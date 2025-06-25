@@ -9,13 +9,15 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3030;
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
 
 app.use(cors());
 app.use(express.json());
 
 // Servir arquivos estáticos do build em produção
-if (process.env.NODE_ENV === 'production') {
+if (isProduction) {
   app.use(express.static(path.join(__dirname, '../dist')));
+  console.log('Servindo arquivos estáticos de:', path.join(__dirname, '../dist'));
 }
 
 const DATA_PATH = {
@@ -80,9 +82,10 @@ app.get("/api/eventos", (req, res) => {
 });
 
 // Rota catch-all para servir o React em produção
-if (process.env.NODE_ENV === 'production') {
+if (isProduction) {
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
+      console.log('Servindo index.html para:', req.path);
       res.sendFile(path.join(__dirname, '../dist/index.html'));
     }
   });
