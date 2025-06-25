@@ -37,7 +37,9 @@ function App() {
           ))}
         </nav>
         <div className="tab-content">
-          <div style={{ display: activeTab === "gabinetes" ? "block" : "none" }}>
+          <div
+            style={{ display: activeTab === "gabinetes" ? "block" : "none" }}
+          >
             <Gabinetes />
           </div>
           <div style={{ display: activeTab === "projetos" ? "block" : "none" }}>
@@ -46,7 +48,9 @@ function App() {
           <div style={{ display: activeTab === "paineis" ? "block" : "none" }}>
             <Paineis />
           </div>
-          <div style={{ display: activeTab === "relatorio" ? "block" : "none" }}>
+          <div
+            style={{ display: activeTab === "relatorio" ? "block" : "none" }}
+          >
             <Relatorio />
           </div>
           <div style={{ display: activeTab === "agenda" ? "block" : "none" }}>
