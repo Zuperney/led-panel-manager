@@ -33,27 +33,27 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
     // Navegar para a aba de projetos e definir o projeto para edição
     if (onNavigateToTab) {
       // Salvar o projeto selecionado para edição no localStorage
-      localStorage.setItem('projetoParaEdicao', JSON.stringify(proj));
+      localStorage.setItem("projetoParaEdicao", JSON.stringify(proj));
       // Mostrar uma notificação ao usuário
       setTimeout(() => {
         alert(`Navegando para a aba Projetos para editar: ${proj.nome}`);
       }, 100);
-      onNavigateToTab('projetos');
+      onNavigateToTab("projetos");
     } else {
       alert(`Editar projeto: ${proj.nome}`);
     }
   }
-  
+
   function editarPaineis(proj) {
     // Navegar para a aba de painéis e carregar o projeto
     if (onNavigateToTab) {
       // Salvar o projeto selecionado no localStorage para a aba de painéis
-      localStorage.setItem('selectedProjectId', proj.nome);
+      localStorage.setItem("selectedProjectId", proj.nome);
       // Mostrar uma notificação ao usuário
       setTimeout(() => {
         alert(`Navegando para a aba Painéis com o projeto: ${proj.nome}`);
       }, 100);
-      onNavigateToTab('paineis');
+      onNavigateToTab("paineis");
     } else {
       alert(`Editar painéis do projeto: ${proj.nome}`);
     }
@@ -566,11 +566,11 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
                       <button
                         style={{
                           ...menuBtnStyle,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          backgroundColor: '#1e40af',
-                          borderBottom: '1px solid #3a4161'
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          backgroundColor: "#1e40af",
+                          borderBottom: "1px solid #3a4161",
                         }}
                         onClick={() => {
                           editarProjeto(proj);
@@ -583,11 +583,11 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
                       <button
                         style={{
                           ...menuBtnStyle,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          backgroundColor: '#0f766e',
-                          borderBottom: 'none'
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          backgroundColor: "#0f766e",
+                          borderBottom: "none",
                         }}
                         onClick={() => {
                           editarPaineis(proj);

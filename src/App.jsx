@@ -5,6 +5,7 @@ import Projetos from "./Projetos";
 import Paineis from "./Paineis";
 import Agenda from "./Agenda";
 import Relatorio from "./Relatorio";
+import PixelMapping from "./PixelMapping";
 import "./App.css";
 
 const TABS = [
@@ -13,7 +14,7 @@ const TABS = [
   { label: "Painéis", key: "paineis", icon: "🖥️" },
   { label: "Relatório", key: "relatorio", icon: "📊" },
   { label: "Agenda", key: "agenda", icon: "📅" },
-  { label: "Pixel Mapping", key: "pixelmapping", icon: "🎯" },
+  { label: "Layout", key: "pixelmapping", icon: "�" },
   { label: "Configurações", key: "configuracoes", icon: "⚙️" },
 ];
 
@@ -95,21 +96,18 @@ function App() {
           <div
             style={{ display: activeTab === "relatorio" ? "block" : "none" }}
           >
-            <Relatorio 
-              isActive={activeTab === "relatorio"} 
+            <Relatorio
+              isActive={activeTab === "relatorio"}
               onNavigateToTab={handleTabChange}
             />
           </div>
           <div style={{ display: activeTab === "agenda" ? "block" : "none" }}>
             <Agenda isActive={activeTab === "agenda"} />
           </div>
+          <div style={{ display: activeTab === "pixelmapping" ? "block" : "none" }}>
+            <PixelMapping isActive={activeTab === "pixelmapping"} />
+          </div>
           {/* Placeholder para futuras abas */}
-          {activeTab === "pixelmapping" && (
-            <div style={{ textAlign: "center", padding: "40px" }}>
-              <h3>🎯 Pixel Mapping</h3>
-              <p>Funcionalidade em desenvolvimento...</p>
-            </div>
-          )}
           {activeTab === "configuracoes" && (
             <div style={{ textAlign: "center", padding: "40px" }}>
               <h3>⚙️ Configurações</h3>

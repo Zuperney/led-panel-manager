@@ -3,173 +3,108 @@ import { useProjeto } from "./contextProjeto";
 import { useApiData, useLocalStorage } from "./hooks";
 import FeedbackMessage from "./components/FeedbackMessage";
 import PixelGridEditor from "./components/PixelGridEditor";
-import ZoneEditor from "./components/ZoneEditor";
-import UniverseConfig from "./components/UniverseConfig";
-import ExportWizard from "./components/ExportWizard";
+import PanelLayoutEditor from "./components/PanelLayoutEditor";
 import { UTILS } from "./config";
 
 export default function PixelMapping({ isActive }) {
   const { state } = useProjeto();
   const { data: paineis } = useApiData("paineis", isActive);
   const { data: gabinetes } = useApiData("gabinetes", isActive);
-  
+
   // Estados locais
-  const [selectedProjectId, setSelectedProjectId] = useLocalStorage("pixelMappingProjectId", "");
-  const [selectedPainelId, setSelectedPainelId] = useState("");
-  const [mappingConfig, setMappingConfig] = useState({
-    universos: [],
-    zonas: [],
-    configuracoes: {
-      protocoloSaida: "Art-Net",
-      universoInicial: 1,
-      enderecoInicial: 1,
-      pixelsPerUniverse: 170, // Padrão Art-Net (512 canais / 3 RGB = ~170 pixels)
-      rgbOrder: "RGB"
-    }
+  const [selectedProjectId, setSelectedProjectId] = useLocalStorage(
+    "panelLayoutProjectId",
+    ""
+  );
+  const [layoutConfig, setLayoutConfig] = useState({
+    paineis: [], // Array de painéis posicionados no canvas
+    canvasSize: { width: 1920, height: 1080 }, // Tamanho do canvas em pixels
+    zoom: 1,
+    gridSnap: true
   });
-  const [previewMode, setPreviewMode] = useLocalStorage("pixelMappingPreviewMode", "grid");
-  const [selectedZone, setSelectedZone] = useState(null);
+  const [previewMode, setPreviewMode] = useLocalStorage(
+    "panelLayoutPreviewMode",
+    "layout"
+  );
+  const [selectedPanel, setSelectedPanel] = useState(null);
   const [feedback, setFeedback] = useState("");
-  const [activeTab, setActiveTab] = useState("visual"); // "visual", "zones", "universes"
-  const [showExportWizard, setShowExportWizard] = useState(false);
+  const [activeTab, setActiveTab] = useState("visual"); // "visual", "panels"
 
   // Painéis filtrados pelo projeto
   const paineisFiltrados = selectedProjectId 
-    ? paineis.filter(p => p.projeto === selectedProjectId)
+    ? paineis.filter((p) => p.projeto === selectedProjectId)
     : [];
 
-  // Painel selecionado
-  const painelSelecionado = paineisFiltrados.find(p => p.nome === selectedPainelId);
-
-  // Carregar configuração salva quando mudar painel
+  // Carregar configuração salva quando mudar projeto
   useEffect(() => {
-    if (painelSelecionado) {
-      const savedConfig = localStorage.getItem(`pixelMapping_${selectedProjectId}_${selectedPainelId}`);
+    if (selectedProjectId) {
+      const savedConfig = localStorage.getItem(
+        `panelLayout_${selectedProjectId}`
+      );
       if (savedConfig) {
         try {
-          setMappingConfig(JSON.parse(savedConfig));
+          setLayoutConfig(JSON.parse(savedConfig));
         } catch (error) {
-          console.error("Erro ao carregar configuração:", error);
+          console.error("Erro ao carregar layout:", error);
         }
       } else {
-        // Configuração padrão baseada no painel
-        const totalPixels = painelSelecionado.pixelsLargura * painelSelecionado.pixelsAltura;
-        const universesNeeded = Math.ceil(totalPixels / mappingConfig.configuracoes.pixelsPerUniverse);
-        
-        setMappingConfig(prev => ({
-          ...prev,
-          universos: Array.from({ length: universesNeeded }, (_, i) => ({
-            id: i + 1,
-            universe: prev.configuracoes.universoInicial + i,
-            startPixel: i * prev.configuracoes.pixelsPerUniverse,
-            endPixel: Math.min((i + 1) * prev.configuracoes.pixelsPerUniverse - 1, totalPixels - 1),
-            protocol: prev.configuracoes.protocoloSaida
-          })),
-          zonas: [{
-            id: 1,
-            nome: "Zona Principal",
-            x: 0,
-            y: 0,
-            width: painelSelecionado.pixelsLargura,
-            height: painelSelecionado.pixelsAltura,
-            universeStart: prev.configuracoes.universoInicial,
-            pixelStart: 0
-          }]
-        }));
+        // Configuração padrão
+        setLayoutConfig({
+          paineis: [],
+          canvasSize: { width: 1920, height: 1080 },
+          zoom: 1,
+          gridSnap: true
+        });
       }
     }
-  }, [painelSelecionado, selectedProjectId, selectedPainelId]);
+  }, [selectedProjectId]);
 
   // Salvar configuração
-  const salvarConfiguracao = () => {
-    if (painelSelecionado) {
-      const key = `pixelMapping_${selectedProjectId}_${selectedPainelId}`;
-      localStorage.setItem(key, JSON.stringify(mappingConfig));
-      setFeedback("Configuração de Pixel Mapping salva com sucesso!");
+  const salvarLayout = () => {
+    if (selectedProjectId) {
+      const key = `panelLayout_${selectedProjectId}`;
+      localStorage.setItem(key, JSON.stringify(layoutConfig));
+      setFeedback("Layout de painéis salvo com sucesso!");
       setTimeout(() => setFeedback(""), 3000);
     }
   };
 
   // Exportar configuração
-  const exportarConfiguracao = () => {
-    if (!painelSelecionado) return;
+  const exportarLayout = () => {
+    if (!selectedProjectId) return;
 
     const exportData = {
       projeto: selectedProjectId,
-      painel: selectedPainelId,
-      configuracao: mappingConfig,
-      painel_info: {
-        largura: painelSelecionado.largura,
-        altura: painelSelecionado.altura,
-        pixelsLargura: painelSelecionado.pixelsLargura,
-        pixelsAltura: painelSelecionado.pixelsAltura,
-        gabinete: painelSelecionado.gabinete
-      },
-      timestamp: new Date().toISOString()
+      layout: layoutConfig,
+      paineis_info: paineisFiltrados.map(p => ({
+        nome: p.nome,
+        largura: p.largura,
+        altura: p.altura,
+        pixelsLargura: p.pixelsLargura,
+        pixelsAltura: p.pixelsAltura,
+        gabinete: p.gabinete
+      })),
+      timestamp: new Date().toISOString(),
     };
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: "application/json"
+      type: "application/json",
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `PixelMapping_${selectedProjectId}_${selectedPainelId}.json`;
+    a.download = `PanelLayout_${selectedProjectId}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
-    setFeedback("Configuração exportada com sucesso!");
+
+    setFeedback("Layout exportado com sucesso!");
     setTimeout(() => setFeedback(""), 3000);
   };
 
-  // Adicionar nova zona
-  const adicionarZona = () => {
-    if (!painelSelecionado) return;
-
-    const novaZona = {
-      id: Date.now(),
-      nome: `Zona ${mappingConfig.zonas.length + 1}`,
-      x: 0,
-      y: 0,
-      width: Math.floor(painelSelecionado.pixelsLargura / 2),
-      height: Math.floor(painelSelecionado.pixelsAltura / 2),
-      universeStart: mappingConfig.configuracoes.universoInicial,
-      pixelStart: 0
-    };
-
-    setMappingConfig(prev => ({
-      ...prev,
-      zonas: [...prev.zonas, novaZona]
-    }));
-    setSelectedZone(novaZona);
-  };
-
-  // Remover zona
-  const removerZona = (zonaId) => {
-    setMappingConfig(prev => ({
-      ...prev,
-      zonas: prev.zonas.filter(z => z.id !== zonaId)
-    }));
-    if (selectedZone?.id === zonaId) {
-      setSelectedZone(null);
-    }
-  };
-
-  // Atualizar zona
-  const atualizarZona = (zonaAtualizada) => {
-    setMappingConfig(prev => ({
-      ...prev,
-      zonas: prev.zonas.map(z => z.id === zonaAtualizada.id ? zonaAtualizada : z)
-    }));
-    if (selectedZone?.id === zonaAtualizada.id) {
-      setSelectedZone(zonaAtualizada);
-    }
-  };
-
   // Importar configuração
-  const importarConfiguracao = (event) => {
+  const importarLayout = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -177,13 +112,13 @@ export default function PixelMapping({ isActive }) {
     reader.onload = (e) => {
       try {
         const importData = JSON.parse(e.target.result);
-        if (importData.configuracao) {
-          setMappingConfig(importData.configuracao);
-          setFeedback("Configuração importada com sucesso!");
+        if (importData.layout) {
+          setLayoutConfig(importData.layout);
+          setFeedback("Layout importado com sucesso!");
           setTimeout(() => setFeedback(""), 3000);
         }
       } catch (error) {
-        setFeedback("Erro ao importar configuração!");
+        setFeedback("Erro ao importar layout!");
         console.error("Erro na importação:", error);
         setTimeout(() => setFeedback(""), 3000);
       }
@@ -196,30 +131,33 @@ export default function PixelMapping({ isActive }) {
 
   return (
     <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
-      <h2 style={{ color: "#fff", marginBottom: 24 }}>🎯 Pixel Mapping</h2>
-      
+      <h2 style={{ color: "#fff", marginBottom: 24 }}>� Layout de Painéis</h2>
+
       <FeedbackMessage message={feedback} type="success" />
-      
-      {/* Seleção de Projeto e Painel */}
-      <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "1fr 1fr", 
-        gap: 16, 
-        marginBottom: 24,
-        padding: 16,
-        background: "#23283a",
-        borderRadius: 12
-      }}>
+
+      {/* Seleção de Projeto */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 16,
+          marginBottom: 24,
+          padding: 16,
+          background: "#23283a",
+          borderRadius: 12,
+        }}
+      >
         <div>
-          <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+          <label
+            style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}
+          >
             Projeto:
           </label>
           <select
             value={selectedProjectId}
             onChange={(e) => {
               setSelectedProjectId(e.target.value);
-              setSelectedPainelId("");
-              setSelectedZone(null);
+              setSelectedPanel(null);
             }}
             style={{
               width: "100%",
@@ -227,7 +165,7 @@ export default function PixelMapping({ isActive }) {
               borderRadius: 6,
               border: "1px solid #3a4161",
               background: "#1a1d29",
-              color: "#fff"
+              color: "#fff",
             }}
           >
             <option value="">Selecione o Projeto</option>
@@ -238,74 +176,52 @@ export default function PixelMapping({ isActive }) {
             ))}
           </select>
         </div>
-        
-        <div>
-          <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
-            Painel:
-          </label>
-          <select
-            value={selectedPainelId}
-            onChange={(e) => {
-              setSelectedPainelId(e.target.value);
-              setSelectedZone(null);
-            }}
-            disabled={!selectedProjectId}
-            style={{
-              width: "100%",
-              padding: 8,
-              borderRadius: 6,
-              border: "1px solid #3a4161",
-              background: "#1a1d29",
-              color: "#fff"
-            }}
-          >
-            <option value="">Selecione o Painel</option>
-            {paineisFiltrados.map((p, i) => (
-              <option key={i} value={p.nome}>
-                {p.nome} ({UTILS.formatNumber(p.pixelsLargura, 0)}×{UTILS.formatNumber(p.pixelsAltura, 0)})
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
-      {painelSelecionado ? (
+      {selectedProjectId ? (
         <>
-          {/* Informações do Painel */}
-          <div style={{
-            background: "#23283a",
-            borderRadius: 12,
-            padding: 16,
-            marginBottom: 24
-          }}>
-            <h3 style={{ color: "#fff", marginBottom: 12 }}>ℹ️ Informações do Painel</h3>
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
-              gap: 12,
-              fontSize: "0.9em",
-              color: "#b6c1e0"
-            }}>
-              <div>📐 Resolução: {UTILS.formatNumber(painelSelecionado.pixelsLargura, 0)} × {UTILS.formatNumber(painelSelecionado.pixelsAltura, 0)} pixels</div>
-              <div>📏 Dimensões: {UTILS.formatNumber(painelSelecionado.largura, 2)}m × {UTILS.formatNumber(painelSelecionado.altura, 2)}m</div>
-              <div>🔢 Total de Pixels: {UTILS.formatNumber(painelSelecionado.pixelsLargura * painelSelecionado.pixelsAltura, 0)}</div>
-              <div>📦 Gabinete: {painelSelecionado.gabinete}</div>
+          {/* Informações do Projeto */}
+          <div
+            style={{
+              background: "#23283a",
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 24,
+            }}
+          >
+            <h3 style={{ color: "#fff", marginBottom: 12 }}>
+              ℹ️ Informações do Projeto
+            </h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: 12,
+                fontSize: "0.9em",
+                color: "#b6c1e0",
+              }}
+            >
+              <div>� Projeto: {selectedProjectId}</div>
+              <div>� Painéis Disponíveis: {paineisFiltrados.length}</div>
+              <div>🎨 Painéis no Canvas: {layoutConfig.paineis.length}</div>
+              <div>� Canvas: {layoutConfig.canvasSize.width}×{layoutConfig.canvasSize.height}px</div>
             </div>
           </div>
 
           {/* Navegação por Abas */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ 
-              display: "flex", 
-              gap: 8,
-              borderBottom: "2px solid #3a4161",
-              marginBottom: 16
-            }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                borderBottom: "2px solid #3a4161",
+                marginBottom: 16,
+              }}
+            >
               {[
                 { key: "visual", label: "Editor Visual", icon: "🎨" },
-                { key: "zones", label: "Gerenciar Zonas", icon: "🔲" },
-                { key: "universes", label: "Configurar Universos", icon: "🌐" }
-              ].map(tab => (
+                { key: "panels", label: "Configurar Canvas", icon: "⚙️" },
+              ].map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
@@ -317,8 +233,11 @@ export default function PixelMapping({ isActive }) {
                     color: "#fff",
                     cursor: "pointer",
                     fontWeight: activeTab === tab.key ? 600 : 400,
-                    borderBottom: activeTab === tab.key ? "2px solid #3b82f6" : "2px solid transparent",
-                    marginBottom: "-2px"
+                    borderBottom:
+                      activeTab === tab.key
+                        ? "2px solid #3b82f6"
+                        : "2px solid transparent",
+                    marginBottom: "-2px",
                   }}
                 >
                   {tab.icon} {tab.label}
@@ -328,117 +247,58 @@ export default function PixelMapping({ isActive }) {
 
             {/* Conteúdo das Abas */}
             {activeTab === "visual" && (
-              <div style={{ display: "flex", gap: 24 }}>
-                {/* Editor Visual */}
-                <div style={{ flex: 2 }}>
-                  <div style={{ 
-                    background: "#23283a", 
-                    borderRadius: 12, 
-                    padding: 16 
-                  }}>
-                    <div style={{ 
-                      display: "flex", 
-                      justifyContent: "space-between", 
-                      alignItems: "center",
-                      marginBottom: 16 
-                    }}>
-                      <h4 style={{ color: "#fff", margin: 0 }}>Editor Visual</h4>
-                      
-                      {/* Controles de Visualização */}
-                      <div style={{ display: "flex", gap: 8 }}>
-                        {[
-                          { key: "grid", label: "Grid", icon: "⬜" },
-                          { key: "zones", label: "Zonas", icon: "🔲" },
-                          { key: "universes", label: "Universos", icon: "🌐" }
-                        ].map(mode => (
-                          <button
-                            key={mode.key}
-                            onClick={() => setPreviewMode(mode.key)}
-                            style={{
-                              padding: "6px 12px",
-                              borderRadius: 6,
-                              border: "none",
-                              background: previewMode === mode.key ? "#3b82f6" : "#2a2d3a",
-                              color: "#fff",
-                              cursor: "pointer",
-                              fontSize: "0.8em"
-                            }}
-                          >
-                            {mode.icon} {mode.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <PixelGridEditor
-                      painelConfig={painelSelecionado}
-                      mappingConfig={mappingConfig}
-                      onMappingUpdate={setMappingConfig}
-                      previewMode={previewMode}
-                      selectedZone={selectedZone}
-                      onZoneSelect={setSelectedZone}
-                      onZoneUpdate={atualizarZona}
-                    />
-                  </div>
-                </div>
-
-                {/* Painel lateral com controles */}
-                <div style={{ flex: 1, minWidth: 320 }}>
-                  {/* Ações principais */}
-                  <div style={{
+              <div>
+                {/* Ações principais */}
+                <div
+                  style={{
                     background: "#23283a",
                     borderRadius: 12,
                     padding: 16,
-                    marginBottom: 16
-                  }}>
-                    <h4 style={{ color: "#fff", marginBottom: 12 }}>💾 Ações</h4>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      <button
-                        onClick={salvarConfiguracao}
-                        style={{
-                          padding: "10px 16px",
-                          borderRadius: 6,
-                          border: "none",
-                          background: "#10b981",
-                          color: "#fff",
-                          cursor: "pointer",
-                          fontWeight: 500
-                        }}
-                      >
-                        💾 Salvar Configuração
-                      </button>
-                      
-                      <button
-                        onClick={exportarConfiguracao}
-                        style={{
-                          padding: "10px 16px",
-                          borderRadius: 6,
-                          border: "none",
-                          background: "#3b82f6",
-                          color: "#fff",
-                          cursor: "pointer",
-                          fontWeight: 500
-                        }}
-                      >
-                        📤 Exportar JSON
-                      </button>
-                      
-                      <button
-                        onClick={() => setShowExportWizard(true)}
-                        style={{
-                          padding: "10px 16px",
-                          borderRadius: 6,
-                          border: "none",
-                          background: "#8b5cf6",
-                          color: "#fff",
-                          cursor: "pointer",
-                          fontWeight: 500
-                        }}
-                      >
-                        🚀 Exportar Pro
-                      </button>
-                      
-                      <label style={{
+                    marginBottom: 16,
+                  }}
+                >
+                  <h4 style={{ color: "#fff", marginBottom: 12 }}>
+                    💾 Ações
+                  </h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      flexWrap: "wrap"
+                    }}
+                  >
+                    <button
+                      onClick={salvarLayout}
+                      style={{
+                        padding: "10px 16px",
+                        borderRadius: 6,
+                        border: "none",
+                        background: "#10b981",
+                        color: "#fff",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                      }}
+                    >
+                      💾 Salvar Layout
+                    </button>
+
+                    <button
+                      onClick={exportarLayout}
+                      style={{
+                        padding: "10px 16px",
+                        borderRadius: 6,
+                        border: "none",
+                        background: "#3b82f6",
+                        color: "#fff",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                      }}
+                    >
+                      📤 Exportar JSON
+                    </button>
+
+                    <label
+                      style={{
                         padding: "10px 16px",
                         borderRadius: 6,
                         border: "none",
@@ -447,85 +307,178 @@ export default function PixelMapping({ isActive }) {
                         cursor: "pointer",
                         fontWeight: 500,
                         textAlign: "center",
-                        display: "block"
-                      }}>
-                        📥 Importar JSON
-                        <input
-                          type="file"
-                          accept=".json"
-                          onChange={importarConfiguracao}
-                          style={{ display: "none" }}
-                        />
-                      </label>
-                    </div>
+                        display: "block",
+                      }}
+                    >
+                      📥 Importar JSON
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={importarLayout}
+                        style={{ display: "none" }}
+                      />
+                    </label>
                   </div>
-
-                  {/* Editor de zona selecionada */}
-                  {previewMode === "zones" && (
-                    <ZoneEditor
-                      zonas={mappingConfig.zonas}
-                      selectedZone={selectedZone}
-                      onZoneSelect={setSelectedZone}
-                      onZoneUpdate={atualizarZona}
-                      onZoneDelete={removerZona}
-                      onZoneAdd={adicionarZona}
-                      universos={mappingConfig.universos}
-                    />
-                  )}
                 </div>
+
+                {/* Editor de Layout */}
+                <PanelLayoutEditor
+                  availablePanels={paineisFiltrados}
+                  layoutConfig={layoutConfig}
+                  onLayoutUpdate={setLayoutConfig}
+                  selectedPanel={selectedPanel}
+                  onPanelSelect={setSelectedPanel}
+                  onFeedback={setFeedback}
+                />
               </div>
             )}
 
-            {activeTab === "zones" && (
-              <ZoneEditor
-                zonas={mappingConfig.zonas}
-                selectedZone={selectedZone}
-                onZoneSelect={setSelectedZone}
-                onZoneUpdate={atualizarZona}
-                onZoneDelete={removerZona}
-                onZoneAdd={adicionarZona}
-                universos={mappingConfig.universos}
-              />
-            )}
+            {activeTab === "panels" && (
+              <div style={{
+                background: "#23283a",
+                borderRadius: 12,
+                padding: 16
+              }}>
+                <h4 style={{ color: "#fff", marginBottom: 16 }}>⚙️ Configurações do Canvas</h4>
+                
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div>
+                    <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+                      Largura do Canvas (px):
+                    </label>
+                    <input
+                      type="number"
+                      min="800"
+                      max="7680"
+                      step="100"
+                      value={layoutConfig.canvasSize.width}
+                      onChange={(e) => setLayoutConfig(prev => ({
+                        ...prev,
+                        canvasSize: { ...prev.canvasSize, width: parseInt(e.target.value) || 1920 }
+                      }))}
+                      style={{
+                        width: "100%",
+                        padding: 8,
+                        borderRadius: 6,
+                        border: "1px solid #3a4161",
+                        background: "#1a1d29",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+                      Altura do Canvas (px):
+                    </label>
+                    <input
+                      type="number"
+                      min="600"
+                      max="4320"
+                      step="100"
+                      value={layoutConfig.canvasSize.height}
+                      onChange={(e) => setLayoutConfig(prev => ({
+                        ...prev,
+                        canvasSize: { ...prev.canvasSize, height: parseInt(e.target.value) || 1080 }
+                      }))}
+                      style={{
+                        width: "100%",
+                        padding: 8,
+                        borderRadius: 6,
+                        border: "1px solid #3a4161",
+                        background: "#1a1d29",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+                </div>
 
-            {activeTab === "universes" && (
-              <UniverseConfig
-                universos={mappingConfig.universos}
-                configuracoes={mappingConfig.configuracoes}
-                onUniverseUpdate={(universos) => setMappingConfig(prev => ({ ...prev, universos }))}
-                onConfigUpdate={(configuracoes) => setMappingConfig(prev => ({ ...prev, configuracoes }))}
-                totalPixels={painelSelecionado.pixelsLargura * painelSelecionado.pixelsAltura}
-              />
+                {/* Presets de Resolução */}
+                <div style={{ marginTop: 16 }}>
+                  <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+                    Presets de Resolução:
+                  </label>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {[
+                      { name: "HD", width: 1280, height: 720 },
+                      { name: "Full HD", width: 1920, height: 1080 },
+                      { name: "2K", width: 2560, height: 1440 },
+                      { name: "4K", width: 3840, height: 2160 },
+                      { name: "8K", width: 7680, height: 4320 },
+                    ].map(preset => (
+                      <button
+                        key={preset.name}
+                        onClick={() => setLayoutConfig(prev => ({
+                          ...prev,
+                          canvasSize: { width: preset.width, height: preset.height }
+                        }))}
+                        style={{
+                          padding: "6px 12px",
+                          borderRadius: 6,
+                          border: "none",
+                          background: layoutConfig.canvasSize.width === preset.width && 
+                                     layoutConfig.canvasSize.height === preset.height ? 
+                                     "#3b82f6" : "#2a2d3a",
+                          color: "#fff",
+                          cursor: "pointer",
+                          fontSize: "0.9em"
+                        }}
+                      >
+                        {preset.name}<br/>
+                        <small>{preset.width}×{preset.height}</small>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Informações */}
+                <div style={{
+                  marginTop: 20,
+                  padding: 16,
+                  background: "#1a1d29",
+                  borderRadius: 8,
+                  fontSize: "0.9em",
+                  color: "#b6c1e0"
+                }}>
+                  <strong>💡 Dicas:</strong><br/>
+                  • O canvas representa a área total onde os painéis serão posicionados<br/>
+                  • Use presets de resolução comum ou configure manualmente<br/>
+                  • Os painéis são dimensionados automaticamente baseados em suas medidas reais<br/>
+                  • 1 metro = 100 pixels na escala do editor
+                </div>
+              </div>
             )}
           </div>
         </>
       ) : (
-        <div style={{
-          textAlign: "center",
-          padding: 60,
-          color: "#9ca3af"
-        }}>
-          <div style={{ fontSize: "3em", marginBottom: 16 }}>🎯</div>
-          <h3 style={{ color: "#fff", marginBottom: 8 }}>Pixel Mapping Avançado</h3>
-          <p>Selecione um projeto e painel para começar a configurar o mapeamento de pixels</p>
+        <div
+          style={{
+            textAlign: "center",
+            padding: 60,
+            color: "#9ca3af",
+          }}
+        >
+          <div style={{ fontSize: "3em", marginBottom: 16 }}>�</div>
+          <h3 style={{ color: "#fff", marginBottom: 8 }}>
+            Layout de Painéis Simplificado
+          </h3>
+          <p>
+            Selecione um projeto para começar a arranjar os painéis no canvas
+          </p>
           <div style={{ fontSize: "0.9em", marginTop: 16, lineHeight: 1.6 }}>
-            <strong>Recursos disponíveis:</strong><br/>
-            🎨 Editor visual interativo com drag & drop<br/>
-            🔲 Criação e edição de zonas personalizadas<br/>
-            🌐 Configuração avançada de universos DMX<br/>
-            📤 Exportação e importação de configurações<br/>
-            🔄 Suporte para Art-Net, sACN e DDP
+            <strong>Recursos disponíveis:</strong>
+            <br />
+            🎨 Editor visual com drag & drop
+            <br />
+            � Adição de múltiplos painéis do projeto
+            <br />
+            📐 Canvas configurável com presets de resolução
+            <br />
+            � Salvamento e exportação de layouts
+            <br />
+            � Grid de alinhamento e zoom
           </div>
         </div>
-      )}
-      
-      {/* Export Wizard Modal */}
-      {showExportWizard && painelSelecionado && (
-        <ExportWizard
-          mappingConfig={mappingConfig}
-          painelConfig={painelSelecionado}
-          onClose={() => setShowExportWizard(false)}
-        />
       )}
     </div>
   );
