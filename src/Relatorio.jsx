@@ -11,34 +11,17 @@ import {
   Line,
 } from "@react-pdf/renderer";
 import { calcularPotenciaFinal, calcularEnergia } from "./painelCalculos";
+import { useApiData } from "./hooks";
 
 export default function Relatorio({ isActive }) {
-  const [projetos, setProjetos] = useState([]);
-  const [paineis, setPaineis] = useState([]);
+  const { data: projetos } = useApiData('projetos', isActive);
+  const { data: paineis } = useApiData('paineis', isActive);
+  const { data: gabinetes } = useApiData('gabinetes', isActive);
   const [menuAberto, setMenuAberto] = useState(null); // index do menu aberto
   const [exportando, setExportando] = useState(null); // index do projeto exportando
-  const [gabinetes, setGabinetes] = useState([]);
 
   useEffect(() => {
-    if (isActive) {
-      // Carregar projetos
-      fetch("/api/projetos")
-        .then((res) => res.json())
-        .then((data) => setProjetos(data))
-        .catch((error) => console.error("Erro ao carregar projetos:", error));
-      
-      // Carregar painéis
-      fetch("/api/paineis")
-        .then((res) => res.json())
-        .then((data) => setPaineis(data))
-        .catch((error) => console.error("Erro ao carregar painéis:", error));
-      
-      // Carregar gabinetes
-      fetch("/api/gabinetes")
-        .then((res) => res.json())
-        .then((data) => setGabinetes(data))
-        .catch((error) => console.error("Erro ao carregar gabinetes:", error));
-    } else {
+    if (!isActive) {
       // Fechar menus quando aba não está ativa
       setMenuAberto(null);
       setExportando(null);
@@ -435,9 +418,11 @@ export default function Relatorio({ isActive }) {
 
   // Não renderizar se a aba não estiver ativa
   if (!isActive) {
-    return <div style={{ padding: "20px", textAlign: "center" }}>
-      <p>Carregando relatórios...</p>
-    </div>;
+    return (
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <p>Carregando relatórios...</p>
+      </div>
+    );
   }
 
   return (
@@ -553,7 +538,9 @@ export default function Relatorio({ isActive }) {
                           }}
                           disabled
                         >
-                          {paineisProjeto.length === 0 ? "Sem painéis para exportar" : "Carregando..."}
+                          {paineisProjeto.length === 0
+                            ? "Sem painéis para exportar"
+                            : "Carregando..."}
                         </button>
                       )}
                       <button

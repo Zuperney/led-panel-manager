@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useProjeto } from "./contextProjeto";
+import { useApiData } from "./hooks";
+import FeedbackMessage from "./components/FeedbackMessage";
 
 export default function Projetos({ isActive }) {
   const { state, dispatch } = useProjeto();
+  const { updateData: salvarProjetos } = useApiData('projetos', isActive);
   const [form, setForm] = useState({ nome: "", cliente: "", dataEntrega: "" });
 
   // Carregar projetos do backend ao iniciar e quando a aba se torna ativa
@@ -15,13 +18,10 @@ export default function Projetos({ isActive }) {
     }
   }, [dispatch, isActive]);
 
-  function salvarProjetosBackend(novosProjetos) {
-    fetch("/api/projetos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novosProjetos),
-    });
-  }
+  // Função otimizada para salvar projetos
+  const salvarProjetosBackend = async (novosProjetos) => {
+    await salvarProjetos(novosProjetos);
+  };
 
   function handleSubmit(e) {
     e.preventDefault();

@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
 import { useProjeto } from "./contextProjeto";
+import { useApiData, useLocalStorage, useTemporaryFeedback } from "./hooks";
+import PainelCard from "./components/PainelCard";
+import FeedbackMessage from "./components/FeedbackMessage";
 import {
   calcularPainelPorGabinete,
   calcularPainelPorMetro,
   calcularEnergia,
-  calcularIntensidade,
   calcularPotenciaFinal,
 } from "./painelCalculos";
 
 export default function Paineis({ isActive }) {
   const { state } = useProjeto();
-  const [gabinetes, setGabinetes] = useState([]);
-  const [paineis, setPaineis] = useState([]);
+  
+  // Usar hooks customizados para dados da API
+  const { data: gabinetes } = useApiData('gabinetes', isActive);
+  const { data: paineis, setData: setPaineis, updateData: salvarPaineis } = useApiData('paineis', isActive);
+  
+  // Estados locais otimizados
   const [editando, setEditando] = useState(null);
-  const [selectedProjectId, setSelectedProjectId] = useState("");
   const [selectedPanelIndex, setSelectedPanelIndex] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useLocalStorage('selectedProjectId', '');
   const [form, setForm] = useState({
     projeto: "",
     nome: "",
@@ -29,49 +35,19 @@ export default function Paineis({ isActive }) {
   const [tensao, setTensao] = useState("220"); // 220 ou 380
   const [tipoRede, setTipoRede] = useState("monofasico");
   const [energia, setEnergia] = useState(null);
-  const [brilho, setBrilho] = useState(100); // porcentagem de brilho
-  const [fatorConteudo, setFatorConteudo] = useState(0.33);
-  const [consumoBase, setConsumoBase] = useState(0.3);
   const [potenciaDetalhe, setPotenciaDetalhe] = useState(null);
   const [previewPainel, setPreviewPainel] = useState(null);
   const [painelRecenteAdicionado, setPainelRecenteAdicionado] = useState(null);
-  const [mensagemFeedback, setMensagemFeedback] = useState("");
+  const [mensagemFeedback, showFeedback] = useTemporaryFeedback();
 
-  // Carregar gabinetes e painéis quando a aba se torna ativa
-  useEffect(() => {
-    if (isActive) {
-      // Carregar gabinetes
-      fetch("/api/gabinetes")
-        .then((res) => res.json())
-        .then((data) => setGabinetes(data))
-        .catch((error) => console.error("Erro ao carregar gabinetes:", error));
+  // Remover useEffects de carregamento de dados pois agora é feito pelos hooks customizados
 
-      // Carregar painéis
-      fetch("/api/paineis")
-        .then((res) => res.json())
-        .then((data) => setPaineis(data))
-        .catch((error) => console.error("Erro ao carregar painéis:", error));
-    }
-  }, [isActive]);
+  // Função simplificada para salvar painéis
+  const salvarPaineisBackend = async (novosPaineis) => {
+    await salvarPaineis(novosPaineis);
+  };
 
-  function salvarPaineisBackend(novosPaineis) {
-    fetch("/api/paineis", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novosPaineis),
-    });
-  }
-
-  // Persistência do projeto selecionado
-  useEffect(() => {
-    const salvo = localStorage.getItem("selectedProjectId");
-    if (salvo) setSelectedProjectId(salvo);
-  }, []);
-  useEffect(() => {
-    if (selectedProjectId) {
-      localStorage.setItem("selectedProjectId", selectedProjectId);
-    }
-  }, [selectedProjectId]);
+  // Persistência do projeto selecionado já é feita pelo hook useLocalStorage
 
   // Atualiza resultado, energia e potência detalhada sempre que form, tipoRede, tensao mudam
   useEffect(() => {
@@ -209,13 +185,12 @@ export default function Paineis({ isActive }) {
       novos = [...paineis, painel];
       setPreviewPainel({ ...painel });
       setPainelRecenteAdicionado(painel.nome); // Marca o painel como recém-adicionado
-      setMensagemFeedback(`Painel "${painel.nome}" adicionado com sucesso!`);
+      showFeedback(`Painel "${painel.nome}" adicionado com sucesso!`);
       setPaineis(novos);
-      
-      // Remove o destaque e mensagem após 3 segundos
+
+      // Remove o destaque após 3 segundos
       setTimeout(() => {
         setPainelRecenteAdicionado(null);
-        setMensagemFeedback("");
       }, 3000);
     }
     salvarPaineisBackend(novos);
@@ -229,7 +204,7 @@ export default function Paineis({ isActive }) {
       larguraM: "",
       alturaM: "",
     });
-    
+
     // Foca no campo nome para facilitar adição do próximo painel
     setTimeout(() => {
       const nomeInput = document.querySelector('input[name="nome"]');
@@ -274,7 +249,7 @@ export default function Paineis({ isActive }) {
     setPaineis(novos);
     setPainelRecenteAdicionado(novoPainel.nome); // Destaca o painel duplicado
     salvarPaineisBackend(novos);
-    
+
     // Remove o destaque após 3 segundos
     setTimeout(() => {
       setPainelRecenteAdicionado(null);
@@ -291,26 +266,10 @@ export default function Paineis({ isActive }) {
     <div style={{ display: "flex", gap: 32 }}>
       <div style={{ flex: 1, minWidth: 340 }}>
         <h2>Painéis</h2>
-        
+
         {/* Mensagem de feedback */}
-        {mensagemFeedback && (
-          <div
-            style={{
-              background: "#065f46",
-              color: "#ecfdf5",
-              padding: "12px 16px",
-              borderRadius: 8,
-              marginBottom: 16,
-              border: "1px solid #059669",
-              fontSize: "0.9em",
-              fontWeight: "500",
-              animation: "fade-in 0.3s ease-out",
-            }}
-          >
-            ✅ {mensagemFeedback}
-          </div>
-        )}
-        
+        <FeedbackMessage message={mensagemFeedback} type="success" />
+
         <div style={{ marginBottom: 16 }}>
           <label>
             Projeto:&nbsp;
@@ -620,137 +579,29 @@ export default function Paineis({ isActive }) {
               padding: "12px 0",
             }}
           >
-            {paineisFiltrados.map((p, i) => {
-              const gabineteObj = gabinetes.find((g) => g.nome === p.gabinete);
-              const isRecenteAdicionado = painelRecenteAdicionado === p.nome;
-              
-              return (
-                <div
-                  key={i}
-                  className={`painel-lista-item ${isRecenteAdicionado ? 'painel-novo' : ''}`}
-                  style={{
-                    cursor: "pointer",
-                    background: selectedPanelIndex === i 
-                      ? "#2d3550" 
-                      : isRecenteAdicionado 
-                        ? "#1a4d3a" 
-                        : "transparent",
-                    borderRadius: 8,
-                    margin: "8px 12px",
-                    padding: 16,
-                    border: isRecenteAdicionado ? "2px solid #4ade80" : "2px solid transparent",
-                    transition: "all 0.3s ease",
-                    position: "relative",
-                  }}
-                  onClick={() => {
-                    setSelectedPanelIndex(i);
-                    setPreviewPainel(p);
-                    setEditando(null);
-                  }}
-                >
-                  {isRecenteAdicionado && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: -8,
-                        right: 8,
-                        background: "#4ade80",
-                        color: "#000",
-                        fontSize: "0.75em",
-                        padding: "4px 8px",
-                        borderRadius: 12,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      NOVO
-                    </div>
-                  )}
-                  <div style={{ width: "100%" }}>
-                    <div className="painel-nome" style={{ 
-                      fontWeight: "600",
-                      fontSize: "1.08em",
-                      color: "#fff",
-                      marginBottom: 4
-                    }}>
-                      {p.nome}
-                    </div>
-                    <div className="painel-tamanho" style={{
-                      fontSize: "0.95em",
-                      color: "#b6c1e0",
-                      marginBottom: 6
-                    }}>
-                      {p.largura?.toFixed(2)} m × {p.altura?.toFixed(2)} m
-                    </div>
-                    <div
-                      style={{ 
-                        fontSize: 13, 
-                        color: "#9ca3af", 
-                        marginBottom: 12,
-                        lineHeight: 1.3
-                      }}
-                    >
-                      Tipo: {gabineteObj ? gabineteObj.tipo : "-"} | Gabinete: {p.gabinete}
-                    </div>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <button
-                        style={{
-                          padding: "6px 12px",
-                          fontSize: "0.8em",
-                          background: "#3b82f6",
-                          border: "none",
-                          borderRadius: 6,
-                          color: "white",
-                          cursor: "pointer",
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setForm({ ...p, projeto: selectedProjectId });
-                          setEditando(i);
-                          setPreviewPainel(null);
-                        }}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        style={{
-                          padding: "6px 12px",
-                          fontSize: "0.8em",
-                          background: "#10b981",
-                          border: "none",
-                          borderRadius: 6,
-                          color: "white",
-                          cursor: "pointer",
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          duplicarPainel(i);
-                        }}
-                      >
-                        Duplicar
-                      </button>
-                      <button
-                        style={{
-                          padding: "6px 12px",
-                          fontSize: "0.8em",
-                          background: "#ef4444",
-                          border: "none",
-                          borderRadius: 6,
-                          color: "white",
-                          cursor: "pointer",
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removerPainel(i);
-                        }}
-                        className="remove-btn"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {paineisFiltrados.map((p, i) => (
+              <PainelCard
+                key={i}
+                painel={p}
+                index={i}
+                gabinetes={gabinetes}
+                isSelected={selectedPanelIndex === i}
+                isRecenteAdicionado={painelRecenteAdicionado === p.nome}
+                onSelect={(index, painel) => {
+                  setSelectedPanelIndex(index);
+                  setPreviewPainel(painel);
+                  setEditando(null);
+                }}
+                onEdit={(index) => {
+                  setForm({ ...paineisFiltrados[index], projeto: selectedProjectId });
+                  setEditando(index);
+                  setPreviewPainel(null);
+                  setPainelRecenteAdicionado(null);
+                }}
+                onDuplicate={duplicarPainel}
+                onRemove={removerPainel}
+              />
+            ))}
           </div>
         )}
       </div>
