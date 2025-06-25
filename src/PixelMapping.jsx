@@ -20,7 +20,7 @@ export default function PixelMapping({ isActive }) {
     paineis: [], // Array de painéis posicionados no canvas
     canvasSize: { width: 1920, height: 1080 }, // Tamanho do canvas em pixels
     zoom: 1,
-    gridSnap: true
+    gridSnap: true,
   });
   const [previewMode, setPreviewMode] = useLocalStorage(
     "panelLayoutPreviewMode",
@@ -31,7 +31,7 @@ export default function PixelMapping({ isActive }) {
   const [activeTab, setActiveTab] = useState("visual"); // "visual", "panels"
 
   // Painéis filtrados pelo projeto
-  const paineisFiltrados = selectedProjectId 
+  const paineisFiltrados = selectedProjectId
     ? paineis.filter((p) => p.projeto === selectedProjectId)
     : [];
 
@@ -53,7 +53,7 @@ export default function PixelMapping({ isActive }) {
           paineis: [],
           canvasSize: { width: 1920, height: 1080 },
           zoom: 1,
-          gridSnap: true
+          gridSnap: true,
         });
       }
     }
@@ -76,13 +76,13 @@ export default function PixelMapping({ isActive }) {
     const exportData = {
       projeto: selectedProjectId,
       layout: layoutConfig,
-      paineis_info: paineisFiltrados.map(p => ({
+      paineis_info: paineisFiltrados.map((p) => ({
         nome: p.nome,
         largura: p.largura,
         altura: p.altura,
         pixelsLargura: p.pixelsLargura,
         pixelsAltura: p.pixelsAltura,
-        gabinete: p.gabinete
+        gabinete: p.gabinete,
       })),
       timestamp: new Date().toISOString(),
     };
@@ -124,9 +124,9 @@ export default function PixelMapping({ isActive }) {
       }
     };
     reader.readAsText(file);
-    
+
     // Limpar o input
-    event.target.value = '';
+    event.target.value = "";
   };
 
   return (
@@ -185,8 +185,8 @@ export default function PixelMapping({ isActive }) {
             style={{
               background: "#23283a",
               borderRadius: 12,
-              padding: 16,
-              marginBottom: 24,
+              padding: 12,
+              marginBottom: 12,
             }}
           >
             <h3 style={{ color: "#fff", marginBottom: 12 }}>
@@ -204,7 +204,10 @@ export default function PixelMapping({ isActive }) {
               <div>� Projeto: {selectedProjectId}</div>
               <div>� Painéis Disponíveis: {paineisFiltrados.length}</div>
               <div>🎨 Painéis no Canvas: {layoutConfig.paineis.length}</div>
-              <div>� Canvas: {layoutConfig.canvasSize.width}×{layoutConfig.canvasSize.height}px</div>
+              <div>
+                � Canvas: {layoutConfig.canvasSize.width}×
+                {layoutConfig.canvasSize.height}px
+              </div>
             </div>
           </div>
 
@@ -257,14 +260,12 @@ export default function PixelMapping({ isActive }) {
                     marginBottom: 16,
                   }}
                 >
-                  <h4 style={{ color: "#fff", marginBottom: 12 }}>
-                    💾 Ações
-                  </h4>
+                  <h4 style={{ color: "#fff", marginBottom: 12 }}>💾 Ações</h4>
                   <div
                     style={{
                       display: "flex",
                       gap: 8,
-                      flexWrap: "wrap"
+                      flexWrap: "wrap",
                     }}
                   >
                     <button
@@ -334,16 +335,32 @@ export default function PixelMapping({ isActive }) {
             )}
 
             {activeTab === "panels" && (
-              <div style={{
-                background: "#23283a",
-                borderRadius: 12,
-                padding: 16
-              }}>
-                <h4 style={{ color: "#fff", marginBottom: 16 }}>⚙️ Configurações do Canvas</h4>
-                
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div
+                style={{
+                  background: "#23283a",
+                  borderRadius: 12,
+                  padding: 16,
+                }}
+              >
+                <h4 style={{ color: "#fff", marginBottom: 16 }}>
+                  ⚙️ Configurações do Canvas
+                </h4>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 16,
+                  }}
+                >
                   <div>
-                    <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+                    <label
+                      style={{
+                        color: "#b6c1e0",
+                        display: "block",
+                        marginBottom: 8,
+                      }}
+                    >
                       Largura do Canvas (px):
                     </label>
                     <input
@@ -352,10 +369,15 @@ export default function PixelMapping({ isActive }) {
                       max="7680"
                       step="100"
                       value={layoutConfig.canvasSize.width}
-                      onChange={(e) => setLayoutConfig(prev => ({
-                        ...prev,
-                        canvasSize: { ...prev.canvasSize, width: parseInt(e.target.value) || 1920 }
-                      }))}
+                      onChange={(e) =>
+                        setLayoutConfig((prev) => ({
+                          ...prev,
+                          canvasSize: {
+                            ...prev.canvasSize,
+                            width: parseInt(e.target.value) || 1920,
+                          },
+                        }))
+                      }
                       style={{
                         width: "100%",
                         padding: 8,
@@ -366,9 +388,15 @@ export default function PixelMapping({ isActive }) {
                       }}
                     />
                   </div>
-                  
+
                   <div>
-                    <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+                    <label
+                      style={{
+                        color: "#b6c1e0",
+                        display: "block",
+                        marginBottom: 8,
+                      }}
+                    >
                       Altura do Canvas (px):
                     </label>
                     <input
@@ -377,10 +405,15 @@ export default function PixelMapping({ isActive }) {
                       max="4320"
                       step="100"
                       value={layoutConfig.canvasSize.height}
-                      onChange={(e) => setLayoutConfig(prev => ({
-                        ...prev,
-                        canvasSize: { ...prev.canvasSize, height: parseInt(e.target.value) || 1080 }
-                      }))}
+                      onChange={(e) =>
+                        setLayoutConfig((prev) => ({
+                          ...prev,
+                          canvasSize: {
+                            ...prev.canvasSize,
+                            height: parseInt(e.target.value) || 1080,
+                          },
+                        }))
+                      }
                       style={{
                         width: "100%",
                         padding: 8,
@@ -395,7 +428,13 @@ export default function PixelMapping({ isActive }) {
 
                 {/* Presets de Resolução */}
                 <div style={{ marginTop: 16 }}>
-                  <label style={{ color: "#b6c1e0", display: "block", marginBottom: 8 }}>
+                  <label
+                    style={{
+                      color: "#b6c1e0",
+                      display: "block",
+                      marginBottom: 8,
+                    }}
+                  >
                     Presets de Resolução:
                   </label>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -405,46 +444,63 @@ export default function PixelMapping({ isActive }) {
                       { name: "2K", width: 2560, height: 1440 },
                       { name: "4K", width: 3840, height: 2160 },
                       { name: "8K", width: 7680, height: 4320 },
-                    ].map(preset => (
+                    ].map((preset) => (
                       <button
                         key={preset.name}
-                        onClick={() => setLayoutConfig(prev => ({
-                          ...prev,
-                          canvasSize: { width: preset.width, height: preset.height }
-                        }))}
+                        onClick={() =>
+                          setLayoutConfig((prev) => ({
+                            ...prev,
+                            canvasSize: {
+                              width: preset.width,
+                              height: preset.height,
+                            },
+                          }))
+                        }
                         style={{
                           padding: "6px 12px",
                           borderRadius: 6,
                           border: "none",
-                          background: layoutConfig.canvasSize.width === preset.width && 
-                                     layoutConfig.canvasSize.height === preset.height ? 
-                                     "#3b82f6" : "#2a2d3a",
+                          background:
+                            layoutConfig.canvasSize.width === preset.width &&
+                            layoutConfig.canvasSize.height === preset.height
+                              ? "#3b82f6"
+                              : "#2a2d3a",
                           color: "#fff",
                           cursor: "pointer",
-                          fontSize: "0.9em"
+                          fontSize: "0.9em",
                         }}
                       >
-                        {preset.name}<br/>
-                        <small>{preset.width}×{preset.height}</small>
+                        {preset.name}
+                        <br />
+                        <small>
+                          {preset.width}×{preset.height}
+                        </small>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Informações */}
-                <div style={{
-                  marginTop: 20,
-                  padding: 16,
-                  background: "#1a1d29",
-                  borderRadius: 8,
-                  fontSize: "0.9em",
-                  color: "#b6c1e0"
-                }}>
-                  <strong>💡 Dicas:</strong><br/>
-                  • O canvas representa a área total onde os painéis serão posicionados<br/>
-                  • Use presets de resolução comum ou configure manualmente<br/>
-                  • Os painéis são dimensionados automaticamente baseados em suas medidas reais<br/>
-                  • 1 metro = 100 pixels na escala do editor
+                <div
+                  style={{
+                    marginTop: 20,
+                    padding: 16,
+                    background: "#1a1d29",
+                    borderRadius: 8,
+                    fontSize: "0.9em",
+                    color: "#b6c1e0",
+                  }}
+                >
+                  <strong>💡 Dicas:</strong>
+                  <br />
+                  • O canvas representa a área total onde os painéis serão
+                  posicionados
+                  <br />
+                  • Use presets de resolução comum ou configure manualmente
+                  <br />
+                  • Os painéis são dimensionados automaticamente baseados em
+                  suas medidas reais
+                  <br />• 1 metro = 100 pixels na escala do editor
                 </div>
               </div>
             )}
@@ -475,8 +531,7 @@ export default function PixelMapping({ isActive }) {
             📐 Canvas configurável com presets de resolução
             <br />
             � Salvamento e exportação de layouts
-            <br />
-            � Grid de alinhamento e zoom
+            <br />� Grid de alinhamento e zoom
           </div>
         </div>
       )}

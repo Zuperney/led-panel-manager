@@ -104,7 +104,9 @@ function App() {
           <div style={{ display: activeTab === "agenda" ? "block" : "none" }}>
             <Agenda isActive={activeTab === "agenda"} />
           </div>
-          <div style={{ display: activeTab === "pixelmapping" ? "block" : "none" }}>
+          <div
+            style={{ display: activeTab === "pixelmapping" ? "block" : "none" }}
+          >
             <PixelMapping isActive={activeTab === "pixelmapping"} />
           </div>
           {/* Placeholder para futuras abas */}
