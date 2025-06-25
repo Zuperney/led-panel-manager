@@ -30,7 +30,8 @@ export default function Gabinetes() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novosGabinetes),
-    });
+    })
+      .catch((error) => console.error("Erro ao salvar gabinetes:", error));
   }
 
   function handleChange(e) {

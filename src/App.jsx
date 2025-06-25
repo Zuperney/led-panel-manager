@@ -37,11 +37,21 @@ function App() {
           ))}
         </nav>
         <div className="tab-content">
-          {activeTab === "gabinetes" && <Gabinetes />}
-          {activeTab === "projetos" && <Projetos />}
-          {activeTab === "paineis" && <Paineis />}
-          {activeTab === "relatorio" && <Relatorio />}
-          {activeTab === "agenda" && <Agenda />}
+          <div style={{ display: activeTab === "gabinetes" ? "block" : "none" }}>
+            <Gabinetes />
+          </div>
+          <div style={{ display: activeTab === "projetos" ? "block" : "none" }}>
+            <Projetos />
+          </div>
+          <div style={{ display: activeTab === "paineis" ? "block" : "none" }}>
+            <Paineis />
+          </div>
+          <div style={{ display: activeTab === "relatorio" ? "block" : "none" }}>
+            <Relatorio />
+          </div>
+          <div style={{ display: activeTab === "agenda" ? "block" : "none" }}>
+            <Agenda />
+          </div>
           {/* {activeTab === "pixelmapping" && <PixelMapping />} */}
           {/* {activeTab === "configuracoes" && <Configuracoes />} */}
         </div>
