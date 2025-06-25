@@ -36,7 +36,21 @@ export default function Gabinetes({ isActive }) {
   }
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const newForm = { ...form, [e.target.name]: e.target.value };
+    
+    // Calcular pixel pitch automaticamente quando temos largura e pixels_largura
+    if ((e.target.name === 'largura' || e.target.name === 'pixels_largura') && 
+        newForm.largura && newForm.pixels_largura) {
+      const larguraMm = parseFloat(newForm.largura);
+      const pixelsLargura = parseFloat(newForm.pixels_largura);
+      
+      if (larguraMm > 0 && pixelsLargura > 0) {
+        const pixelPitch = (larguraMm / pixelsLargura).toFixed(2);
+        newForm.pitch = pixelPitch;
+      }
+    }
+    
+    setForm(newForm);
   }
 
   function handleSubmit(e) {
@@ -144,6 +158,22 @@ export default function Gabinetes({ isActive }) {
             required
           />
         </div>
+        
+        {/* Dica sobre cálculo automático */}
+        {form.largura && form.pixels_largura && (
+          <div style={{
+            background: '#1a3d1a',
+            color: '#90ee90',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '0.9rem',
+            marginBottom: '12px',
+            textAlign: 'center',
+            border: '1px solid #2d5a2d'
+          }}>
+            💡 Pixel Pitch calculado: {form.largura}mm ÷ {form.pixels_largura}px = {form.pitch}mm
+          </div>
+        )}
 
         <div className="form-row">
           <input
@@ -165,15 +195,39 @@ export default function Gabinetes({ isActive }) {
         </div>
 
         <div className="form-row">
-          <input
-            name="pitch"
-            placeholder="Pitch (mm)"
-            type="number"
-            step="0.1"
-            value={form.pitch}
-            onChange={handleChange}
-            required
-          />
+          <div style={{ flex: 1, position: 'relative' }}>
+            <input
+              name="pitch"
+              placeholder={form.largura && form.pixels_largura ? "Calculado automaticamente" : "Pitch (mm)"}
+              type="number"
+              step="0.01"
+              value={form.pitch}
+              onChange={handleChange}
+              required
+              readOnly={form.largura && form.pixels_largura && (form.largura / form.pixels_largura) > 0}
+              style={{
+                backgroundColor: form.largura && form.pixels_largura ? '#1a3d1a' : '',
+                color: form.largura && form.pixels_largura ? '#90ee90' : ''
+              }}
+              title={form.largura && form.pixels_largura ? 
+                `Calculado: ${form.largura}mm ÷ ${form.pixels_largura}px = ${form.pitch}mm` : 
+                "Será calculado automaticamente ao inserir largura e pixels"
+              }
+            />
+            {form.largura && form.pixels_largura && form.pitch && (
+              <span style={{
+                position: 'absolute',
+                right: '8px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#90ee90',
+                fontSize: '0.9rem',
+                pointerEvents: 'none'
+              }}>
+                🔢
+              </span>
+            )}
+          </div>
           <input
             name="fabricante"
             placeholder="Fabricante"
