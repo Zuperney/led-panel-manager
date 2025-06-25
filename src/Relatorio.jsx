@@ -20,15 +20,18 @@ export default function Relatorio() {
   const [gabinetes, setGabinetes] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3030/api/projetos")
+    fetch("/api/projetos")
       .then((res) => res.json())
-      .then((data) => setProjetos(data));
-    fetch("http://localhost:3030/api/paineis")
+      .then((data) => setProjetos(data))
+      .catch((error) => console.error("Erro ao carregar projetos:", error));
+    fetch("/api/paineis")
       .then((res) => res.json())
-      .then((data) => setPaineis(data));
-    fetch("http://localhost:3030/api/gabinetes")
+      .then((data) => setPaineis(data))
+      .catch((error) => console.error("Erro ao carregar painéis:", error));
+    fetch("/api/gabinetes")
       .then((res) => res.json())
-      .then((data) => setGabinetes(data));
+      .then((data) => setGabinetes(data))
+      .catch((error) => console.error("Erro ao carregar gabinetes:", error));
   }, []);
 
   // Funções placeholder para ações

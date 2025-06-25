@@ -7,13 +7,14 @@ export default function Projetos() {
 
   // Carregar projetos do backend ao iniciar
   useEffect(() => {
-    fetch("http://localhost:3030/api/projetos")
+    fetch("/api/projetos")
       .then((res) => res.json())
-      .then((data) => dispatch({ type: "CARREGAR_PROJETOS", payload: data }));
+      .then((data) => dispatch({ type: "CARREGAR_PROJETOS", payload: data }))
+      .catch((error) => console.error("Erro ao carregar projetos:", error));
   }, [dispatch]);
 
   function salvarProjetosBackend(novosProjetos) {
-    fetch("http://localhost:3030/api/projetos", {
+    fetch("/api/projetos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novosProjetos),

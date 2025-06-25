@@ -7,7 +7,7 @@ export default function Agenda() {
   useEffect(() => {
     setErro("");
     // Busca eventos do backend (ajuste a rota conforme seu backend)
-    fetch("http://localhost:3030/api/eventos")
+    fetch("/api/eventos")
       .then((res) => {
         if (!res.ok) throw new Error("API de eventos indisponível");
         return res.json();

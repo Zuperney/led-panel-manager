@@ -18,14 +18,15 @@ export default function Gabinetes() {
 
   // Carregar gabinetes do backend ao iniciar
   useEffect(() => {
-    fetch("http://localhost:3030/api/gabinetes")
+    fetch("/api/gabinetes")
       .then((res) => res.json())
-      .then((data) => setGabinetes(data));
+      .then((data) => setGabinetes(data))
+      .catch((error) => console.error("Erro ao carregar gabinetes:", error));
   }, []);
 
   // Salvar no backend apenas em ações de CRUD
   function salvarGabinetesBackend(novosGabinetes) {
-    fetch("http://localhost:3030/api/gabinetes", {
+    fetch("/api/gabinetes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novosGabinetes),

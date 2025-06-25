@@ -37,20 +37,22 @@ export default function Paineis() {
 
   // Carregar gabinetes sempre do backend
   useEffect(() => {
-    fetch("http://localhost:3030/api/gabinetes")
+    fetch("/api/gabinetes")
       .then((res) => res.json())
-      .then((data) => setGabinetes(data));
+      .then((data) => setGabinetes(data))
+      .catch((error) => console.error("Erro ao carregar gabinetes:", error));
   }, []);
 
   // Carregar paineis do backend ao iniciar
   useEffect(() => {
-    fetch("http://localhost:3030/api/paineis")
+    fetch("/api/paineis")
       .then((res) => res.json())
-      .then((data) => setPaineis(data));
+      .then((data) => setPaineis(data))
+      .catch((error) => console.error("Erro ao carregar painéis:", error));
   }, []);
 
   function salvarPaineisBackend(novosPaineis) {
-    fetch("http://localhost:3030/api/paineis", {
+    fetch("/api/paineis", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novosPaineis),

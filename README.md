@@ -9,19 +9,21 @@ Sistema moderno para gerenciamento de painéis LED, migrado para React + Vite co
 ## 🏠 Desenvolvimento Local
 
 ### Opção 1: Automática (Recomendada)
+
 ```bash
 # Execute o arquivo start-all.bat
 start-all.bat
 ```
 
 ### Opção 2: Manual
+
 ```bash
 # Terminal 1 - Backend
 cd backend
 npm install
 npm start
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend
 npm install
 npm run dev
 ```

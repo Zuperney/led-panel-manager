@@ -2,22 +2,26 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3030;
-const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
+const isProduction =
+  process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT;
 
 app.use(cors());
 app.use(express.json());
 
 // Servir arquivos estáticos do build em produção
 if (isProduction) {
-  app.use(express.static(path.join(__dirname, '../dist')));
-  console.log('Servindo arquivos estáticos de:', path.join(__dirname, '../dist'));
+  app.use(express.static(path.join(__dirname, "../dist")));
+  console.log(
+    "Servindo arquivos estáticos de:",
+    path.join(__dirname, "../dist")
+  );
 }
 
 const DATA_PATH = {
@@ -83,14 +87,14 @@ app.get("/api/eventos", (req, res) => {
 
 // Rota catch-all para servir o React em produção
 if (isProduction) {
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      console.log('Servindo index.html para:', req.path);
-      res.sendFile(path.join(__dirname, '../dist/index.html'));
+  app.get("*", (req, res) => {
+    if (!req.path.startsWith("/api")) {
+      console.log("Servindo index.html para:", req.path);
+      res.sendFile(path.join(__dirname, "../dist/index.html"));
     }
   });
 }
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend rodando em http://0.0.0.0:${PORT}`);
 });
