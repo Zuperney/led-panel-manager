@@ -34,6 +34,8 @@ export default function Paineis({ isActive }) {
   const [consumoBase, setConsumoBase] = useState(0.3);
   const [potenciaDetalhe, setPotenciaDetalhe] = useState(null);
   const [previewPainel, setPreviewPainel] = useState(null);
+  const [painelRecenteAdicionado, setPainelRecenteAdicionado] = useState(null);
+  const [mensagemFeedback, setMensagemFeedback] = useState("");
 
   // Carregar gabinetes e painéis quando a aba se torna ativa
   useEffect(() => {
@@ -206,7 +208,15 @@ export default function Paineis({ isActive }) {
     } else {
       novos = [...paineis, painel];
       setPreviewPainel({ ...painel });
+      setPainelRecenteAdicionado(painel.nome); // Marca o painel como recém-adicionado
+      setMensagemFeedback(`Painel "${painel.nome}" adicionado com sucesso!`);
       setPaineis(novos);
+      
+      // Remove o destaque e mensagem após 3 segundos
+      setTimeout(() => {
+        setPainelRecenteAdicionado(null);
+        setMensagemFeedback("");
+      }, 3000);
     }
     salvarPaineisBackend(novos);
     setForm({
@@ -219,12 +229,19 @@ export default function Paineis({ isActive }) {
       larguraM: "",
       alturaM: "",
     });
+    
+    // Foca no campo nome para facilitar adição do próximo painel
+    setTimeout(() => {
+      const nomeInput = document.querySelector('input[name="nome"]');
+      if (nomeInput) nomeInput.focus();
+    }, 100);
   }
 
   function editarPainel(index) {
     setForm({ ...paineisFiltrados[index], projeto: selectedProjectId });
     setEditando(index);
     setPreviewPainel(null);
+    setPainelRecenteAdicionado(null); // Remove destaque ao iniciar edição
   }
 
   function removerPainel(index) {
@@ -255,7 +272,13 @@ export default function Paineis({ isActive }) {
     const novoPainel = { ...painelOriginal, nome: novoNome };
     const novos = [...paineis, novoPainel];
     setPaineis(novos);
+    setPainelRecenteAdicionado(novoPainel.nome); // Destaca o painel duplicado
     salvarPaineisBackend(novos);
+    
+    // Remove o destaque após 3 segundos
+    setTimeout(() => {
+      setPainelRecenteAdicionado(null);
+    }, 3000);
   }
 
   // Filtrar paineis pelo projeto selecionado
@@ -268,6 +291,26 @@ export default function Paineis({ isActive }) {
     <div style={{ display: "flex", gap: 32 }}>
       <div style={{ flex: 1, minWidth: 340 }}>
         <h2>Painéis</h2>
+        
+        {/* Mensagem de feedback */}
+        {mensagemFeedback && (
+          <div
+            style={{
+              background: "#065f46",
+              color: "#ecfdf5",
+              padding: "12px 16px",
+              borderRadius: 8,
+              marginBottom: 16,
+              border: "1px solid #059669",
+              fontSize: "0.9em",
+              fontWeight: "500",
+              animation: "fade-in 0.3s ease-out",
+            }}
+          >
+            ✅ {mensagemFeedback}
+          </div>
+        )}
+        
         <div style={{ marginBottom: 16 }}>
           <label>
             Projeto:&nbsp;
@@ -551,93 +594,165 @@ export default function Paineis({ isActive }) {
           })()}
       </div>
       {/* Lista lateral de painéis do projeto selecionado */}
-      <div style={{ minWidth: 320, maxWidth: 400 }}>
+      <div style={{ minWidth: 320, maxWidth: 450 }}>
         <h3>Painéis do Projeto</h3>
-        <div
-          style={{
-            maxHeight: 420,
-            overflowY: "auto",
-            background: "#23283a",
-            borderRadius: 12,
-            boxShadow: "0 2px 8px #0003",
-            padding: "8px 0",
-            marginBottom: 8,
-          }}
-        >
-          {paineisFiltrados.length === 0 ? (
-            <p style={{ padding: 16 }}>
-              Nenhum painel cadastrado para este projeto.
+        {paineisFiltrados.length === 0 ? (
+          <div
+            style={{
+              background: "#23283a",
+              borderRadius: 12,
+              padding: 24,
+              textAlign: "center",
+              color: "#b6c1e0",
+            }}
+          >
+            <p>Nenhum painel cadastrado para este projeto.</p>
+            <p style={{ fontSize: "0.9em", marginTop: 8 }}>
+              Preencha o formulário ao lado para adicionar o primeiro painel.
             </p>
-          ) : (
-            <ul style={{ padding: 0, margin: 0 }}>
-              {paineisFiltrados.map((p, i) => {
-                const gabineteObj = gabinetes.find(
-                  (g) => g.nome === p.gabinete
-                );
-                return (
-                  <li
-                    key={i}
-                    className="painel-lista-item"
-                    style={{
-                      cursor: "pointer",
-                      background:
-                        selectedPanelIndex === i ? "#2d3550" : "transparent",
-                      borderRadius: 8,
-                      marginBottom: 4,
-                    }}
-                    onClick={() => {
-                      setSelectedPanelIndex(i);
-                      setPreviewPainel(p);
-                      setEditando(null);
-                    }}
-                  >
-                    <div style={{ width: "100%" }}>
-                      <div className="painel-nome">{p.nome}</div>
-                      <div className="painel-tamanho">
-                        {p.largura?.toFixed(2)} m × {p.altura?.toFixed(2)} m
-                      </div>
-                      <div
-                        style={{ fontSize: 13, color: "#b6c1e0", marginTop: 2 }}
-                      >
-                        Tipo: {gabineteObj ? gabineteObj.tipo : "-"} | Gabinete:{" "}
-                        {p.gabinete}
-                      </div>
-                      <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setForm({ ...p, projeto: selectedProjectId });
-                            setEditando(i);
-                            setPreviewPainel(null);
-                          }}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            duplicarPainel(i);
-                          }}
-                        >
-                          Duplicar
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removerPainel(i);
-                          }}
-                          className="remove-btn"
-                        >
-                          🗑️
-                        </button>
-                      </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              background: "#23283a",
+              borderRadius: 12,
+              boxShadow: "0 2px 8px #0003",
+              padding: "12px 0",
+            }}
+          >
+            {paineisFiltrados.map((p, i) => {
+              const gabineteObj = gabinetes.find((g) => g.nome === p.gabinete);
+              const isRecenteAdicionado = painelRecenteAdicionado === p.nome;
+              
+              return (
+                <div
+                  key={i}
+                  className={`painel-lista-item ${isRecenteAdicionado ? 'painel-novo' : ''}`}
+                  style={{
+                    cursor: "pointer",
+                    background: selectedPanelIndex === i 
+                      ? "#2d3550" 
+                      : isRecenteAdicionado 
+                        ? "#1a4d3a" 
+                        : "transparent",
+                    borderRadius: 8,
+                    margin: "8px 12px",
+                    padding: 16,
+                    border: isRecenteAdicionado ? "2px solid #4ade80" : "2px solid transparent",
+                    transition: "all 0.3s ease",
+                    position: "relative",
+                  }}
+                  onClick={() => {
+                    setSelectedPanelIndex(i);
+                    setPreviewPainel(p);
+                    setEditando(null);
+                  }}
+                >
+                  {isRecenteAdicionado && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -8,
+                        right: 8,
+                        background: "#4ade80",
+                        color: "#000",
+                        fontSize: "0.75em",
+                        padding: "4px 8px",
+                        borderRadius: 12,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      NOVO
                     </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                  )}
+                  <div style={{ width: "100%" }}>
+                    <div className="painel-nome" style={{ 
+                      fontWeight: "600",
+                      fontSize: "1.08em",
+                      color: "#fff",
+                      marginBottom: 4
+                    }}>
+                      {p.nome}
+                    </div>
+                    <div className="painel-tamanho" style={{
+                      fontSize: "0.95em",
+                      color: "#b6c1e0",
+                      marginBottom: 6
+                    }}>
+                      {p.largura?.toFixed(2)} m × {p.altura?.toFixed(2)} m
+                    </div>
+                    <div
+                      style={{ 
+                        fontSize: 13, 
+                        color: "#9ca3af", 
+                        marginBottom: 12,
+                        lineHeight: 1.3
+                      }}
+                    >
+                      Tipo: {gabineteObj ? gabineteObj.tipo : "-"} | Gabinete: {p.gabinete}
+                    </div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <button
+                        style={{
+                          padding: "6px 12px",
+                          fontSize: "0.8em",
+                          background: "#3b82f6",
+                          border: "none",
+                          borderRadius: 6,
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setForm({ ...p, projeto: selectedProjectId });
+                          setEditando(i);
+                          setPreviewPainel(null);
+                        }}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        style={{
+                          padding: "6px 12px",
+                          fontSize: "0.8em",
+                          background: "#10b981",
+                          border: "none",
+                          borderRadius: 6,
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          duplicarPainel(i);
+                        }}
+                      >
+                        Duplicar
+                      </button>
+                      <button
+                        style={{
+                          padding: "6px 12px",
+                          fontSize: "0.8em",
+                          background: "#ef4444",
+                          border: "none",
+                          borderRadius: 6,
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removerPainel(i);
+                        }}
+                        className="remove-btn"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

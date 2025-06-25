@@ -34,5 +34,17 @@
     "peso": "6",
     "pitch": "2.6",
     "fabricante": "Yestech"
+  },
+  {
+    "nome": "P3.9 Sigpel",
+    "tipo": "outdoor",
+    "largura": "500",
+    "altura": "500",
+    "pixels_largura": "128",
+    "pixels_altura": "128",
+    "potencia": "110",
+    "peso": "8",
+    "pitch": "3.91",
+    "fabricante": "Sigpel"
   }
 ]

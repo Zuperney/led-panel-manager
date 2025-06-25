@@ -55,5 +55,43 @@
     "pixelsAltura": 1536,
     "peso": 288,
     "potencia": 2570.4
+  },
+  {
+    "projeto": "Sicredi",
+    "nome": "Retorno",
+    "gabinete": "P3.9 Sigpel",
+    "modo": "metro",
+    "qtdLargura": 10,
+    "qtdAltura": 7,
+    "larguraM": "5",
+    "alturaM": "3.5",
+    "tensao": "220",
+    "tipoRede": "monofasico",
+    "largura": 5,
+    "altura": 3.5,
+    "area": 17.5,
+    "pixelsLargura": 1280,
+    "pixelsAltura": 896,
+    "peso": 560,
+    "potencia": 4851
+  },
+  {
+    "projeto": "Sicredi",
+    "nome": "Marvelous",
+    "gabinete": "P2.6",
+    "modo": "metro",
+    "qtdLargura": 6,
+    "qtdAltura": 3,
+    "larguraM": "3",
+    "alturaM": "1.5",
+    "tensao": "220",
+    "tipoRede": "trifasico",
+    "largura": 3,
+    "altura": 1.5,
+    "area": 4.5,
+    "pixelsLargura": 1152,
+    "pixelsAltura": 576,
+    "peso": 108,
+    "potencia": 963.9000000000001
   }
 ]
