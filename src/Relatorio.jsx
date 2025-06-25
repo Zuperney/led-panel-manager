@@ -38,6 +38,10 @@ export default function Relatorio({ isActive }) {
         .then((res) => res.json())
         .then((data) => setGabinetes(data))
         .catch((error) => console.error("Erro ao carregar gabinetes:", error));
+    } else {
+      // Fechar menus quando aba não está ativa
+      setMenuAberto(null);
+      setExportando(null);
     }
   }, [isActive]);
 
@@ -429,11 +433,21 @@ export default function Relatorio({ isActive }) {
     );
   }
 
+  // Não renderizar se a aba não estiver ativa
+  if (!isActive) {
+    return <div style={{ padding: "20px", textAlign: "center" }}>
+      <p>Carregando relatórios...</p>
+    </div>;
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h2>Relatório de Projetos</h2>
+      <h2>📊 Relatório de Projetos</h2>
       {projetos.length === 0 ? (
-        <p>Nenhum projeto cadastrado.</p>
+        <div className="info-box" style={{ textAlign: "center" }}>
+          <p>📋 Nenhum projeto cadastrado ainda.</p>
+          <p>Vá para a aba "Projetos" para adicionar o primeiro projeto.</p>
+        </div>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           {projetos.map((proj, i) => {
@@ -479,11 +493,17 @@ export default function Relatorio({ isActive }) {
                       marginLeft: 8,
                     }}
                     title="Ações do projeto"
-                    onClick={() => setMenuAberto(menuAberto === i ? null : i)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (isActive) {
+                        setMenuAberto(menuAberto === i ? null : i);
+                      }
+                    }}
                   >
                     ⚙️
                   </button>
-                  {menuAberto === i && (
+                  {menuAberto === i && isActive && (
                     <div
                       style={{
                         position: "absolute",
@@ -497,29 +517,45 @@ export default function Relatorio({ isActive }) {
                         minWidth: 180,
                       }}
                     >
-                      <PDFDownloadLink
-                        document={
-                          <ProjetoPDF
-                            projeto={proj}
-                            paineisProjeto={paineisProjeto}
-                          />
-                        }
-                        fileName={`Relatorio_${proj.nome.replace(
-                          /\s+/g,
-                          "_"
-                        )}.pdf`}
-                        style={{
-                          ...menuBtnStyle,
-                          color: "#222",
-                          background: "#b6e0b6",
-                          borderBottom: "1px solid #333",
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {({ loading, url, blob }) =>
-                          loading ? "Gerando PDF..." : "Exportar Relatório"
-                        }
-                      </PDFDownloadLink>
+                      {/* Só renderizar PDF quando aba estiver ativa e dados carregados */}
+                      {isActive && paineisProjeto.length > 0 ? (
+                        <PDFDownloadLink
+                          document={
+                            <ProjetoPDF
+                              projeto={proj}
+                              paineisProjeto={paineisProjeto}
+                            />
+                          }
+                          fileName={`Relatorio_${proj.nome.replace(
+                            /\s+/g,
+                            "_"
+                          )}.pdf`}
+                          style={{
+                            ...menuBtnStyle,
+                            color: "#222",
+                            background: "#b6e0b6",
+                            borderBottom: "1px solid #333",
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {({ loading, url, blob }) =>
+                            loading ? "Gerando PDF..." : "Exportar Relatório"
+                          }
+                        </PDFDownloadLink>
+                      ) : (
+                        <button
+                          style={{
+                            ...menuBtnStyle,
+                            color: "#666",
+                            background: "#333",
+                            borderBottom: "1px solid #333",
+                            cursor: "not-allowed",
+                          }}
+                          disabled
+                        >
+                          {paineisProjeto.length === 0 ? "Sem painéis para exportar" : "Carregando..."}
+                        </button>
+                      )}
                       <button
                         style={menuBtnStyle}
                         onClick={() => {
