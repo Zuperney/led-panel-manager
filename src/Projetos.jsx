@@ -67,58 +67,94 @@ export default function Projetos() {
 
   return (
     <div>
-      <h2>Projetos</h2>
-      <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
-        <input
-          name="nome"
-          placeholder="Nome do Projeto"
-          value={form.nome}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="cliente"
-          placeholder="Cliente"
-          value={form.cliente}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="dataEntrega"
-          type="date"
-          value={form.dataEntrega}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">
-          {state.projetoEditando !== null
-            ? "Salvar Edição"
-            : "Adicionar Projeto"}
-        </button>
+      <h2>📋 Projetos</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <input
+            name="nome"
+            placeholder="Nome do Projeto"
+            value={form.nome}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <input
+            name="cliente"
+            placeholder="Cliente"
+            value={form.cliente}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <input
+            name="dataEntrega"
+            type="date"
+            value={form.dataEntrega}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="button-group">
+          <button type="submit">
+            {state.projetoEditando !== null ? "💾 Salvar Alterações" : "➕ Adicionar Projeto"}
+          </button>
+          {state.projetoEditando !== null && (
+            <button 
+              type="button" 
+              onClick={() => {
+                dispatch({ type: "SET_EDITANDO", payload: null });
+                setForm({ nome: "", cliente: "", dataEntrega: "" });
+              }}
+            >
+              ❌ Cancelar
+            </button>
+          )}
+        </div>
       </form>
-      <div>
+
+      {/* Lista de projetos */}
+      <div className="grid-container">
         {state.projetos.length === 0 ? (
-          <p>Nenhum projeto cadastrado.</p>
+          <div className="info-box" style={{ textAlign: "center" }}>
+            <p>📋 Nenhum projeto cadastrado ainda.</p>
+            <p>Use o formulário acima para adicionar o primeiro projeto.</p>
+          </div>
         ) : (
-          <ul>
-            {state.projetos.map((p, i) => (
-              <li key={i} style={{ marginBottom: 8 }}>
-                <b>{p.nome}</b> - {p.cliente} - Entrega: {p.dataEntrega}
+          state.projetos.map((p, i) => (
+            <div key={i} className="painel-lista-item">
+              <div style={{ flex: 1 }}>
+                <div className="painel-nome">
+                  {p.nome}
+                </div>
+                <div className="painel-tamanho">
+                  🏢 Cliente: {p.cliente}
+                </div>
+                <div className="painel-tamanho">
+                  📅 Entrega: {p.dataEntrega}
+                </div>
+              </div>
+              <div className="button-group" style={{ flexDirection: 'column', minWidth: 'auto' }}>
                 <button
                   onClick={() => editarProjeto(i)}
-                  style={{ marginLeft: 8 }}
+                  style={{ margin: '2px 0', padding: '8px 12px', fontSize: '0.9rem' }}
                 >
-                  Editar
+                  ✏️ Editar
                 </button>
                 <button
                   onClick={() => removerProjeto(i)}
-                  style={{ marginLeft: 4 }}
+                  className="remove-btn"
+                  style={{ margin: '2px 0', padding: '8px 12px', fontSize: '0.9rem' }}
                 >
-                  Remover
+                  🗑️ Remover
                 </button>
-              </li>
-            ))}
-          </ul>
+              </div>
+            </div>
+          ))
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 
@@ -16,33 +16,114 @@ body {
 
 .main-tabs {
   max-width: 1200px;
-  margin: 32px auto;
+  margin: 16px auto;
   background: #23283a;
   border-radius: 18px;
   box-shadow: 0 4px 32px #0005;
-  padding: 32px 32px 24px 32px;
+  padding: 16px;
+  position: relative;
 }
 
+/* Navegação Desktop */
 .tabs-nav {
   display: flex;
   gap: 12px;
   margin-bottom: 32px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-btn {
   font-family: inherit;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   background: #23283a;
   color: #b6c1e0;
   border: none;
   border-radius: 8px 8px 0 0;
-  padding: 12px 28px;
+  padding: 12px 20px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  min-width: max-content;
 }
+
 .tab-btn.active,
 .tab-btn:hover {
+  background: #2e3650;
+  color: #fff;
+}
+
+/* Menu mobile hambúrguer */
+.mobile-menu-btn {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #2e3650;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  z-index: 1000;
+}
+
+.mobile-tabs-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 999;
+}
+
+.mobile-tabs-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100vh;
+  background: #23283a;
+  padding: 60px 20px 20px;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-tabs-menu.open {
+  transform: translateX(0);
+}
+
+.mobile-tab-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: transparent;
+  color: #b6c1e0;
+  border: none;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mobile-tab-btn.active,
+.mobile-tab-btn:hover {
   background: #2e3650;
   color: #fff;
 }
@@ -50,17 +131,33 @@ body {
 .tab-content {
   background: #181818;
   border-radius: 0 0 8px 8px;
-  padding: 32px 24px 24px 24px;
+  padding: 20px 16px;
   min-height: 400px;
   box-shadow: 0 2px 12px #0002;
 }
 
+/* Formulários mobile-friendly */
 form {
   background: #23283a;
   border-radius: 12px;
-  padding: 24px 20px 16px 20px;
+  padding: 20px 16px;
   margin-bottom: 24px;
   box-shadow: 0 2px 8px #0002;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-row > * {
+  flex: 1;
+  min-width: 120px;
 }
 
 input,
@@ -70,46 +167,64 @@ select {
   background: #23283a;
   color: #f3f3f3;
   border: 1.5px solid #3a4060;
-  border-radius: 7px;
-  padding: 8px 12px;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0;
   outline: none;
   transition: border 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px; /* Touch-friendly height */
 }
+
 input:focus,
 select:focus {
   border: 1.5px solid #6c7ae0;
 }
 
+/* Botões touch-friendly */
 button {
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   background: linear-gradient(90deg, #6c7ae0 0%, #4e54c8 100%);
   color: #fff;
   border: none;
-  border-radius: 7px;
-  padding: 7px 16px;
-  margin: 0 8px 0 0;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin: 8px 4px;
   cursor: pointer;
   box-shadow: 0 2px 8px #0002;
   transition: background 0.2s, transform 0.1s;
+  min-height: 44px; /* Touch-friendly height */
+  min-width: 80px;
 }
+
 button:hover {
   background: linear-gradient(90deg, #4e54c8 0%, #6c7ae0 100%);
-  transform: translateY(-2px) scale(1.04);
+  transform: translateY(-1px);
 }
-button:last-child {
-  margin-right: 0;
-}
+
 button.remove-btn {
   background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
   color: #fff !important;
-  margin-left: 0;
 }
+
 button.remove-btn:hover {
   background: linear-gradient(90deg, #c0392b 0%, #e74c3c 100%);
+}
+
+/* Botões em linha para mobile */
+.button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button-group button {
+  flex: 1;
+  min-width: 120px;
 }
 
 h2,
@@ -118,6 +233,7 @@ h3 {
   font-weight: 700;
   color: #b6c1e0;
   margin-top: 0;
+  text-align: center;
 }
 
 ul {
@@ -128,7 +244,7 @@ li {
   list-style: none;
 }
 
-/* Painéis e caixas de info */
+/* Cards responsivos */
 .info-box,
 .painel-preview,
 .painel-lista-item {
@@ -136,8 +252,8 @@ li {
   color: #f3f3f3;
   border-radius: 12px;
   box-shadow: 0 2px 8px #0003;
-  padding: 18px 20px;
-  margin-bottom: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
 .painel-lista-item {
@@ -145,6 +261,7 @@ li {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .painel-lista-item .painel-nome {
@@ -152,11 +269,21 @@ li {
   font-size: 1.08em;
   color: #fff;
 }
+
 .painel-lista-item .painel-tamanho {
-  font-size: 0.98em;
+  font-size: 0.95em;
   color: #b6c1e0;
+  flex-shrink: 0;
 }
 
+/* Grid responsivo para dispositivos */
+.grid-container {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Scrollbar personalizado */
 ::-webkit-scrollbar {
   width: 8px;
   background: #23283a;
@@ -166,11 +293,191 @@ li {
   border-radius: 8px;
 }
 
-@media (max-width: 800px) {
+/* Media Queries para Responsividade */
+
+/* Tablets */
+@media (max-width: 1024px) {
   .main-tabs {
-    padding: 10px 2px;
+    margin: 8px;
+    padding: 12px;
+    border-radius: 12px;
   }
+  
+  .tabs-nav {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .tab-btn {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+  }
+  
   .tab-content {
+    padding: 16px 12px;
+    min-height: 300px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-row > * {
+    min-width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  #root {
     padding: 0;
+  }
+  
+  .main-tabs {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+  
+  /* Mostrar menu hambúrguer */
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  /* Esconder navegação desktop */
+  .tabs-nav {
+    display: none;
+  }
+  
+  /* Mostrar menu mobile quando ativo */
+  .mobile-tabs-overlay.open,
+  .mobile-tabs-menu.open {
+    display: block;
+  }
+  
+  .mobile-tabs-menu {
+    display: block;
+  }
+  
+  .tab-content {
+    border-radius: 0;
+    padding: 20px 12px;
+    background: #181818;
+  }
+  
+  /* Formulários mobile */
+  form {
+    padding: 16px 12px;
+    border-radius: 8px;
+  }
+  
+  input,
+  select {
+    font-size: 16px; /* Previne zoom no iOS */
+    padding: 14px 16px;
+  }
+  
+  button {
+    padding: 14px 20px;
+    font-size: 1rem;
+    width: 100%;
+    margin: 4px 0;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .button-group button {
+    min-width: 100%;
+  }
+  
+  /* Cards mobile */
+  .painel-lista-item {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .painel-lista-item .painel-tamanho {
+    margin-top: 8px;
+  }
+  
+  /* Grid mobile */
+  .grid-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  h2, h3 {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
+  .mobile-tabs-menu {
+    width: 240px;
+  }
+  
+  .tab-content {
+    padding: 16px 8px;
+  }
+  
+  form {
+    padding: 12px 8px;
+  }
+  
+  input,
+  select {
+    padding: 12px 14px;
+  }
+  
+  button {
+    padding: 12px 16px;
+  }
+  
+  .info-box,
+  .painel-preview,
+  .painel-lista-item {
+    padding: 12px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .main-tabs {
+    min-height: auto;
+  }
+  
+  .mobile-tabs-menu {
+    width: 200px;
+    padding: 40px 16px 16px;
+  }
+  
+  .mobile-tab-btn {
+    padding: 12px 16px;
+    margin-bottom: 4px;
+  }
+}
+
+/* Utilitários mobile */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
   }
 }
