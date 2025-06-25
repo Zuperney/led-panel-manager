@@ -31,7 +31,7 @@ export default function PanelLayoutEditor({
     "#ec4899",
   ];
 
-  // Calcular bounding box dos painéis posicionados
+  // Calcular bounding box dos painéis posicionados em PIXELS reais
   const calculateBoundingBox = useCallback(() => {
     if (layoutConfig.paineis.length === 0) {
       return { width: 0, height: 0, minX: 0, minY: 0 };
@@ -43,10 +43,15 @@ export default function PanelLayoutEditor({
       maxY = -Infinity;
 
     layoutConfig.paineis.forEach((panel) => {
-      minX = Math.min(minX, panel.x);
-      minY = Math.min(minY, panel.y);
-      maxX = Math.max(maxX, panel.x + panel.width);
-      maxY = Math.max(maxY, panel.y + panel.height);
+      // Converter coordenadas do canvas visual para pixels reais
+      const baseScale = 0.2; // Mesma escala usada na criação dos painéis
+      const realX = panel.x / baseScale;
+      const realY = panel.y / baseScale;
+      
+      minX = Math.min(minX, realX);
+      minY = Math.min(minY, realY);
+      maxX = Math.max(maxX, realX + panel.pixelsWidth);
+      maxY = Math.max(maxY, realY + panel.pixelsHeight);
     });
 
     return {
@@ -116,18 +121,23 @@ export default function PanelLayoutEditor({
           ${layoutConfig.paineis
             .map((panel, index) => {
               const color = panelColors[index % panelColors.length];
+              // Converter coordenadas do canvas visual para pixels reais
+              const baseScale = 0.2; // Mesma escala usada na criação dos painéis
+              const realX = panel.x / baseScale - boundingBox.minX;
+              const realY = panel.y / baseScale - boundingBox.minY;
+              
               return `
               <g>
-                <rect x="${panel.x}" y="${panel.y}" 
-                      width="${panel.width}" height="${panel.height}"
+                <rect x="${realX}" y="${realY}" 
+                      width="${panel.pixelsWidth}" height="${panel.pixelsHeight}"
                       fill="${color}40" stroke="${color}" stroke-width="2"/>
-                <text x="${panel.x + panel.width / 2}" y="${
-                panel.y + panel.height / 2 - 5
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                realY + panel.pixelsHeight / 2 - 5
               }"
                       text-anchor="middle" dominant-baseline="middle"
                       class="panel-text panel-name">${panel.nome}</text>
-                <text x="${panel.x + panel.width / 2}" y="${
-                panel.y + panel.height / 2 + 12
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                realY + panel.pixelsHeight / 2 + 12
               }"
                       text-anchor="middle" dominant-baseline="middle"
                       class="panel-text panel-resolution">${
@@ -378,10 +388,16 @@ export default function PanelLayoutEditor({
 
   // Adicionar painel ao canvas
   const addPanelToCanvas = (panel) => {
+    // Calcular escala baseada nos pixels do painel
+    // Usamos uma escala que mantém proporção mas deixa os painéis visíveis no canvas
+    const baseScale = 0.2; // Escala base para visualização (1 pixel real = 0.2 pixels no canvas)
+    const visualWidth = panel.pixelsLargura * baseScale;
+    const visualHeight = panel.pixelsAltura * baseScale;
+    
     // Encontrar posição livre
     let x = 50,
       y = 50;
-    const step = 100;
+    const step = Math.max(visualWidth, visualHeight) + 20; // Espaçamento baseado no tamanho do painel
 
     // Verificar se a posição está ocupada
     while (
@@ -390,7 +406,7 @@ export default function PanelLayoutEditor({
       )
     ) {
       x += step;
-      if (x > canvasSize.width - panel.largura * 100) {
+      if (x > canvasSize.width - visualWidth) {
         x = 50;
         y += step;
       }
@@ -402,10 +418,12 @@ export default function PanelLayoutEditor({
       nome: panel.nome,
       x: x,
       y: y,
-      width: panel.largura * 100, // Converter metros para pixels (escala 1m = 100px)
-      height: panel.altura * 100,
-      pixelsWidth: panel.pixelsLargura,
-      pixelsHeight: panel.pixelsAltura,
+      width: visualWidth, // Largura visual proporcional aos pixels
+      height: visualHeight, // Altura visual proporcional aos pixels
+      pixelsWidth: panel.pixelsLargura, // Pixels reais do painel
+      pixelsHeight: panel.pixelsAltura, // Pixels reais do painel
+      physicalWidth: panel.largura, // Dimensões físicas em metros
+      physicalHeight: panel.altura,
       rotation: 0,
     };
 
@@ -1033,11 +1051,14 @@ export default function PanelLayoutEditor({
                   Posição: {selectedPanel.x}, {selectedPanel.y}
                 </div>
                 <div>
-                  Tamanho: {selectedPanel.width}×{selectedPanel.height}px
+                  Visual: {selectedPanel.width}×{selectedPanel.height}px
                 </div>
                 <div>
-                  Resolução: {selectedPanel.pixelsWidth}×
+                  Pixels: {selectedPanel.pixelsWidth}×
                   {selectedPanel.pixelsHeight}
+                </div>
+                <div>
+                  Físico: {selectedPanel.physicalWidth}×{selectedPanel.physicalHeight}m
                 </div>
               </div>
             </div>
