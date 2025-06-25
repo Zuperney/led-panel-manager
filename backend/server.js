@@ -85,6 +85,19 @@ app.get("/api/eventos", (req, res) => {
   res.json(eventos);
 });
 
+// Endpoint de teste para verificar sincronização Railway
+app.get("/api/teste-deploy", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    commit: "96f7f08",
+    message: "Railway está sincronizado com GitHub!",
+    lastUpdate: "2025-06-25 - Correção gabinetes + formatação",
+    environment: process.env.NODE_ENV || "development",
+    isRailway: !!process.env.RAILWAY_ENVIRONMENT,
+  });
+});
+
 // Rota catch-all para servir o React em produção
 if (isProduction) {
   app.get("*", (req, res) => {
