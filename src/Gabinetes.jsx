@@ -3,7 +3,11 @@ import { useApiData } from "./hooks";
 import FeedbackMessage from "./components/FeedbackMessage";
 
 export default function Gabinetes({ isActive }) {
-  const { data: gabinetes, setData: setGabinetes, updateData: salvarGabinetes } = useApiData('gabinetes', isActive);
+  const {
+    data: gabinetes,
+    setData: setGabinetes,
+    updateData: salvarGabinetes,
+  } = useApiData("gabinetes", isActive);
   const [form, setForm] = useState({
     nome: "",
     tipo: "indoor",

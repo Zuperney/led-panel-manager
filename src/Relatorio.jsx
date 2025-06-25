@@ -13,10 +13,10 @@ import {
 import { calcularPotenciaFinal, calcularEnergia } from "./painelCalculos";
 import { useApiData } from "./hooks";
 
-export default function Relatorio({ isActive }) {
-  const { data: projetos } = useApiData('projetos', isActive);
-  const { data: paineis } = useApiData('paineis', isActive);
-  const { data: gabinetes } = useApiData('gabinetes', isActive);
+export default function Relatorio({ isActive, onNavigateToTab }) {
+  const { data: projetos } = useApiData("projetos", isActive);
+  const { data: paineis } = useApiData("paineis", isActive);
+  const { data: gabinetes } = useApiData("gabinetes", isActive);
   const [menuAberto, setMenuAberto] = useState(null); // index do menu aberto
   const [exportando, setExportando] = useState(null); // index do projeto exportando
 
@@ -28,15 +28,35 @@ export default function Relatorio({ isActive }) {
     }
   }, [isActive]);
 
-  // Funções placeholder para ações
-  function marcarConcluido(proj) {
-    alert(`Projeto marcado como concluído: ${proj.nome}`);
-  }
+  // Funções melhoradas para navegação
   function editarProjeto(proj) {
-    alert(`Editar projeto: ${proj.nome}`);
+    // Navegar para a aba de projetos e definir o projeto para edição
+    if (onNavigateToTab) {
+      // Salvar o projeto selecionado para edição no localStorage
+      localStorage.setItem('projetoParaEdicao', JSON.stringify(proj));
+      // Mostrar uma notificação ao usuário
+      setTimeout(() => {
+        alert(`Navegando para a aba Projetos para editar: ${proj.nome}`);
+      }, 100);
+      onNavigateToTab('projetos');
+    } else {
+      alert(`Editar projeto: ${proj.nome}`);
+    }
   }
+  
   function editarPaineis(proj) {
-    alert(`Editar painéis do projeto: ${proj.nome}`);
+    // Navegar para a aba de painéis e carregar o projeto
+    if (onNavigateToTab) {
+      // Salvar o projeto selecionado no localStorage para a aba de painéis
+      localStorage.setItem('selectedProjectId', proj.nome);
+      // Mostrar uma notificação ao usuário
+      setTimeout(() => {
+        alert(`Navegando para a aba Painéis com o projeto: ${proj.nome}`);
+      }, 100);
+      onNavigateToTab('paineis');
+    } else {
+      alert(`Editar painéis do projeto: ${proj.nome}`);
+    }
   }
 
   // PDF Styles
@@ -544,31 +564,38 @@ export default function Relatorio({ isActive }) {
                         </button>
                       )}
                       <button
-                        style={menuBtnStyle}
-                        onClick={() => {
-                          marcarConcluido(proj);
-                          setMenuAberto(null);
+                        style={{
+                          ...menuBtnStyle,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          backgroundColor: '#1e40af',
+                          borderBottom: '1px solid #3a4161'
                         }}
-                      >
-                        Marcar como Concluído
-                      </button>
-                      <button
-                        style={menuBtnStyle}
                         onClick={() => {
                           editarProjeto(proj);
                           setMenuAberto(null);
                         }}
+                        title="Ir para a aba Projetos e editar este projeto"
                       >
-                        Editar Projeto
+                        📋 <span>Editar Projeto</span>
                       </button>
                       <button
-                        style={menuBtnStyle}
+                        style={{
+                          ...menuBtnStyle,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          backgroundColor: '#0f766e',
+                          borderBottom: 'none'
+                        }}
                         onClick={() => {
                           editarPaineis(proj);
                           setMenuAberto(null);
                         }}
+                        title="Ir para a aba Painéis e carregar os painéis deste projeto"
                       >
-                        Editar Painéis
+                        🖥️ <span>Editar Painéis</span>
                       </button>
                     </div>
                   )}

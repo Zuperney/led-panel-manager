@@ -12,15 +12,22 @@ import {
 
 export default function Paineis({ isActive }) {
   const { state } = useProjeto();
-  
+
   // Usar hooks customizados para dados da API
-  const { data: gabinetes } = useApiData('gabinetes', isActive);
-  const { data: paineis, setData: setPaineis, updateData: salvarPaineis } = useApiData('paineis', isActive);
-  
+  const { data: gabinetes } = useApiData("gabinetes", isActive);
+  const {
+    data: paineis,
+    setData: setPaineis,
+    updateData: salvarPaineis,
+  } = useApiData("paineis", isActive);
+
   // Estados locais otimizados
   const [editando, setEditando] = useState(null);
   const [selectedPanelIndex, setSelectedPanelIndex] = useState(null);
-  const [selectedProjectId, setSelectedProjectId] = useLocalStorage('selectedProjectId', '');
+  const [selectedProjectId, setSelectedProjectId] = useLocalStorage(
+    "selectedProjectId",
+    ""
+  );
   const [form, setForm] = useState({
     projeto: "",
     nome: "",
@@ -593,7 +600,10 @@ export default function Paineis({ isActive }) {
                   setEditando(null);
                 }}
                 onEdit={(index) => {
-                  setForm({ ...paineisFiltrados[index], projeto: selectedProjectId });
+                  setForm({
+                    ...paineisFiltrados[index],
+                    projeto: selectedProjectId,
+                  });
                   setEditando(index);
                   setPreviewPainel(null);
                   setPainelRecenteAdicionado(null);

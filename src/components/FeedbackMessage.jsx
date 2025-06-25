@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-const FeedbackMessage = ({ message, type = 'success' }) => {
+const FeedbackMessage = ({ message, type = "success" }) => {
   if (!message) return null;
 
   const styles = {
@@ -18,7 +18,7 @@ const FeedbackMessage = ({ message, type = 'success' }) => {
       background: "#92400e",
       color: "#fffbeb",
       border: "1px solid #d97706",
-    }
+    },
   };
 
   return (
@@ -33,9 +33,9 @@ const FeedbackMessage = ({ message, type = 'success' }) => {
         animation: "fade-in 0.3s ease-out",
       }}
     >
-      {type === 'success' && '✅ '}
-      {type === 'error' && '❌ '}
-      {type === 'warning' && '⚠️ '}
+      {type === "success" && "✅ "}
+      {type === "error" && "❌ "}
+      {type === "warning" && "⚠️ "}
       {message}
     </div>
   );

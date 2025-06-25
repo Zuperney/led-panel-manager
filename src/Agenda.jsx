@@ -3,7 +3,11 @@ import { useApiData } from "./hooks";
 import FeedbackMessage from "./components/FeedbackMessage";
 
 export default function Agenda({ isActive }) {
-  const { data: eventos, setData: setEventos, updateData: salvarEventos } = useApiData('agenda', isActive);
+  const {
+    data: eventos,
+    setData: setEventos,
+    updateData: salvarEventos,
+  } = useApiData("agenda", isActive);
   const [erro, setErro] = useState("");
 
   useEffect(() => {

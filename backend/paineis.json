@@ -1,7 +1,7 @@
 [
   {
     "projeto": "Sicredi",
-    "nome": "bogart",
+    "nome": "1",
     "gabinete": "P3.91 Indoor",
     "modo": "metro",
     "qtdLargura": 24,
@@ -9,7 +9,7 @@
     "larguraM": "12",
     "alturaM": "5",
     "tensao": "220",
-    "tipoRede": "trifasico",
+    "tipoRede": "monofasico",
     "largura": 12,
     "altura": 5,
     "area": 60,
@@ -17,5 +17,24 @@
     "pixelsAltura": 1280,
     "peso": 1560,
     "potencia": 52920
+  },
+  {
+    "projeto": "Sicredi",
+    "nome": "2",
+    "gabinete": "P2.6",
+    "modo": "metro",
+    "qtdLargura": 6,
+    "qtdAltura": 8,
+    "larguraM": "3",
+    "alturaM": "4",
+    "tensao": "220",
+    "tipoRede": "trifasico",
+    "largura": 3,
+    "altura": 4,
+    "area": 12,
+    "pixelsLargura": 1152,
+    "pixelsAltura": 1536,
+    "peso": 288,
+    "potencia": 2570.4
   }
 ]

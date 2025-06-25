@@ -1,33 +1,35 @@
-import React from 'react';
+import React from "react";
 
-const PainelCard = ({ 
-  painel, 
-  index, 
-  gabinetes, 
-  isSelected, 
+const PainelCard = ({
+  painel,
+  index,
+  gabinetes,
+  isSelected,
   isRecenteAdicionado,
-  onSelect, 
-  onEdit, 
-  onDuplicate, 
-  onRemove 
+  onSelect,
+  onEdit,
+  onDuplicate,
+  onRemove,
 }) => {
   const gabineteObj = gabinetes.find((g) => g.nome === painel.gabinete);
 
   return (
     <div
-      className={`painel-lista-item ${isRecenteAdicionado ? "painel-novo" : ""}`}
+      className={`painel-lista-item ${
+        isRecenteAdicionado ? "painel-novo" : ""
+      }`}
       style={{
         cursor: "pointer",
-        background: isSelected 
+        background: isSelected
           ? "#2d3550"
-          : isRecenteAdicionado 
-            ? "#1a4d3a" 
-            : "transparent",
+          : isRecenteAdicionado
+          ? "#1a4d3a"
+          : "transparent",
         borderRadius: 8,
         margin: "8px 12px",
         padding: 16,
-        border: isRecenteAdicionado 
-          ? "2px solid #4ade80" 
+        border: isRecenteAdicionado
+          ? "2px solid #4ade80"
           : "2px solid transparent",
         transition: "all 0.3s ease",
         position: "relative",
@@ -51,7 +53,7 @@ const PainelCard = ({
           NOVO
         </div>
       )}
-      
+
       <div style={{ width: "100%" }}>
         <div
           className="painel-nome"
@@ -64,7 +66,7 @@ const PainelCard = ({
         >
           {painel.nome}
         </div>
-        
+
         <div
           className="painel-tamanho"
           style={{
@@ -75,7 +77,7 @@ const PainelCard = ({
         >
           {painel.largura?.toFixed(2)} m × {painel.altura?.toFixed(2)} m
         </div>
-        
+
         <div
           style={{
             fontSize: 13,
@@ -84,9 +86,10 @@ const PainelCard = ({
             lineHeight: 1.3,
           }}
         >
-          Tipo: {gabineteObj ? gabineteObj.tipo : "-"} | Gabinete: {painel.gabinete}
+          Tipo: {gabineteObj ? gabineteObj.tipo : "-"} | Gabinete:{" "}
+          {painel.gabinete}
         </div>
-        
+
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button
             style={{
@@ -105,7 +108,7 @@ const PainelCard = ({
           >
             Editar
           </button>
-          
+
           <button
             style={{
               padding: "6px 12px",
@@ -123,7 +126,7 @@ const PainelCard = ({
           >
             Duplicar
           </button>
-          
+
           <button
             style={{
               padding: "6px 12px",

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // Hook customizado para carregar dados de APIs
 export function useApiData(endpoint, isActive = true) {
@@ -31,8 +31,8 @@ export function useApiData(endpoint, isActive = true) {
   const updateData = async (newData) => {
     try {
       const response = await fetch(`/api/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newData),
       });
       if (!response.ok) throw new Error(`Erro ao salvar ${endpoint}`);
@@ -63,7 +63,7 @@ export function useLocalStorage(key, defaultValue) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error('Erro ao salvar no localStorage:', error);
+      console.error("Erro ao salvar no localStorage:", error);
     }
   }, [key, value]);
 
@@ -72,11 +72,11 @@ export function useLocalStorage(key, defaultValue) {
 
 // Hook para controle de feedback temporário
 export function useTemporaryFeedback(duration = 3000) {
-  const [feedback, setFeedback] = useState('');
+  const [feedback, setFeedback] = useState("");
 
   const showFeedback = (message) => {
     setFeedback(message);
-    setTimeout(() => setFeedback(''), duration);
+    setTimeout(() => setFeedback(""), duration);
   };
 
   return [feedback, showFeedback];

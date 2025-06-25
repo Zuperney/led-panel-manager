@@ -95,7 +95,10 @@ function App() {
           <div
             style={{ display: activeTab === "relatorio" ? "block" : "none" }}
           >
-            <Relatorio isActive={activeTab === "relatorio"} />
+            <Relatorio 
+              isActive={activeTab === "relatorio"} 
+              onNavigateToTab={handleTabChange}
+            />
           </div>
           <div style={{ display: activeTab === "agenda" ? "block" : "none" }}>
             <Agenda isActive={activeTab === "agenda"} />

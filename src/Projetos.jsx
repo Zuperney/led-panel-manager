@@ -5,7 +5,7 @@ import FeedbackMessage from "./components/FeedbackMessage";
 
 export default function Projetos({ isActive }) {
   const { state, dispatch } = useProjeto();
-  const { updateData: salvarProjetos } = useApiData('projetos', isActive);
+  const { updateData: salvarProjetos } = useApiData("projetos", isActive);
   const [form, setForm] = useState({ nome: "", cliente: "", dataEntrega: "" });
 
   // Carregar projetos do backend ao iniciar e quando a aba se torna ativa
@@ -13,7 +13,26 @@ export default function Projetos({ isActive }) {
     if (isActive) {
       fetch("/api/projetos")
         .then((res) => res.json())
-        .then((data) => dispatch({ type: "CARREGAR_PROJETOS", payload: data }))
+        .then((data) => {
+          dispatch({ type: "CARREGAR_PROJETOS", payload: data });
+
+          // Verificar se há um projeto para edição vindo do Relatório
+          const projetoParaEdicao = localStorage.getItem("projetoParaEdicao");
+          if (projetoParaEdicao) {
+            try {
+              const projeto = JSON.parse(projetoParaEdicao);
+              const index = data.findIndex((p) => p.nome === projeto.nome);
+              if (index !== -1) {
+                setForm(data[index]);
+                dispatch({ type: "SET_EDITANDO", payload: index });
+              }
+              // Limpar o localStorage após usar
+              localStorage.removeItem("projetoParaEdicao");
+            } catch (error) {
+              console.error("Erro ao carregar projeto para edição:", error);
+            }
+          }
+        })
         .catch((error) => console.error("Erro ao carregar projetos:", error));
     }
   }, [dispatch, isActive]);
