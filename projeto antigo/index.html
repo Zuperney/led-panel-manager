@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Aplicação web para gerenciamento de painéis LED, cálculos técnicos e projetos" />
+  <meta name="author" content="Led Panel Manager" />
+  <title>Led Panel Manager</title>
+
+  <!-- Arquivos de estilos -->
+  <link rel="stylesheet" href="style/style.css" />
+  <link rel="stylesheet" href="style/agenda.css" />
+
+  <!-- Biblioteca de ícones Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Cabeçalho com navegação principal -->
+  <header>
+    <h1><i class="fas fa-tv"></i> Led Panel Manager</h1>
+
+    <!-- Menu de navegação principal -->
+    <nav>
+      <button onclick="navigate('gabinetes')" title="Gerenciar gabinetes LED">
+        <i class="fas fa-object-group"></i> Gabinetes
+      </button>
+      <button onclick="navigate('projetos')" title="Gerenciar projetos">
+        <i class="fas fa-project-diagram"></i> Projetos
+      </button>
+      <button onclick="navigate('agenda')" title="Ver agenda de projetos">
+        <i class="fas fa-calendar-alt"></i> Agenda
+      </button>
+      <button onclick="navigate('relatorio')" title="Gerar relatórios">
+        <i class="fas fa-chart-bar"></i> Relatório
+      </button>
+      <button onclick="navigate('pixel')" title="Configurar pixel mapping">
+        <i class="fas fa-th"></i> Pixel Mapping
+      </button>
+      <button onclick="navigate('config')" title="Configurações do sistema">
+        <i class="fas fa-cog"></i> Configurações
+      </button>
+    </nav>
+  </header>
+  <main id="app">
+    <section id="gabinetes" class="app-section">
+      <div class="section-header">
+        <h2>Gerenciamento de Gabinetes LED</h2>
+        <p>Cadastre e gerencie modelos de gabinetes LED para uso em seus projetos</p>
+      </div>
+      <div id="gabinete-content"></div>
+    </section>
+
+    <section id="projetos" class="app-section hidden">
+      <div class="section-header">
+        <h2>Projetos</h2>
+        <p>Crie e gerencie seus projetos de painéis LED</p>
+      </div>
+      <div class="card">
+        <div class="card-header">Novo Projeto</div>
+        <form id="form-projeto">
+          <label>Nome do Projeto: <input type="text" id="projeto-nome" required></label>
+          <label>Cliente: <input type="text" id="projeto-cliente" required></label>
+          <label>Data de Entrega: <input type="date" id="projeto-data" required></label>
+          <label>Observações: <textarea id="projeto-obs"></textarea></label>
+          <button type="submit" class="btn">Criar Projeto</button>
+        </form>
+      </div>
+      <div id="lista-projetos">
+        <h3>Projetos Cadastrados</h3>
+        <div class="grid" id="grid-projetos"></div>
+      </div>
+    </section>
+
+    <section id="relatorio" class="app-section hidden">
+      <div class="section-header">
+        <h2>Relatórios</h2>
+        <p>Gere relatórios técnicos e orçamentos para seus projetos</p>
+      </div>
+      <div class="card">
+        <div class="card-header">Gerar Relatório</div>
+        <form id="form-relatorio">
+          <label>
+            Projeto:
+            <select id="relatorio-projeto" required>
+              <option value="">Selecione um projeto</option>
+            </select>
+          </label>
+          <label>
+            Tipo de Relatório:
+            <select id="relatorio-tipo" required>
+              <option value="completo">Relatório Técnico Completo</option>
+              <option value="tecnico">Especificações Técnicas</option>
+              <option value="orcamento">Orçamento</option>
+              <option value="cliente">Relatório para Cliente</option>
+            </select>
+          </label>
+          <button type="submit" class="btn">Gerar Relatório</button>
+        </form>
+      </div>
+      <div id="relatorio-preview"></div>
+    </section>
+
+    <section id="pixel" class="app-section hidden">
+      <div class="section-header">
+        <h2>Pixel Mapping</h2>
+        <p>Configure o mapeamento de pixels para seus painéis LED</p>
+      </div>
+      <div class="card">
+        <div class="card-header">Configuração de Mapeamento</div>
+        <div id="pixel-mapping-controls">
+          <div class="control-group">
+            <label>
+              Projeto:
+              <select id="pixel-projeto">
+                <option value="">Selecione um projeto</option>
+              </select>
+            </label>
+            <label>
+              Resolução Total:
+              <span id="pixel-resolucao">0 x 0</span>
+            </label>
+          </div>
+          <div class="control-group">
+            <button id="btn-grid-view" class="btn">Visualização em Grid</button>
+            <button id="btn-export-mapping" class="btn">Exportar Mapeamento</button>
+          </div>
+        </div>
+        <div id="pixel-mapping-area">
+          <!-- Canvas para mapeamento de pixels será inserido aqui via JS -->
+        </div>
+      </div>
+    </section>
+
+    <section id="agenda" class="app-section hidden">
+      <div class="section-header">
+        <h2>Agenda de Projetos</h2>
+        <p>Visualize todos os seus projetos e prazos de entrega</p>
+      </div>
+      <div class="agenda-container" id="agenda-container">
+        <!-- Conteúdo da agenda será carregado dinamicamente via JavaScript -->
+      </div>
+    </section>
+
+    <section id="config" class="app-section hidden">
+      <div class="section-header">
+        <h2>Configurações</h2>
+        <p>Configure as opções do sistema e exporte/importe dados</p>
+      </div>
+      <div class="cards-container">
+        <div class="card">
+          <div class="card-header">Configurações do Sistema</div>
+          <form id="form-config">
+            <label>
+              <input type="checkbox" id="config-auto-save"> Salvar automaticamente
+            </label>
+            <label>
+              <input type="checkbox" id="config-dark-mode"> Modo Escuro
+            </label>
+            <label>
+              Unidades de Medida:
+              <select id="config-unit">
+                <option value="mm">Milímetros</option>
+                <option value="cm">Centímetros</option>
+                <option value="m">Metros</option>
+              </select>
+            </label>
+            <button type="submit" class="btn">Salvar Configurações</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Backup de Dados</div>
+          <div class="card-body">
+            <button id="btn-export-data" class="btn">Exportar Todos os Dados</button>
+            <button id="btn-import-data" class="btn">Importar Dados</button>
+            <input type="file" id="import-file" style="display: none;">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Sobre o Sistema</div>
+          <div class="card-body">
+            <p>Led Panel Manager v1.0</p>
+            <p>Desenvolvido para ajudar na criação e gestão de projetos de painéis LED.</p>
+            <p>&copy; 2025 - Todos os direitos reservados</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Led Panel Manager</p>
+  </footer>
+
+  <script src="script/main.js"></script>
+  <script src="script/gabinetes.js"></script>
+  <script src="script/projetos.js"></script>
+  <script src="script/calculos.js"></script>
+  <script src="script/exportacao.js"></script>
+  <script src="script/pixel-mapping.js"></script>
+  <script src="script/config.js"></script>
+  <script src="script/agenda.js"></script>
+</body>
+
+</html>

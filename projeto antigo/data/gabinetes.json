@@ -1,0 +1,74 @@
+[
+  {
+    "nome": "P3.91 Indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 128,
+    "pixels_altura": 128,
+    "potencia": 350,
+    "peso": 6.5,
+    "tipo": "indoor",
+    "pitch": 3.91,
+    "fabricante": "LEDcorp"
+  },
+  {
+    "nome": "P2.5 Alta Definição",
+    "largura": 480,
+    "altura": 480,
+    "pixels_largura": 192,
+    "pixels_altura": 192,
+    "potencia": 450,
+    "peso": 7.2,
+    "tipo": "indoor",
+    "pitch": 2.5,
+    "fabricante": "VisualTech"
+  },
+  {
+    "nome": "P8 Outdoor",
+    "largura": 640,
+    "altura": 640,
+    "pixels_largura": 80,
+    "pixels_altura": 80,
+    "potencia": 500,
+    "peso": 12,
+    "tipo": "outdoor",
+    "pitch": 8,
+    "fabricante": "OutdoorLED"
+  },
+  {
+    "nome": "P10 Outdoor Alta Potência",
+    "largura": 960,
+    "altura": 960,
+    "pixels_largura": 96,
+    "pixels_altura": 96,
+    "potencia": 750,
+    "peso": 15.8,
+    "tipo": "outdoor",
+    "pitch": 10,
+    "fabricante": "OutdoorLED"
+  },
+  {
+    "nome": "P4.8 Transparente",
+    "largura": 576,
+    "altura": 576,
+    "pixels_largura": 120,
+    "pixels_altura": 120,
+    "potencia": 280,
+    "peso": 5.5,
+    "tipo": "transparente",
+    "pitch": 4.8,
+    "fabricante": "GlassLED"
+  },
+  {
+    "nome": "P5.2 Curvo",
+    "largura": 520,
+    "altura": 520,
+    "pixels_largura": 100,
+    "pixels_altura": 100,
+    "potencia": 300,
+    "peso": 8.5,
+    "tipo": "curvo",
+    "pitch": 5.2,
+    "fabricante": "FlexiLED"
+  }
+]

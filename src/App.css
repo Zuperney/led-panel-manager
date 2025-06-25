@@ -1,0 +1,176 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+body {
+  font-family: "Inter", Arial, Helvetica, sans-serif;
+  background: #181c24;
+  color: #f3f3f3;
+  margin: 0;
+}
+
+.main-tabs {
+  max-width: 1200px;
+  margin: 32px auto;
+  background: #23283a;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px #0005;
+  padding: 32px 32px 24px 32px;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.tab-btn {
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: #23283a;
+  color: #b6c1e0;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tab-btn.active,
+.tab-btn:hover {
+  background: #2e3650;
+  color: #fff;
+}
+
+.tab-content {
+  background: #181818;
+  border-radius: 0 0 8px 8px;
+  padding: 32px 24px 24px 24px;
+  min-height: 400px;
+  box-shadow: 0 2px 12px #0002;
+}
+
+form {
+  background: #23283a;
+  border-radius: 12px;
+  padding: 24px 20px 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px #0002;
+}
+
+input,
+select {
+  font-family: inherit;
+  font-size: 1rem;
+  background: #23283a;
+  color: #f3f3f3;
+  border: 1.5px solid #3a4060;
+  border-radius: 7px;
+  padding: 8px 12px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: border 0.2s;
+}
+input:focus,
+select:focus {
+  border: 1.5px solid #6c7ae0;
+}
+
+button {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #6c7ae0 0%, #4e54c8 100%);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 16px;
+  margin: 0 8px 0 0;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #0002;
+  transition: background 0.2s, transform 0.1s;
+}
+button:hover {
+  background: linear-gradient(90deg, #4e54c8 0%, #6c7ae0 100%);
+  transform: translateY(-2px) scale(1.04);
+}
+button:last-child {
+  margin-right: 0;
+}
+button.remove-btn {
+  background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+  color: #fff !important;
+  margin-left: 0;
+}
+button.remove-btn:hover {
+  background: linear-gradient(90deg, #c0392b 0%, #e74c3c 100%);
+}
+
+h2,
+h3 {
+  font-family: "Inter", Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  color: #b6c1e0;
+  margin-top: 0;
+}
+
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+}
+
+/* Painéis e caixas de info */
+.info-box,
+.painel-preview,
+.painel-lista-item {
+  background: #23283a;
+  color: #f3f3f3;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #0003;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
+.painel-lista-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.painel-lista-item .painel-nome {
+  font-weight: 600;
+  font-size: 1.08em;
+  color: #fff;
+}
+.painel-lista-item .painel-tamanho {
+  font-size: 0.98em;
+  color: #b6c1e0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #23283a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2e3650;
+  border-radius: 8px;
+}
+
+@media (max-width: 800px) {
+  .main-tabs {
+    padding: 10px 2px;
+  }
+  .tab-content {
+    padding: 0;
+  }
+}

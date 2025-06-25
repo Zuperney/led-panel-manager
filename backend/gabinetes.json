@@ -1,0 +1,38 @@
+[
+  {
+    "nome": "P3.91 Indoor",
+    "tipo": "indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 128,
+    "pixels_altura": 128,
+    "potencia": 350,
+    "peso": 6.5,
+    "pitch": 3.91,
+    "fabricante": "NovaLED"
+  },
+  {
+    "nome": "P5 Outdoor",
+    "tipo": "outdoor",
+    "largura": 960,
+    "altura": 960,
+    "pixels_largura": 192,
+    "pixels_altura": 192,
+    "potencia": 600,
+    "peso": 18,
+    "pitch": 5,
+    "fabricante": "PowerDisplay"
+  },
+  {
+    "nome": "P2.6",
+    "tipo": "indoor",
+    "largura": "500",
+    "altura": "500",
+    "pixels_largura": "192",
+    "pixels_altura": "192",
+    "potencia": "85",
+    "peso": "6",
+    "pitch": "2.6",
+    "fabricante": "Yestech"
+  }
+]
