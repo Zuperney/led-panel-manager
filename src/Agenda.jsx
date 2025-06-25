@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 
-export default function Agenda() {
+export default function Agenda({ isActive }) {
   const [eventos, setEventos] = useState([]);
   const [erro, setErro] = useState("");
 
   useEffect(() => {
-    setErro("");
-    // Busca eventos do backend (ajuste a rota conforme seu backend)
-    fetch("/api/eventos")
-      .then((res) => {
-        if (!res.ok) throw new Error("API de eventos indisponível");
-        return res.json();
-      })
-      .then((data) => setEventos(data))
-      .catch(() =>
-        setErro(
-          "Não foi possível carregar os eventos. Verifique se o backend está rodando e tente novamente."
-        )
-      );
-  }, []);
+    if (isActive) {
+      setErro("");
+      // Busca eventos do backend
+      fetch("/api/eventos")
+        .then((res) => {
+          if (!res.ok) throw new Error("API de eventos indisponível");
+          return res.json();
+        })
+        .then((data) => setEventos(data))
+        .catch(() =>
+          setErro(
+            "Não foi possível carregar os eventos. Verifique se o backend está rodando e tente novamente."
+          )
+        );
+    }
+  }, [isActive]);
 
   // Função para cor de fundo conforme dias restantes
   function getBgColor(dataEvento) {

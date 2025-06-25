@@ -34,7 +34,7 @@ function App() {
     <ProjetoProvider>
       <div className="main-tabs">
         {/* Menu hambúrguer mobile */}
-        <button 
+        <button
           className="mobile-menu-btn"
           onClick={toggleMobileMenu}
           aria-label="Menu"
@@ -43,7 +43,7 @@ function App() {
         </button>
 
         {/* Overlay para fechar menu mobile */}
-        <div 
+        <div
           className={`mobile-tabs-overlay ${mobileMenuOpen ? "open" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         />
@@ -53,10 +53,12 @@ function App() {
           {TABS.map((tab) => (
             <button
               key={tab.key}
-              className={`mobile-tab-btn ${activeTab === tab.key ? "active" : ""}`}
+              className={`mobile-tab-btn ${
+                activeTab === tab.key ? "active" : ""
+              }`}
               onClick={() => handleTabChange(tab.key)}
             >
-              <span style={{ marginRight: '8px' }}>{tab.icon}</span>
+              <span style={{ marginRight: "8px" }}>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
@@ -70,7 +72,9 @@ function App() {
               className={activeTab === tab.key ? "tab-btn active" : "tab-btn"}
               onClick={() => handleTabChange(tab.key)}
             >
-              <span className="desktop-only" style={{ marginRight: '8px' }}>{tab.icon}</span>
+              <span className="desktop-only" style={{ marginRight: "8px" }}>
+                {tab.icon}
+              </span>
               {tab.label}
             </button>
           ))}
@@ -80,21 +84,21 @@ function App() {
           <div
             style={{ display: activeTab === "gabinetes" ? "block" : "none" }}
           >
-            <Gabinetes />
+            <Gabinetes isActive={activeTab === "gabinetes"} />
           </div>
           <div style={{ display: activeTab === "projetos" ? "block" : "none" }}>
-            <Projetos />
+            <Projetos isActive={activeTab === "projetos"} />
           </div>
           <div style={{ display: activeTab === "paineis" ? "block" : "none" }}>
-            <Paineis />
+            <Paineis isActive={activeTab === "paineis"} />
           </div>
           <div
             style={{ display: activeTab === "relatorio" ? "block" : "none" }}
           >
-            <Relatorio />
+            <Relatorio isActive={activeTab === "relatorio"} />
           </div>
           <div style={{ display: activeTab === "agenda" ? "block" : "none" }}>
-            <Agenda />
+            <Agenda isActive={activeTab === "agenda"} />
           </div>
           {/* Placeholder para futuras abas */}
           {activeTab === "pixelmapping" && (

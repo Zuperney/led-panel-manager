@@ -8,7 +8,7 @@ import {
   calcularPotenciaFinal,
 } from "./painelCalculos";
 
-export default function Paineis() {
+export default function Paineis({ isActive }) {
   const { state } = useProjeto();
   const [gabinetes, setGabinetes] = useState([]);
   const [paineis, setPaineis] = useState([]);
@@ -35,21 +35,22 @@ export default function Paineis() {
   const [potenciaDetalhe, setPotenciaDetalhe] = useState(null);
   const [previewPainel, setPreviewPainel] = useState(null);
 
-  // Carregar gabinetes sempre do backend
+  // Carregar gabinetes e painéis quando a aba se torna ativa
   useEffect(() => {
-    fetch("/api/gabinetes")
-      .then((res) => res.json())
-      .then((data) => setGabinetes(data))
-      .catch((error) => console.error("Erro ao carregar gabinetes:", error));
-  }, []);
+    if (isActive) {
+      // Carregar gabinetes
+      fetch("/api/gabinetes")
+        .then((res) => res.json())
+        .then((data) => setGabinetes(data))
+        .catch((error) => console.error("Erro ao carregar gabinetes:", error));
 
-  // Carregar paineis do backend ao iniciar
-  useEffect(() => {
-    fetch("/api/paineis")
-      .then((res) => res.json())
-      .then((data) => setPaineis(data))
-      .catch((error) => console.error("Erro ao carregar painéis:", error));
-  }, []);
+      // Carregar painéis
+      fetch("/api/paineis")
+        .then((res) => res.json())
+        .then((data) => setPaineis(data))
+        .catch((error) => console.error("Erro ao carregar painéis:", error));
+    }
+  }, [isActive]);
 
   function salvarPaineisBackend(novosPaineis) {
     fetch("/api/paineis", {

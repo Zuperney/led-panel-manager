@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Gabinetes() {
+export default function Gabinetes({ isActive }) {
   const [gabinetes, setGabinetes] = useState([]);
   const [form, setForm] = useState({
     nome: "",
@@ -16,13 +16,15 @@ export default function Gabinetes() {
   });
   const [editando, setEditando] = useState(null);
 
-  // Carregar gabinetes do backend ao iniciar
+  // Carregar gabinetes do backend ao iniciar e quando a aba se torna ativa
   useEffect(() => {
-    fetch("/api/gabinetes")
-      .then((res) => res.json())
-      .then((data) => setGabinetes(data))
-      .catch((error) => console.error("Erro ao carregar gabinetes:", error));
-  }, []);
+    if (isActive) {
+      fetch("/api/gabinetes")
+        .then((res) => res.json())
+        .then((data) => setGabinetes(data))
+        .catch((error) => console.error("Erro ao carregar gabinetes:", error));
+    }
+  }, [isActive]);
 
   // Salvar no backend apenas em ações de CRUD
   function salvarGabinetesBackend(novosGabinetes) {
@@ -90,9 +92,14 @@ export default function Gabinetes() {
             required
           />
         </div>
-        
+
         <div className="form-group">
-          <select name="tipo" value={form.tipo} onChange={handleChange} required>
+          <select
+            name="tipo"
+            value={form.tipo}
+            onChange={handleChange}
+            required
+          >
             <option value="indoor">Indoor</option>
             <option value="outdoor">Outdoor</option>
             <option value="transparente">Transparente</option>
@@ -178,11 +185,13 @@ export default function Gabinetes() {
 
         <div className="button-group">
           <button type="submit">
-            {editando !== null ? "💾 Salvar Alterações" : "➕ Adicionar Gabinete"}
+            {editando !== null
+              ? "💾 Salvar Alterações"
+              : "➕ Adicionar Gabinete"}
           </button>
           {editando !== null && (
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 setEditando(null);
                 setForm({
@@ -217,37 +226,54 @@ export default function Gabinetes() {
             <div key={i} className="painel-lista-item">
               <div style={{ flex: 1 }}>
                 <div className="painel-nome">
-                  {g.nome} <span style={{ 
-                    fontSize: '0.8em', 
-                    backgroundColor: g.tipo === 'indoor' ? '#2e7d32' : g.tipo === 'outdoor' ? '#f57c00' : '#7b1fa2',
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    marginLeft: '8px'
-                  }}>
+                  {g.nome}{" "}
+                  <span
+                    style={{
+                      fontSize: "0.8em",
+                      backgroundColor:
+                        g.tipo === "indoor"
+                          ? "#2e7d32"
+                          : g.tipo === "outdoor"
+                          ? "#f57c00"
+                          : "#7b1fa2",
+                      padding: "2px 8px",
+                      borderRadius: "12px",
+                      marginLeft: "8px",
+                    }}
+                  >
                     {g.tipo}
                   </span>
                 </div>
                 <div className="painel-tamanho">
-                  📏 {g.largura}×{g.altura}mm | 
-                  🔲 {g.pixels_largura}×{g.pixels_altura}px | 
-                  ⚡ {g.potencia}W | 
-                  ⚖️ {g.peso}kg
+                  📏 {g.largura}×{g.altura}mm | 🔲 {g.pixels_largura}×
+                  {g.pixels_altura}px | ⚡ {g.potencia}W | ⚖️ {g.peso}kg
                 </div>
                 <div className="painel-tamanho">
                   🎯 Pitch: {g.pitch}mm | 🏭 {g.fabricante}
                 </div>
               </div>
-              <div className="button-group" style={{ flexDirection: 'column', minWidth: 'auto' }}>
+              <div
+                className="button-group"
+                style={{ flexDirection: "column", minWidth: "auto" }}
+              >
                 <button
                   onClick={() => editarGabinete(i)}
-                  style={{ margin: '2px 0', padding: '8px 12px', fontSize: '0.9rem' }}
+                  style={{
+                    margin: "2px 0",
+                    padding: "8px 12px",
+                    fontSize: "0.9rem",
+                  }}
                 >
                   ✏️ Editar
                 </button>
                 <button
                   onClick={() => removerGabinete(i)}
                   className="remove-btn"
-                  style={{ margin: '2px 0', padding: '8px 12px', fontSize: '0.9rem' }}
+                  style={{
+                    margin: "2px 0",
+                    padding: "8px 12px",
+                    fontSize: "0.9rem",
+                  }}
                 >
                   🗑️ Remover
                 </button>

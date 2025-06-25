@@ -302,26 +302,26 @@ li {
     padding: 12px;
     border-radius: 12px;
   }
-  
+
   .tabs-nav {
     gap: 8px;
     margin-bottom: 20px;
   }
-  
+
   .tab-btn {
     font-size: 0.95rem;
     padding: 10px 16px;
   }
-  
+
   .tab-content {
     padding: 16px 12px;
     min-height: 300px;
   }
-  
+
   .form-row {
     flex-direction: column;
   }
-  
+
   .form-row > * {
     min-width: 100%;
   }
@@ -332,85 +332,86 @@ li {
   #root {
     padding: 0;
   }
-  
+
   .main-tabs {
     margin: 0;
     border-radius: 0;
     min-height: 100vh;
     box-shadow: none;
   }
-  
+
   /* Mostrar menu hambúrguer */
   .mobile-menu-btn {
     display: block;
   }
-  
+
   /* Esconder navegação desktop */
   .tabs-nav {
     display: none;
   }
-  
+
   /* Mostrar menu mobile quando ativo */
   .mobile-tabs-overlay.open,
   .mobile-tabs-menu.open {
     display: block;
   }
-  
+
   .mobile-tabs-menu {
     display: block;
   }
-  
+
   .tab-content {
     border-radius: 0;
     padding: 20px 12px;
     background: #181818;
   }
-  
+
   /* Formulários mobile */
   form {
     padding: 16px 12px;
     border-radius: 8px;
   }
-  
+
   input,
   select {
     font-size: 16px; /* Previne zoom no iOS */
     padding: 14px 16px;
   }
-  
+
   button {
     padding: 14px 20px;
     font-size: 1rem;
     width: 100%;
     margin: 4px 0;
   }
-  
+
   .button-group {
     flex-direction: column;
   }
-  
+
   .button-group button {
     min-width: 100%;
   }
-  
+
   /* Cards mobile */
   .painel-lista-item {
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
   }
-  
+
   .painel-lista-item .painel-tamanho {
     margin-top: 8px;
   }
-  
+
   /* Grid mobile */
   .grid-container {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
-  h2, h3 {
+
+  h2,
+  h3 {
     font-size: 1.3rem;
     margin-bottom: 16px;
   }
@@ -421,24 +422,24 @@ li {
   .mobile-tabs-menu {
     width: 240px;
   }
-  
+
   .tab-content {
     padding: 16px 8px;
   }
-  
+
   form {
     padding: 12px 8px;
   }
-  
+
   input,
   select {
     padding: 12px 14px;
   }
-  
+
   button {
     padding: 12px 16px;
   }
-  
+
   .info-box,
   .painel-preview,
   .painel-lista-item {
@@ -451,12 +452,12 @@ li {
   .main-tabs {
     min-height: auto;
   }
-  
+
   .mobile-tabs-menu {
     width: 200px;
     padding: 40px 16px 16px;
   }
-  
+
   .mobile-tab-btn {
     padding: 12px 16px;
     margin-bottom: 4px;
@@ -476,7 +477,7 @@ li {
   .mobile-only {
     display: block;
   }
-  
+
   .desktop-only {
     display: none;
   }

@@ -12,7 +12,7 @@ import {
 } from "@react-pdf/renderer";
 import { calcularPotenciaFinal, calcularEnergia } from "./painelCalculos";
 
-export default function Relatorio() {
+export default function Relatorio({ isActive }) {
   const [projetos, setProjetos] = useState([]);
   const [paineis, setPaineis] = useState([]);
   const [menuAberto, setMenuAberto] = useState(null); // index do menu aberto
@@ -20,19 +20,26 @@ export default function Relatorio() {
   const [gabinetes, setGabinetes] = useState([]);
 
   useEffect(() => {
-    fetch("/api/projetos")
-      .then((res) => res.json())
-      .then((data) => setProjetos(data))
-      .catch((error) => console.error("Erro ao carregar projetos:", error));
-    fetch("/api/paineis")
-      .then((res) => res.json())
-      .then((data) => setPaineis(data))
-      .catch((error) => console.error("Erro ao carregar painéis:", error));
-    fetch("/api/gabinetes")
-      .then((res) => res.json())
-      .then((data) => setGabinetes(data))
-      .catch((error) => console.error("Erro ao carregar gabinetes:", error));
-  }, []);
+    if (isActive) {
+      // Carregar projetos
+      fetch("/api/projetos")
+        .then((res) => res.json())
+        .then((data) => setProjetos(data))
+        .catch((error) => console.error("Erro ao carregar projetos:", error));
+      
+      // Carregar painéis
+      fetch("/api/paineis")
+        .then((res) => res.json())
+        .then((data) => setPaineis(data))
+        .catch((error) => console.error("Erro ao carregar painéis:", error));
+      
+      // Carregar gabinetes
+      fetch("/api/gabinetes")
+        .then((res) => res.json())
+        .then((data) => setGabinetes(data))
+        .catch((error) => console.error("Erro ao carregar gabinetes:", error));
+    }
+  }, [isActive]);
 
   // Funções placeholder para ações
   function marcarConcluido(proj) {
