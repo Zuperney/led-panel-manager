@@ -89,7 +89,7 @@ export const THEME = {
       muted: "#9ca3af",
     },
   },
-  
+
   styles: {
     card: {
       background: "#23283a",
@@ -97,7 +97,7 @@ export const THEME = {
       border: "1px solid #3a4161",
       padding: 16,
     },
-    
+
     button: {
       primary: {
         padding: "10px 16px",
@@ -127,7 +127,7 @@ export const THEME = {
         fontWeight: 500,
       },
     },
-    
+
     input: {
       width: "100%",
       padding: 8,
@@ -136,7 +136,7 @@ export const THEME = {
       background: "#1a1d29",
       color: "#fff",
     },
-    
+
     select: {
       width: "100%",
       padding: 8,

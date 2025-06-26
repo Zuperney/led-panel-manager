@@ -1,4 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEff  // Usar hooks customizados para dados da API
+  const { data: gabinetes, loading: loadingGabinetes, error: errorGabinetes } = useApiData("gabinetes", isActive);
+  const {
+    data: paineis,
+    setData: setPaineis,
+    updateData: salvarPaineis,
+  } = useApiData("paineis", isActive);
+
+  // Estados locais otimizadosm "react";
 import { useProjeto } from "./contextProjeto";
 import { useApiData, useLocalStorage, useTemporaryFeedback } from "./hooks";
 import PainelCard from "./components/PainelCard";
@@ -14,12 +22,22 @@ export default function Paineis({ isActive }) {
   const { state } = useProjeto();
 
   // Usar hooks customizados para dados da API
-  const { data: gabinetes } = useApiData("gabinetes", isActive);
+  const { data: gabinetes, loading: loadingGabinetes, error: errorGabinetes } = useApiData("gabinetes", isActive);
   const {
     data: paineis,
     setData: setPaineis,
     updateData: salvarPaineis,
   } = useApiData("paineis", isActive);
+
+  // Debug dos gabinetes
+  useEffect(() => {
+    console.log("🔧 Debug Gabinetes:", {
+      isActive,
+      gabinetes: gabinetes,
+      gabinetes_length: gabinetes?.length,
+      gabinetes_sample: gabinetes?.[0],
+    });
+  }, [gabinetes, isActive]);
 
   // Estados locais otimizados
   const [editando, setEditando] = useState(null);
@@ -314,14 +332,34 @@ export default function Paineis({ isActive }) {
               value={form.gabinete}
               onChange={handleChange}
               required
+              disabled={loadingGabinetes}
             >
-              <option value="">Selecione o Gabinete</option>
+              <option value="">
+                {loadingGabinetes 
+                  ? "Carregando gabinetes..." 
+                  : errorGabinetes
+                  ? "Erro ao carregar gabinetes"
+                  : gabinetes.length === 0 
+                  ? "Nenhum gabinete disponível"
+                  : "Selecione o Gabinete"
+                }
+              </option>
               {gabinetes.map((g, i) => (
                 <option key={i} value={g.nome}>
-                  {g.nome}
+                  {g.nome} ({g.largura}×{g.altura}mm)
                 </option>
               ))}
             </select>
+            {errorGabinetes && (
+              <div style={{ color: "#ef4444", fontSize: "0.9em", marginTop: 4 }}>
+                ❌ Erro: {errorGabinetes}
+              </div>
+            )}
+            {!loadingGabinetes && !errorGabinetes && gabinetes.length === 0 && (
+              <div style={{ color: "#f59e0b", fontSize: "0.9em", marginTop: 4 }}>
+                ⚠️ Nenhum gabinete encontrado. Verifique se há gabinetes cadastrados na aba Gabinetes.
+              </div>
+            )}
             <div style={{ margin: "12px 0" }}>
               <label>
                 <input

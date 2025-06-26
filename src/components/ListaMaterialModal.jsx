@@ -297,8 +297,14 @@ export default function ListaMaterialModal({
 
   // Componente PDF da Lista de Material
   function ListaMaterialPDF({ projeto, paineisProjeto, itens }) {
-    const totalPixels = paineisProjeto.reduce((acc, painel) => acc + (painel.pixelsLargura * painel.pixelsAltura), 0);
-    const areaTotal = paineisProjeto.reduce((acc, painel) => acc + (painel.largura * painel.altura), 0);
+    const totalPixels = paineisProjeto.reduce(
+      (acc, painel) => acc + painel.pixelsLargura * painel.pixelsAltura,
+      0
+    );
+    const areaTotal = paineisProjeto.reduce(
+      (acc, painel) => acc + painel.largura * painel.altura,
+      0
+    );
 
     return (
       <Document>
@@ -324,7 +330,12 @@ export default function ListaMaterialModal({
                 • Cliente: {projeto.cliente || "Não informado"}
               </Text>
               <Text style={{ fontSize: 10, marginBottom: 3 }}>
-                • Data do Projeto: {projeto.dataEntrega ? new Date(projeto.dataEntrega + 'T00:00:00').toLocaleDateString("pt-BR") : "Não informada"}
+                • Data do Projeto:{" "}
+                {projeto.dataEntrega
+                  ? new Date(
+                      projeto.dataEntrega + "T00:00:00"
+                    ).toLocaleDateString("pt-BR")
+                  : "Não informada"}
               </Text>
               <Text style={{ fontSize: 10, marginBottom: 3 }}>
                 • Quantidade de Painéis: {paineisProjeto.length}
@@ -355,8 +366,11 @@ export default function ListaMaterialModal({
                   </View>
                   <View style={{ marginTop: 4 }}>
                     <Text style={{ fontSize: 8, color: "#9ca3af" }}>
-                      Área: {(painel.largura * painel.altura).toFixed(2)} m² • 
-                      Total Pixels: {(painel.pixelsLargura * painel.pixelsAltura).toLocaleString("pt-BR")}
+                      Área: {(painel.largura * painel.altura).toFixed(2)} m² •
+                      Total Pixels:{" "}
+                      {(
+                        painel.pixelsLargura * painel.pixelsAltura
+                      ).toLocaleString("pt-BR")}
                     </Text>
                   </View>
                 </View>
@@ -366,9 +380,14 @@ export default function ListaMaterialModal({
 
           {/* Lista de Material */}
           <View style={pdfStyles.secao}>
-            <Text style={pdfStyles.secaoTitulo}>Lista de Material ({itens.length} {itens.length === 1 ? 'item' : 'itens'})</Text>
+            <Text style={pdfStyles.secaoTitulo}>
+              Lista de Material ({itens.length}{" "}
+              {itens.length === 1 ? "item" : "itens"})
+            </Text>
             {itens.length === 0 ? (
-              <Text style={{ fontSize: 10, color: "#9ca3af", fontStyle: "italic" }}>
+              <Text
+                style={{ fontSize: 10, color: "#9ca3af", fontStyle: "italic" }}
+              >
                 Nenhum item na lista de material
               </Text>
             ) : (
@@ -425,7 +444,8 @@ export default function ListaMaterialModal({
           {/* Rodapé */}
           <View style={pdfStyles.rodape}>
             <Text>
-              Led Panel Manager • Lista de Material • {projeto.nome} • Página 1 • Gerado em {new Date().toLocaleDateString("pt-BR")}
+              Led Panel Manager • Lista de Material • {projeto.nome} • Página 1
+              • Gerado em {new Date().toLocaleDateString("pt-BR")}
             </Text>
           </View>
         </Page>
@@ -503,9 +523,19 @@ export default function ListaMaterialModal({
               color: "#b6c1e0",
             }}
           >
-            📊 <strong>Painéis incluídos no relatório:</strong> {paineisProjeto.length} • 
-            📐 <strong>Área total:</strong> {paineisProjeto.reduce((acc, painel) => acc + (painel.largura * painel.altura), 0).toFixed(2)} m² • 
-            🔲 <strong>Total de pixels:</strong> {paineisProjeto.reduce((acc, painel) => acc + (painel.pixelsLargura * painel.pixelsAltura), 0).toLocaleString("pt-BR")}
+            📊 <strong>Painéis incluídos no relatório:</strong>{" "}
+            {paineisProjeto.length} • 📐 <strong>Área total:</strong>{" "}
+            {paineisProjeto
+              .reduce((acc, painel) => acc + painel.largura * painel.altura, 0)
+              .toFixed(2)}{" "}
+            m² • 🔲 <strong>Total de pixels:</strong>{" "}
+            {paineisProjeto
+              .reduce(
+                (acc, painel) =>
+                  acc + painel.pixelsLargura * painel.pixelsAltura,
+                0
+              )
+              .toLocaleString("pt-BR")}
           </div>
         )}
 
@@ -772,7 +802,14 @@ export default function ListaMaterialModal({
         </div>
 
         {/* Botões de ação */}
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
           <button
             onClick={onClose}
             style={{
@@ -786,7 +823,7 @@ export default function ListaMaterialModal({
           >
             Cancelar
           </button>
-          
+
           {itens.length > 0 && (
             <PDFDownloadLink
               document={
@@ -796,7 +833,9 @@ export default function ListaMaterialModal({
                   itens={itens}
                 />
               }
-              fileName={`ListaMaterial_${projeto?.nome}_${new Date().toISOString().split('T')[0]}.pdf`}
+              fileName={`ListaMaterial_${projeto?.nome}_${
+                new Date().toISOString().split("T")[0]
+              }.pdf`}
               style={{
                 padding: "10px 20px",
                 borderRadius: 6,
@@ -814,7 +853,7 @@ export default function ListaMaterialModal({
               }
             </PDFDownloadLink>
           )}
-          
+
           <button
             onClick={salvarLista}
             style={{

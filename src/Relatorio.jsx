@@ -678,7 +678,13 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
         onClose={fecharListaMaterial}
         onSave={salvarListaMaterial}
         projeto={modalListaMaterial.projeto}
-        paineisProjeto={modalListaMaterial.projeto ? paineis.filter(p => p.projeto === modalListaMaterial.projeto.nome) : []}
+        paineisProjeto={
+          modalListaMaterial.projeto
+            ? paineis.filter(
+                (p) => p.projeto === modalListaMaterial.projeto.nome
+              )
+            : []
+        }
       />
     </div>
   );
