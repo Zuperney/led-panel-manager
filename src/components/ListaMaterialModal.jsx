@@ -315,7 +315,7 @@ export default function ListaMaterialModal({
 
           {/* Informações do Projeto */}
           <View style={pdfStyles.secao}>
-            <Text style={pdfStyles.secaoTitulo}>📋 Informações do Projeto</Text>
+            <Text style={pdfStyles.secaoTitulo}>Informações do Projeto</Text>
             <View style={{ marginLeft: 8 }}>
               <Text style={{ fontSize: 10, marginBottom: 3 }}>
                 • Nome: {projeto.nome}
@@ -324,10 +324,7 @@ export default function ListaMaterialModal({
                 • Cliente: {projeto.cliente || "Não informado"}
               </Text>
               <Text style={{ fontSize: 10, marginBottom: 3 }}>
-                • Localização: {projeto.localizacao || "Não informada"}
-              </Text>
-              <Text style={{ fontSize: 10, marginBottom: 3 }}>
-                • Data do Projeto: {projeto.data || "Não informada"}
+                • Data do Projeto: {projeto.dataEntrega ? new Date(projeto.dataEntrega + 'T00:00:00').toLocaleDateString("pt-BR") : "Não informada"}
               </Text>
               <Text style={{ fontSize: 10, marginBottom: 3 }}>
                 • Quantidade de Painéis: {paineisProjeto.length}
@@ -335,16 +332,13 @@ export default function ListaMaterialModal({
               <Text style={{ fontSize: 10, marginBottom: 3 }}>
                 • Área Total: {areaTotal.toFixed(2)} m²
               </Text>
-              <Text style={{ fontSize: 10, marginBottom: 3 }}>
-                • Total de Pixels: {totalPixels.toLocaleString("pt-BR")}
-              </Text>
             </View>
           </View>
 
           {/* Painéis do Projeto */}
           {paineisProjeto.length > 0 && (
             <View style={pdfStyles.secao}>
-              <Text style={pdfStyles.secaoTitulo}>🔧 Painéis do Projeto</Text>
+              <Text style={pdfStyles.secaoTitulo}>Painéis do Projeto</Text>
               {paineisProjeto.map((painel, idx) => (
                 <View key={idx} style={pdfStyles.painelContainer}>
                   <Text style={pdfStyles.painelNome}>{painel.nome}</Text>
@@ -372,7 +366,7 @@ export default function ListaMaterialModal({
 
           {/* Lista de Material */}
           <View style={pdfStyles.secao}>
-            <Text style={pdfStyles.secaoTitulo}>📦 Lista de Material ({itens.length} {itens.length === 1 ? 'item' : 'itens'})</Text>
+            <Text style={pdfStyles.secaoTitulo}>Lista de Material ({itens.length} {itens.length === 1 ? 'item' : 'itens'})</Text>
             {itens.length === 0 ? (
               <Text style={{ fontSize: 10, color: "#9ca3af", fontStyle: "italic" }}>
                 Nenhum item na lista de material
