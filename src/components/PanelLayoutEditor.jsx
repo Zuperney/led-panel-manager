@@ -47,7 +47,7 @@ export default function PanelLayoutEditor({
       const baseScale = 0.2; // Mesma escala usada na criação dos painéis
       const realX = panel.x / baseScale;
       const realY = panel.y / baseScale;
-      
+
       minX = Math.min(minX, realX);
       minY = Math.min(minY, realY);
       maxX = Math.max(maxX, realX + panel.pixelsWidth);
@@ -125,11 +125,13 @@ export default function PanelLayoutEditor({
               const baseScale = 0.2; // Mesma escala usada na criação dos painéis
               const realX = panel.x / baseScale - boundingBox.minX;
               const realY = panel.y / baseScale - boundingBox.minY;
-              
+
               return `
               <g>
                 <rect x="${realX}" y="${realY}" 
-                      width="${panel.pixelsWidth}" height="${panel.pixelsHeight}"
+                      width="${panel.pixelsWidth}" height="${
+                panel.pixelsHeight
+              }"
                       fill="${color}40" stroke="${color}" stroke-width="2"/>
                 <text x="${realX + panel.pixelsWidth / 2}" y="${
                 realY + panel.pixelsHeight / 2 - 5
@@ -393,7 +395,7 @@ export default function PanelLayoutEditor({
     const baseScale = 0.2; // Escala base para visualização (1 pixel real = 0.2 pixels no canvas)
     const visualWidth = panel.pixelsLargura * baseScale;
     const visualHeight = panel.pixelsAltura * baseScale;
-    
+
     // Encontrar posição livre
     let x = 50,
       y = 50;
@@ -1058,7 +1060,8 @@ export default function PanelLayoutEditor({
                   {selectedPanel.pixelsHeight}
                 </div>
                 <div>
-                  Físico: {selectedPanel.physicalWidth}×{selectedPanel.physicalHeight}m
+                  Físico: {selectedPanel.physicalWidth}×
+                  {selectedPanel.physicalHeight}m
                 </div>
               </div>
             </div>

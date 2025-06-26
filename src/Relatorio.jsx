@@ -12,6 +12,7 @@ import {
 } from "@react-pdf/renderer";
 import { calcularPotenciaFinal, calcularEnergia } from "./painelCalculos";
 import { useApiData } from "./hooks";
+import ListaMaterialModal from "./components/ListaMaterialModal";
 
 export default function Relatorio({ isActive, onNavigateToTab }) {
   const { data: projetos } = useApiData("projetos", isActive);
@@ -19,12 +20,17 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
   const { data: gabinetes } = useApiData("gabinetes", isActive);
   const [menuAberto, setMenuAberto] = useState(null); // index do menu aberto
   const [exportando, setExportando] = useState(null); // index do projeto exportando
+  const [modalListaMaterial, setModalListaMaterial] = useState({
+    isOpen: false,
+    projeto: null,
+  });
 
   useEffect(() => {
     if (!isActive) {
       // Fechar menus quando aba não está ativa
       setMenuAberto(null);
       setExportando(null);
+      setModalListaMaterial({ isOpen: false, projeto: null });
     }
   }, [isActive]);
 
@@ -57,6 +63,22 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
     } else {
       alert(`Editar painéis do projeto: ${proj.nome}`);
     }
+  }
+
+  function abrirListaMaterial(projeto) {
+    setModalListaMaterial({ isOpen: true, projeto });
+    setMenuAberto(null); // Fechar menu
+  }
+
+  function fecharListaMaterial() {
+    setModalListaMaterial({ isOpen: false, projeto: null });
+  }
+
+  function salvarListaMaterial(itens) {
+    console.log(
+      `Lista de material salva para ${modalListaMaterial.projeto?.nome}:`,
+      itens
+    );
   }
 
   // PDF Styles
@@ -586,6 +608,22 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
                           display: "flex",
                           alignItems: "center",
                           gap: "8px",
+                          backgroundColor: "#7c2d12",
+                          borderBottom: "1px solid #3a4161",
+                        }}
+                        onClick={() => {
+                          abrirListaMaterial(proj);
+                        }}
+                        title="Gerenciar lista de material para este projeto"
+                      >
+                        📦 <span>Lista de Material</span>
+                      </button>
+                      <button
+                        style={{
+                          ...menuBtnStyle,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
                           backgroundColor: "#0f766e",
                           borderBottom: "none",
                         }}
@@ -635,6 +673,13 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
           })}
         </ul>
       )}
+      <ListaMaterialModal
+        isOpen={modalListaMaterial.isOpen}
+        onClose={fecharListaMaterial}
+        onSave={salvarListaMaterial}
+        projeto={modalListaMaterial.projeto}
+        paineisProjeto={modalListaMaterial.projeto ? paineis.filter(p => p.projeto === modalListaMaterial.projeto.nome) : []}
+      />
     </div>
   );
 }
