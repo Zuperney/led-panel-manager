@@ -16,7 +16,9 @@ export function useApiData(endpoint, isActive = true) {
         console.log(`Carregando dados de: /api/${endpoint}`);
         const response = await fetch(`/api/${endpoint}`);
         if (!response.ok) {
-          throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+          throw new Error(
+            `Erro HTTP ${response.status}: ${response.statusText}`
+          );
         }
         const result = await response.json();
         console.log(`Dados carregados de ${endpoint}:`, result);

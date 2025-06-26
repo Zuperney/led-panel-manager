@@ -518,3 +518,247 @@ li {
     display: none;
   }
 }
+
+
+/* === Estilos Atualizados por ChatGPT === */
+
+/* Estilos para navegação por abas */
+.tab-nav {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  background-color: #1a1a1a;
+  padding: 0.5rem;
+}
+
+.tab-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  margin: 0.25rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 80px;
+}
+
+.tab-button:hover {
+  transform: scale(1.05);
+}
+
+.tab-button.active {
+  background-color: #2c2c2c;
+  border-radius: 8px;
+}
+
+.tab-icon {
+  width: 24px;
+  height: auto;
+  margin-bottom: 0.3rem;
+}
+
+.tab-label {
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Container principal */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #101010;
+  color: white;
+}
+
+/* Conteúdo da aba */
+.tab-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+
+
+/* === Estilos para Gabinetes.jsx === */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  padding: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+@media (min-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.input-box {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #1e1e1e;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.input-box:focus {
+  outline: none;
+  border-color: #5fa8ff;
+  background-color: #2a2a2a;
+}
+
+.btn-submit {
+  grid-column: span 2;
+  padding: 0.7rem;
+  background-color: #5fa8ff;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-submit:hover {
+  background-color: #4090ea;
+}
+
+.lista-gabinetes {
+  list-style: none;
+  padding: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.item-gabinete {
+  display: flex;
+  justify-content: space-between;
+  background-color: #1a1a1a;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
+
+.item-gabinete button {
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  background-color: #3a3a3a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.item-gabinete button:hover {
+  background-color: #505050;
+}
+
+
+
+/* === Estilos para Projetos.jsx (reutiliza form-grid) === */
+
+
+
+/* === Estilos para Paineis.jsx === */
+.preview-area {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #161616;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+
+
+/* === Estilos para Relatorio.jsx === */
+.relatorio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1rem;
+  max-width: 1000px;
+  margin: auto;
+}
+
+@media (min-width: 640px) {
+  .relatorio-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.relatorio-card {
+  background-color: #1c1c1c;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+
+.relatorio-card h3 {
+  margin: 0 0 0.5rem;
+}
+
+.relatorio-acoes {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.relatorio-acoes button {
+  flex: 1 1 auto;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  background-color: #3a3a3a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.relatorio-acoes button:hover {
+  background-color: #5a5a5a;
+}
+
+
+
+/* === Estilos para PixelMapping.jsx === */
+.layout-pixel-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .layout-pixel-container {
+    flex-direction: row;
+  }
+}
+
+.layout-pixel-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.layout-pixel-canvas {
+  flex: 1;
+  background-color: #0f0f0f;
+  border: 1px solid #333;
+  padding: 0.5rem;
+  border-radius: 8px;
+  overflow: auto;
+}
