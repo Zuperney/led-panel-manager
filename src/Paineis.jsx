@@ -14,7 +14,11 @@ export default function Paineis({ isActive }) {
   const { state } = useProjeto();
 
   // Usar hooks customizados para dados da API
-  const { data: gabinetes, loading: loadingGabinetes, error: errorGabinetes } = useApiData("gabinetes", isActive);
+  const {
+    data: gabinetes,
+    loading: loadingGabinetes,
+    error: errorGabinetes,
+  } = useApiData("gabinetes", isActive);
   const {
     data: paineis,
     setData: setPaineis,
@@ -59,13 +63,17 @@ export default function Paineis({ isActive }) {
   // Atualiza resultado, energia e potência detalhada sempre que form, tipoRede, tensao mudam
   useEffect(() => {
     try {
-      if (!form.gabinete || !Array.isArray(gabinetes) || gabinetes.length === 0) {
+      if (
+        !form.gabinete ||
+        !Array.isArray(gabinetes) ||
+        gabinetes.length === 0
+      ) {
         setResultado(null);
         setEnergia(null);
         setPotenciaDetalhe(null);
         return;
       }
-      
+
       const gabinete = gabinetes.find((g) => g.nome === form.gabinete);
       if (!gabinete) {
         setResultado(null);
@@ -73,17 +81,18 @@ export default function Paineis({ isActive }) {
         setPotenciaDetalhe(null);
         return;
       }
-      
+
       let res = null;
       let qtdGabinetes = 1;
-      
+
       if (form.modo === "gabinete") {
         res = calcularPainelPorGabinete(
           gabinete,
           Number(form.qtdLargura) || 1,
           Number(form.qtdAltura) || 1
         );
-        qtdGabinetes = (Number(form.qtdLargura) || 1) * (Number(form.qtdAltura) || 1);
+        qtdGabinetes =
+          (Number(form.qtdLargura) || 1) * (Number(form.qtdAltura) || 1);
       } else if (form.modo === "metro") {
         res = calcularPainelPorMetro(
           gabinete,
@@ -96,7 +105,7 @@ export default function Paineis({ isActive }) {
           Math.round((Number(res.largura) * 1000) / larguraGab) *
           Math.round((Number(res.altura) * 1000) / alturaGab);
       }
-      
+
       if (res) {
         // Consumo máximo (full white) - com conversão segura
         const potenciaGab = Number(gabinete.potencia) || 0;
@@ -331,14 +340,13 @@ export default function Paineis({ isActive }) {
               disabled={loadingGabinetes}
             >
               <option value="">
-                {loadingGabinetes 
-                  ? "Carregando gabinetes..." 
+                {loadingGabinetes
+                  ? "Carregando gabinetes..."
                   : errorGabinetes
                   ? "Erro ao carregar gabinetes"
-                  : gabinetes.length === 0 
+                  : gabinetes.length === 0
                   ? "Nenhum gabinete disponível"
-                  : "Selecione o Gabinete"
-                }
+                  : "Selecione o Gabinete"}
               </option>
               {gabinetes.map((g, i) => (
                 <option key={i} value={g.nome}>
@@ -347,13 +355,18 @@ export default function Paineis({ isActive }) {
               ))}
             </select>
             {errorGabinetes && (
-              <div style={{ color: "#ef4444", fontSize: "0.9em", marginTop: 4 }}>
+              <div
+                style={{ color: "#ef4444", fontSize: "0.9em", marginTop: 4 }}
+              >
                 ❌ Erro: {errorGabinetes}
               </div>
             )}
             {!loadingGabinetes && !errorGabinetes && gabinetes.length === 0 && (
-              <div style={{ color: "#f59e0b", fontSize: "0.9em", marginTop: 4 }}>
-                ⚠️ Nenhum gabinete encontrado. Verifique se há gabinetes cadastrados na aba Gabinetes.
+              <div
+                style={{ color: "#f59e0b", fontSize: "0.9em", marginTop: 4 }}
+              >
+                ⚠️ Nenhum gabinete encontrado. Verifique se há gabinetes
+                cadastrados na aba Gabinetes.
               </div>
             )}
             <div style={{ margin: "12px 0" }}>
