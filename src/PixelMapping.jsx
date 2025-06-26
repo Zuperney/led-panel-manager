@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useProjeto } from "./contextProjeto";
-import { useApiData, useLocalStorage } from "./hooks";
+import { useApiData, useLocalStorage, useTemporaryFeedback } from "./hooks";
 import FeedbackMessage from "./components/FeedbackMessage";
-import PixelGridEditor from "./components/PixelGridEditor";
 import PanelLayoutEditor from "./components/PanelLayoutEditor";
-import { UTILS } from "./config";
 
 export default function PixelMapping({ isActive }) {
   const { state } = useProjeto();
   const { data: paineis } = useApiData("paineis", isActive);
-  const { data: gabinetes } = useApiData("gabinetes", isActive);
+
+  // Hook de feedback
+  const [feedback, showFeedback] = useTemporaryFeedback();
 
   // Estados locais
   const [selectedProjectId, setSelectedProjectId] = useLocalStorage(
@@ -27,7 +27,6 @@ export default function PixelMapping({ isActive }) {
     "layout"
   );
   const [selectedPanel, setSelectedPanel] = useState(null);
-  const [feedback, setFeedback] = useState("");
   const [activeTab, setActiveTab] = useState("visual"); // "visual", "panels"
 
   // Painéis filtrados pelo projeto
@@ -64,8 +63,7 @@ export default function PixelMapping({ isActive }) {
     if (selectedProjectId) {
       const key = `panelLayout_${selectedProjectId}`;
       localStorage.setItem(key, JSON.stringify(layoutConfig));
-      setFeedback("Layout de painéis salvo com sucesso!");
-      setTimeout(() => setFeedback(""), 3000);
+      showFeedback("Layout de painéis salvo com sucesso!");
     }
   };
 
@@ -99,8 +97,7 @@ export default function PixelMapping({ isActive }) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    setFeedback("Layout exportado com sucesso!");
-    setTimeout(() => setFeedback(""), 3000);
+    showFeedback("Layout exportado com sucesso!");
   };
 
   // Importar configuração
@@ -114,13 +111,11 @@ export default function PixelMapping({ isActive }) {
         const importData = JSON.parse(e.target.result);
         if (importData.layout) {
           setLayoutConfig(importData.layout);
-          setFeedback("Layout importado com sucesso!");
-          setTimeout(() => setFeedback(""), 3000);
+          showFeedback("Layout importado com sucesso!");
         }
       } catch (error) {
-        setFeedback("Erro ao importar layout!");
+        showFeedback("Erro ao importar layout!");
         console.error("Erro na importação:", error);
-        setTimeout(() => setFeedback(""), 3000);
       }
     };
     reader.readAsText(file);
@@ -329,7 +324,7 @@ export default function PixelMapping({ isActive }) {
                   onLayoutUpdate={setLayoutConfig}
                   selectedPanel={selectedPanel}
                   onPanelSelect={setSelectedPanel}
-                  onFeedback={setFeedback}
+                  onFeedback={showFeedback}
                 />
               </div>
             )}
