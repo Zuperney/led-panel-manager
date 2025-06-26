@@ -1,12 +1,4 @@
-import { useEff  // Usar hooks customizados para dados da API
-  const { data: gabinetes, loading: loadingGabinetes, error: errorGabinetes } = useApiData("gabinetes", isActive);
-  const {
-    data: paineis,
-    setData: setPaineis,
-    updateData: salvarPaineis,
-  } = useApiData("paineis", isActive);
-
-  // Estados locais otimizadosm "react";
+import { useEffect, useState } from "react";
 import { useProjeto } from "./contextProjeto";
 import { useApiData, useLocalStorage, useTemporaryFeedback } from "./hooks";
 import PainelCard from "./components/PainelCard";
@@ -28,16 +20,6 @@ export default function Paineis({ isActive }) {
     setData: setPaineis,
     updateData: salvarPaineis,
   } = useApiData("paineis", isActive);
-
-  // Debug dos gabinetes
-  useEffect(() => {
-    console.log("🔧 Debug Gabinetes:", {
-      isActive,
-      gabinetes: gabinetes,
-      gabinetes_length: gabinetes?.length,
-      gabinetes_sample: gabinetes?.[0],
-    });
-  }, [gabinetes, isActive]);
 
   // Estados locais otimizados
   const [editando, setEditando] = useState(null);
@@ -76,61 +58,75 @@ export default function Paineis({ isActive }) {
 
   // Atualiza resultado, energia e potência detalhada sempre que form, tipoRede, tensao mudam
   useEffect(() => {
-    if (!form.gabinete) {
-      setResultado(null);
-      setEnergia(null);
-      setPotenciaDetalhe(null);
-      return;
-    }
-    const gabinete = gabinetes.find((g) => g.nome === form.gabinete);
-    if (!gabinete) {
-      setResultado(null);
-      setEnergia(null);
-      setPotenciaDetalhe(null);
-      return;
-    }
-    let res = null;
-    let qtdGabinetes = 1;
-    if (form.modo === "gabinete") {
-      res = calcularPainelPorGabinete(
-        gabinete,
-        Number(form.qtdLargura),
-        Number(form.qtdAltura)
-      );
-      qtdGabinetes = Number(form.qtdLargura) * Number(form.qtdAltura);
-    } else if (form.modo === "metro") {
-      res = calcularPainelPorMetro(
-        gabinete,
-        Number(form.larguraM),
-        Number(form.alturaM)
-      );
-      qtdGabinetes =
-        Math.round((Number(res.largura) * 1000) / gabinete.largura) *
-        Math.round((Number(res.altura) * 1000) / gabinete.altura);
-    }
-    if (res) {
-      // Consumo máximo (full white)
-      const P_total_max = gabinete.potencia * qtdGabinetes;
-      // Consumo médio (modelo realista, brilho 100%)
-      const brilhoPercentualMax = 100;
-      const fatorConteudo = 0.33;
-      const consumoBasePercentual = 0.3;
-      const pwmMax = Math.pow(brilhoPercentualMax / 100, 2);
-      const P_brilhoMax = P_total_max * pwmMax;
-      const P_conteudoMax = P_brilhoMax * fatorConteudo;
-      const P_baseMax = P_total_max * consumoBasePercentual;
-      const P_finalMax = P_conteudoMax + P_baseMax;
-      // Consumo médio (brilho 50%)
-      const brilhoPercentual50 = 50;
-      const pwm50 = Math.pow(brilhoPercentual50 / 100, 2);
-      const P_brilho50 = P_total_max * pwm50;
-      const P_conteudo50 = P_brilho50 * fatorConteudo;
-      const P_base50 = P_total_max * consumoBasePercentual;
-      const P_final50 = P_conteudo50 + P_base50;
-      setPotenciaDetalhe({ P_total_max, P_finalMax, P_final50 });
-      setResultado({ ...res, potencia: P_finalMax });
-      setEnergia(calcularEnergia(P_finalMax, tipoRede, tensao));
-    } else {
+    try {
+      if (!form.gabinete || !Array.isArray(gabinetes) || gabinetes.length === 0) {
+        setResultado(null);
+        setEnergia(null);
+        setPotenciaDetalhe(null);
+        return;
+      }
+      
+      const gabinete = gabinetes.find((g) => g.nome === form.gabinete);
+      if (!gabinete) {
+        setResultado(null);
+        setEnergia(null);
+        setPotenciaDetalhe(null);
+        return;
+      }
+      
+      let res = null;
+      let qtdGabinetes = 1;
+      
+      if (form.modo === "gabinete") {
+        res = calcularPainelPorGabinete(
+          gabinete,
+          Number(form.qtdLargura) || 1,
+          Number(form.qtdAltura) || 1
+        );
+        qtdGabinetes = (Number(form.qtdLargura) || 1) * (Number(form.qtdAltura) || 1);
+      } else if (form.modo === "metro") {
+        res = calcularPainelPorMetro(
+          gabinete,
+          Number(form.larguraM) || 0.5,
+          Number(form.alturaM) || 0.5
+        );
+        const larguraGab = Number(gabinete.largura) || 500;
+        const alturaGab = Number(gabinete.altura) || 500;
+        qtdGabinetes =
+          Math.round((Number(res.largura) * 1000) / larguraGab) *
+          Math.round((Number(res.altura) * 1000) / alturaGab);
+      }
+      
+      if (res) {
+        // Consumo máximo (full white) - com conversão segura
+        const potenciaGab = Number(gabinete.potencia) || 0;
+        const P_total_max = potenciaGab * qtdGabinetes;
+        // Consumo médio (modelo realista, brilho 100%)
+        const brilhoPercentualMax = 100;
+        const fatorConteudo = 0.33;
+        const consumoBasePercentual = 0.3;
+        const pwmMax = Math.pow(brilhoPercentualMax / 100, 2);
+        const P_brilhoMax = P_total_max * pwmMax;
+        const P_conteudoMax = P_brilhoMax * fatorConteudo;
+        const P_baseMax = P_total_max * consumoBasePercentual;
+        const P_finalMax = P_conteudoMax + P_baseMax;
+        // Consumo médio (brilho 50%)
+        const brilhoPercentual50 = 50;
+        const pwm50 = Math.pow(brilhoPercentual50 / 100, 2);
+        const P_brilho50 = P_total_max * pwm50;
+        const P_conteudo50 = P_brilho50 * fatorConteudo;
+        const P_base50 = P_total_max * consumoBasePercentual;
+        const P_final50 = P_conteudo50 + P_base50;
+        setPotenciaDetalhe({ P_total_max, P_finalMax, P_final50 });
+        setResultado({ ...res, potencia: P_finalMax });
+        setEnergia(calcularEnergia(P_finalMax, tipoRede, tensao));
+      } else {
+        setResultado(null);
+        setEnergia(null);
+        setPotenciaDetalhe(null);
+      }
+    } catch (error) {
+      console.error("Erro ao calcular painel:", error);
       setResultado(null);
       setEnergia(null);
       setPotenciaDetalhe(null);

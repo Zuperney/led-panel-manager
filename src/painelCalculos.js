@@ -2,21 +2,33 @@
 export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
   // gabinete: objeto do banco de gabinetes
   // qtdLargura, qtdAltura: quantidade de gabinetes em cada direção
-  const largura = (gabinete.largura * qtdLargura) / 1000; // metros
-  const altura = (gabinete.altura * qtdAltura) / 1000; // metros
+  
+  // Validação e conversão segura de valores
+  const larguraGab = Number(gabinete.largura) || 0;
+  const alturaGab = Number(gabinete.altura) || 0;
+  const pixelsLarguraGab = Number(gabinete.pixels_largura) || 0;
+  const pixelsAlturaGab = Number(gabinete.pixels_altura) || 0;
+  const pesoGab = Number(gabinete.peso) || 0;
+  const potenciaGab = Number(gabinete.potencia) || 0;
+  
+  const largura = (larguraGab * qtdLargura) / 1000; // metros
+  const altura = (alturaGab * qtdAltura) / 1000; // metros
   const area = largura * altura;
-  const pixelsLargura = gabinete.pixels_largura * qtdLargura;
-  const pixelsAltura = gabinete.pixels_altura * qtdAltura;
-  const peso = gabinete.peso * qtdLargura * qtdAltura;
-  const potencia = gabinete.potencia * qtdLargura * qtdAltura;
+  const pixelsLargura = pixelsLarguraGab * qtdLargura;
+  const pixelsAltura = pixelsAlturaGab * qtdAltura;
+  const peso = pesoGab * qtdLargura * qtdAltura;
+  const potencia = potenciaGab * qtdLargura * qtdAltura;
   return { largura, altura, area, pixelsLargura, pixelsAltura, peso, potencia };
 }
 
 export function calcularPainelPorMetro(gabinete, larguraM, alturaM) {
   // gabinete: objeto do banco de gabinetes
   // larguraM, alturaM: dimensões desejadas em metros
-  const qtdLargura = Math.round((larguraM * 1000) / gabinete.largura);
-  const qtdAltura = Math.round((alturaM * 1000) / gabinete.altura);
+  const larguraGab = Number(gabinete.largura) || 1;
+  const alturaGab = Number(gabinete.altura) || 1;
+  
+  const qtdLargura = Math.round((larguraM * 1000) / larguraGab);
+  const qtdAltura = Math.round((alturaM * 1000) / alturaGab);
   return calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura);
 }
 
@@ -71,8 +83,9 @@ export function calcularPotenciaFinal(
   fatorConteudo = 0.33,
   consumoBasePercentual = 0.3
 ) {
-  // 1. Potência máxima total
-  const P_total_max = gabinete.potencia * qtdGabinetes;
+  // 1. Potência máxima total - com conversão segura
+  const potenciaGab = Number(gabinete.potencia) || 0;
+  const P_total_max = potenciaGab * qtdGabinetes;
   // 2. PWM real
   const pwm = Math.pow(brilhoPercentual / 100, 2);
   // 3. Potência ajustada pelo brilho
