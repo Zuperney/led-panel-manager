@@ -1,4 +1,7 @@
 import { useState, useRef, useCallback } from "react";
+import ResolumeExporter from "./ResolumeExporter";
+import ResolumeImporter from "./ResolumeImporter";
+import ResolumeCoordinateHelper from "./ResolumeCoordinateHelper";
 
 export default function PanelLayoutEditor({
   availablePanels, // Painéis disponíveis do projeto
@@ -1369,6 +1372,27 @@ export default function PanelLayoutEditor({
             </div>
           </div>
         )}
+
+        {/* Exportador Resolume */}
+        <ResolumeExporter 
+          layoutConfig={layoutConfig}
+          onFeedback={onFeedback}
+          availablePanels={availablePanels}
+        />
+
+        {/* Importador Resolume */}
+        <ResolumeImporter 
+          onLayoutImport={onLayoutUpdate}
+          onFeedback={onFeedback}
+          availablePanels={availablePanels}
+        />
+
+        {/* Assistente de Coordenadas Resolume */}
+        <ResolumeCoordinateHelper 
+          layoutConfig={layoutConfig}
+          onCoordinateUpdate={onLayoutUpdate}
+          onFeedback={onFeedback}
+        />
 
         {/* Informações do canvas */}
         <div
