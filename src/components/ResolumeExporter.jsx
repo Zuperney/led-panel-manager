@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
 
-export default function ResolumeExporter({ 
-  layoutConfig, 
+export default function ResolumeExporter({
+  layoutConfig,
   onFeedback,
-  availablePanels 
+  availablePanels,
 }) {
   const [exportConfig, setExportConfig] = useState({
     projectName: "LED Panel Layout",
@@ -11,7 +11,7 @@ export default function ResolumeExporter({
     canvasHeight: 3840,
     includeWarping: true,
     layerOffset: { x: 0, y: 0 },
-    screenName: "Screen 1"
+    screenName: "Screen 1",
   });
 
   // Gerar XML compatível com Resolume Arena
@@ -41,7 +41,9 @@ export default function ResolumeExporter({
     <screens>
       <Screen name="${exportConfig.screenName}" uniqueId="${uniqueId}">
         <Params name="Params">
-          <Param name="Name" T="STRING" default="" value="${exportConfig.screenName}"/>
+          <Param name="Name" T="STRING" default="" value="${
+            exportConfig.screenName
+          }"/>
           <Param name="Enabled" T="BOOL" default="1" value="1"/>
           <Param name="Hidden" T="BOOL" default="0" value="0"/>
         </Params>
@@ -86,7 +88,9 @@ export default function ResolumeExporter({
           ${generateLayersXML()}
         </layers>
         <OutputDevice>
-          <OutputDeviceDisplay name="LED Display" deviceId="LED_VIRTUAL_DISPLAY" idHash="${Math.floor(Math.random() * 1000000000000000000)}" fullscreen="1" width="${canvasWidth}" height="${canvasHeight}">
+          <OutputDeviceDisplay name="LED Display" deviceId="LED_VIRTUAL_DISPLAY" idHash="${Math.floor(
+            Math.random() * 1000000000000000000
+          )}" fullscreen="1" width="${canvasWidth}" height="${canvasHeight}">
             <Params name="Params">
               <ParamRange name="Delay" T="DOUBLE" default="0" value="0">
                 <PhaseSourceStatic name="PhaseSourceStatic"/>
@@ -154,8 +158,14 @@ export default function ResolumeExporter({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      const timestamp2 = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-      a.download = `${exportConfig.projectName.replace(/\s+/g, '_')}_${timestamp2}.xml`;
+      const timestamp2 = new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace(/:/g, "-");
+      a.download = `${exportConfig.projectName.replace(
+        /\s+/g,
+        "_"
+      )}_${timestamp2}.xml`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -164,7 +174,6 @@ export default function ResolumeExporter({
       if (onFeedback) {
         onFeedback("🎭 Layout exportado para Resolume Arena!");
       }
-
     } catch (error) {
       console.error("Erro ao gerar XML do Resolume:", error);
       if (onFeedback) {
@@ -175,29 +184,39 @@ export default function ResolumeExporter({
 
   // Gerar XML das layers (slices)
   const generateLayersXML = useCallback(() => {
-    return layoutConfig.paineis.map((panel, index) => {
-      const uniqueId = Date.now() + index;
-      
-      // Converter coordenadas do layout para pixels reais do Resolume
-      const baseScale = 0.2; // Mesma escala do layout visual
-      const outputX = Math.round(panel.x / baseScale) + exportConfig.layerOffset.x;
-      const outputY = Math.round(panel.y / baseScale) + exportConfig.layerOffset.y;
-      const outputWidth = panel.pixelsWidth;
-      const outputHeight = panel.pixelsHeight;
+    return layoutConfig.paineis
+      .map((panel, index) => {
+        const uniqueId = Date.now() + index;
 
-      // Input mapping (fonte de conteúdo) - usar proporção do painel
-      const inputX = index * outputWidth; // Distribui horizontalmente na fonte
-      const inputY = 0;
-      const inputWidth = outputWidth;
-      const inputHeight = outputHeight;
+        // Converter coordenadas do layout para pixels reais do Resolume
+        const baseScale = 0.2; // Mesma escala do layout visual
+        const outputX =
+          Math.round(panel.x / baseScale) + exportConfig.layerOffset.x;
+        const outputY =
+          Math.round(panel.y / baseScale) + exportConfig.layerOffset.y;
+        const outputWidth = panel.pixelsWidth;
+        const outputHeight = panel.pixelsHeight;
 
-      // Gerar vértices do BezierWarper (correção geométrica)
-      const warperVertices = generateWarperVertices(outputX, outputY, outputWidth, outputHeight);
+        // Input mapping (fonte de conteúdo) - usar proporção do painel
+        const inputX = index * outputWidth; // Distribui horizontalmente na fonte
+        const inputY = 0;
+        const inputWidth = outputWidth;
+        const inputHeight = outputHeight;
 
-      return `
+        // Gerar vértices do BezierWarper (correção geométrica)
+        const warperVertices = generateWarperVertices(
+          outputX,
+          outputY,
+          outputWidth,
+          outputHeight
+        );
+
+        return `
           <Slice uniqueId="${uniqueId}">
             <Params name="Common">
-              <Param name="Name" T="STRING" default="Layer" value="${panel.nome}"/>
+              <Param name="Name" T="STRING" default="Layer" value="${
+                panel.nome
+              }"/>
               <Param name="Enabled" T="BOOL" default="1" value="1"/>
             </Params>
             <Params name="Input">
@@ -272,35 +291,40 @@ export default function ResolumeExporter({
                 <src>
                   <v x="${outputX}" y="${outputY}"/>
                   <v x="${outputX + outputWidth}" y="${outputY}"/>
-                  <v x="${outputX + outputWidth}" y="${outputY + outputHeight}"/>
+                  <v x="${outputX + outputWidth}" y="${
+          outputY + outputHeight
+        }"/>
                   <v x="${outputX}" y="${outputY + outputHeight}"/>
                 </src>
                 <dst>
                   <v x="${outputX}" y="${outputY}"/>
                   <v x="${outputX + outputWidth}" y="${outputY}"/>
-                  <v x="${outputX + outputWidth}" y="${outputY + outputHeight}"/>
+                  <v x="${outputX + outputWidth}" y="${
+          outputY + outputHeight
+        }"/>
                   <v x="${outputX}" y="${outputY + outputHeight}"/>
                 </dst>
               </Homography>
             </Warper>
           </Slice>`;
-    }).join('');
+      })
+      .join("");
   }, [layoutConfig.paineis, exportConfig.layerOffset]);
 
   // Gerar vértices do BezierWarper (sistema de correção geométrica)
   const generateWarperVertices = useCallback((x, y, width, height) => {
     const vertices = [];
-    
+
     // Grid 4x4 de vértices para correção geométrica
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
-        const vertexX = x + (col * width / 3);
-        const vertexY = y + (row * height / 3);
+        const vertexX = x + (col * width) / 3;
+        const vertexY = y + (row * height) / 3;
         vertices.push(`<v x="${vertexX}" y="${vertexY}"/>`);
       }
     }
-    
-    return vertices.join('\n                  ');
+
+    return vertices.join("\n                  ");
   }, []);
 
   // Calcular bounds do layout
@@ -310,9 +334,12 @@ export default function ResolumeExporter({
     }
 
     const baseScale = 0.2;
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
 
-    layoutConfig.paineis.forEach(panel => {
+    layoutConfig.paineis.forEach((panel) => {
       const realX = panel.x / baseScale;
       const realY = panel.y / baseScale;
       const realMaxX = realX + panel.pixelsWidth;
@@ -328,43 +355,65 @@ export default function ResolumeExporter({
       width: Math.ceil(maxX - minX),
       height: Math.ceil(maxY - minY),
       minX: Math.floor(minX),
-      minY: Math.floor(minY)
+      minY: Math.floor(minY),
     };
   }, [layoutConfig.paineis]);
 
   return (
-    <div style={{
-      background: "linear-gradient(145deg, #2d3748, #4a5568)",
-      borderRadius: 12,
-      padding: 16,
-      marginTop: 16,
-      border: "1px solid #4a5568",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    }}>
-      <h4 style={{ color: "#fff", marginBottom: 16, fontSize: "1em", display: "flex", alignItems: "center", gap: "8px" }}>
+    <div
+      style={{
+        background: "linear-gradient(145deg, #2d3748, #4a5568)",
+        borderRadius: 12,
+        padding: 16,
+        marginTop: 16,
+        border: "1px solid #4a5568",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      }}
+    >
+      <h4
+        style={{
+          color: "#fff",
+          marginBottom: 16,
+          fontSize: "1em",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
         🎭 Exportar para Resolume Arena
       </h4>
-      
-      <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "1fr 1fr", 
-        gap: "16px",
-        fontSize: "0.9em",
-        marginBottom: "16px"
-      }}>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "16px",
+          fontSize: "0.9em",
+          marginBottom: "16px",
+        }}
+      >
         {/* Configurações do Projeto */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div>
-            <label style={{ color: "#e2e8f0", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+            <label
+              style={{
+                color: "#e2e8f0",
+                fontSize: "0.85em",
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
               Nome do Projeto:
             </label>
             <input
               type="text"
               value={exportConfig.projectName}
-              onChange={(e) => setExportConfig(prev => ({ 
-                ...prev, 
-                projectName: e.target.value 
-              }))}
+              onChange={(e) =>
+                setExportConfig((prev) => ({
+                  ...prev,
+                  projectName: e.target.value,
+                }))
+              }
               style={{
                 width: "100%",
                 padding: "6px 8px",
@@ -372,22 +421,31 @@ export default function ResolumeExporter({
                 border: "1px solid #4a5568",
                 background: "#2d3748",
                 color: "#e2e8f0",
-                fontSize: "0.85em"
+                fontSize: "0.85em",
               }}
             />
           </div>
 
           <div>
-            <label style={{ color: "#e2e8f0", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+            <label
+              style={{
+                color: "#e2e8f0",
+                fontSize: "0.85em",
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
               Nome da Tela:
             </label>
             <input
               type="text"
               value={exportConfig.screenName}
-              onChange={(e) => setExportConfig(prev => ({ 
-                ...prev, 
-                screenName: e.target.value 
-              }))}
+              onChange={(e) =>
+                setExportConfig((prev) => ({
+                  ...prev,
+                  screenName: e.target.value,
+                }))
+              }
               style={{
                 width: "100%",
                 padding: "6px 8px",
@@ -395,7 +453,7 @@ export default function ResolumeExporter({
                 border: "1px solid #4a5568",
                 background: "#2d3748",
                 color: "#e2e8f0",
-                fontSize: "0.85em"
+                fontSize: "0.85em",
               }}
             />
           </div>
@@ -405,16 +463,25 @@ export default function ResolumeExporter({
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div style={{ display: "flex", gap: "8px" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ color: "#e2e8f0", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  color: "#e2e8f0",
+                  fontSize: "0.85em",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Canvas Width:
               </label>
               <input
                 type="number"
                 value={exportConfig.canvasWidth}
-                onChange={(e) => setExportConfig(prev => ({ 
-                  ...prev, 
-                  canvasWidth: Number(e.target.value) 
-                }))}
+                onChange={(e) =>
+                  setExportConfig((prev) => ({
+                    ...prev,
+                    canvasWidth: Number(e.target.value),
+                  }))
+                }
                 style={{
                   width: "100%",
                   padding: "6px 8px",
@@ -422,21 +489,30 @@ export default function ResolumeExporter({
                   border: "1px solid #4a5568",
                   background: "#2d3748",
                   color: "#e2e8f0",
-                  fontSize: "0.85em"
+                  fontSize: "0.85em",
                 }}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ color: "#e2e8f0", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  color: "#e2e8f0",
+                  fontSize: "0.85em",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Canvas Height:
               </label>
               <input
                 type="number"
                 value={exportConfig.canvasHeight}
-                onChange={(e) => setExportConfig(prev => ({ 
-                  ...prev, 
-                  canvasHeight: Number(e.target.value) 
-                }))}
+                onChange={(e) =>
+                  setExportConfig((prev) => ({
+                    ...prev,
+                    canvasHeight: Number(e.target.value),
+                  }))
+                }
                 style={{
                   width: "100%",
                   padding: "6px 8px",
@@ -444,29 +520,33 @@ export default function ResolumeExporter({
                   border: "1px solid #4a5568",
                   background: "#2d3748",
                   color: "#e2e8f0",
-                  fontSize: "0.85em"
+                  fontSize: "0.85em",
                 }}
               />
             </div>
           </div>
 
-          <label style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "8px", 
-            color: "#e2e8f0",
-            cursor: "pointer"
-          }}>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "#e2e8f0",
+              cursor: "pointer",
+            }}
+          >
             <input
               type="checkbox"
               checked={exportConfig.includeWarping}
-              onChange={(e) => setExportConfig(prev => ({ 
-                ...prev, 
-                includeWarping: e.target.checked 
-              }))}
-              style={{ 
+              onChange={(e) =>
+                setExportConfig((prev) => ({
+                  ...prev,
+                  includeWarping: e.target.checked,
+                }))
+              }
+              style={{
                 accentColor: "#3b82f6",
-                transform: "scale(1.1)"
+                transform: "scale(1.1)",
               }}
             />
             <span>🔧 Incluir sistema de warping</span>
@@ -475,22 +555,27 @@ export default function ResolumeExporter({
       </div>
 
       {/* Informações do Layout */}
-      <div style={{
-        padding: 12,
-        background: "#1a202c",
-        borderRadius: 8,
-        fontSize: "0.8em",
-        color: "#a0aec0",
-        marginBottom: "16px"
-      }}>
+      <div
+        style={{
+          padding: 12,
+          background: "#1a202c",
+          borderRadius: 8,
+          fontSize: "0.8em",
+          color: "#a0aec0",
+          marginBottom: "16px",
+        }}
+      >
         <div style={{ marginBottom: 4 }}>
-          📊 <strong>Layout Atual:</strong> {layoutConfig.paineis.length} painéis
+          📊 <strong>Layout Atual:</strong> {layoutConfig.paineis.length}{" "}
+          painéis
         </div>
         <div>
-          📐 <strong>Bounds Calculados:</strong> {(() => {
+          📐 <strong>Bounds Calculados:</strong>{" "}
+          {(() => {
             const bounds = calculateLayoutBounds();
             return `${bounds.width}×${bounds.height}px`;
-          })()} | Offset: {exportConfig.layerOffset.x}, {exportConfig.layerOffset.y}
+          })()}{" "}
+          | Offset: {exportConfig.layerOffset.x}, {exportConfig.layerOffset.y}
         </div>
       </div>
 
@@ -503,15 +588,16 @@ export default function ResolumeExporter({
           padding: "12px",
           borderRadius: 8,
           border: "none",
-          background: layoutConfig.paineis.length === 0 
-            ? "#374151" 
-            : "linear-gradient(145deg, #7c3aed, #5b21b6)",
+          background:
+            layoutConfig.paineis.length === 0
+              ? "#374151"
+              : "linear-gradient(145deg, #7c3aed, #5b21b6)",
           color: "#fff",
           cursor: layoutConfig.paineis.length === 0 ? "not-allowed" : "pointer",
           fontSize: "1em",
           fontWeight: "600",
           opacity: layoutConfig.paineis.length === 0 ? 0.5 : 1,
-          transition: "all 0.2s ease"
+          transition: "all 0.2s ease",
         }}
         title="Exportar layout como arquivo XML do Resolume Arena"
       >

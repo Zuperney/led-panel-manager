@@ -16,7 +16,7 @@ export default function PanelLayoutEditor({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [dragPanel, setDragPanel] = useState(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  
+
   // Estados para configurações de exportação
   const [exportConfig, setExportConfig] = useState({
     showSubdivisions: true,
@@ -24,7 +24,7 @@ export default function PanelLayoutEditor({
     highQuality: true,
     includeBackground: true,
     exportScale: 2,
-    subdivisionGrid: 16 // Grid NxN de subdivisões
+    subdivisionGrid: 16, // Grid NxN de subdivisões
   });
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -114,46 +114,54 @@ export default function PanelLayoutEditor({
 
     try {
       const boundingBox = calculateBoundingBox();
-      
+
       // Função para criar subdivisões (simplificada para preview)
       const createPanelSubdivisions = (panel, realX, realY) => {
-        if (!exportConfig.showSubdivisions) return '';
-        
+        if (!exportConfig.showSubdivisions) return "";
+
         const subdivisions = [];
         const gridDivisions = exportConfig.subdivisionGrid;
         const subWidth = panel.pixelsWidth / gridDivisions;
         const subHeight = panel.pixelsHeight / gridDivisions;
-        
+
         const fineOpacity = Math.max(0.05, 0.15 - (gridDivisions - 8) * 0.01);
         const fineStrokeWidth = Math.max(0.1, 0.3 - (gridDivisions - 8) * 0.01);
-        
+
         for (let i = 0; i <= gridDivisions; i++) {
-          const x = realX + (i * subWidth);
+          const x = realX + i * subWidth;
           subdivisions.push(`
-            <line x1="${x}" y1="${realY}" x2="${x}" y2="${realY + panel.pixelsHeight}"
+            <line x1="${x}" y1="${realY}" x2="${x}" y2="${
+            realY + panel.pixelsHeight
+          }"
                   stroke="#ffffff" stroke-width="${fineStrokeWidth}" opacity="${fineOpacity}"/>
           `);
         }
         for (let j = 0; j <= gridDivisions; j++) {
-          const y = realY + (j * subHeight);
+          const y = realY + j * subHeight;
           subdivisions.push(`
-            <line x1="${realX}" y1="${y}" x2="${realX + panel.pixelsWidth}" y2="${y}"
+            <line x1="${realX}" y1="${y}" x2="${
+            realX + panel.pixelsWidth
+          }" y2="${y}"
                   stroke="#ffffff" stroke-width="${fineStrokeWidth}" opacity="${fineOpacity}"/>
           `);
         }
-        
+
         subdivisions.push(`
-          <line x1="${realX + panel.pixelsWidth/2}" y1="${realY}" 
-                x2="${realX + panel.pixelsWidth/2}" y2="${realY + panel.pixelsHeight}"
+          <line x1="${realX + panel.pixelsWidth / 2}" y1="${realY}" 
+                x2="${realX + panel.pixelsWidth / 2}" y2="${
+          realY + panel.pixelsHeight
+        }"
                 stroke="#ffffff" stroke-width="1.2" opacity="0.5"/>
-          <line x1="${realX}" y1="${realY + panel.pixelsHeight/2}" 
-                x2="${realX + panel.pixelsWidth}" y2="${realY + panel.pixelsHeight/2}"
+          <line x1="${realX}" y1="${realY + panel.pixelsHeight / 2}" 
+                x2="${realX + panel.pixelsWidth}" y2="${
+          realY + panel.pixelsHeight / 2
+        }"
                 stroke="#ffffff" stroke-width="1.2" opacity="0.5"/>
         `);
-        
-        return subdivisions.join('');
+
+        return subdivisions.join("");
       };
-      
+
       // Reutilizar a mesma lógica da exportação mas sem download
       const svgContent = `
         <svg xmlns="http://www.w3.org/2000/svg" 
@@ -170,24 +178,26 @@ export default function PanelLayoutEditor({
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
               }
               .panel-name { 
-                font-size: ${exportConfig.highQuality ? '32px' : '24px'}; 
+                font-size: ${exportConfig.highQuality ? "32px" : "24px"}; 
                 fill: white; 
                 letter-spacing: 1.2px;
               }
               .panel-resolution { 
-                font-size: ${exportConfig.highQuality ? '20px' : '16px'}; 
+                font-size: ${exportConfig.highQuality ? "20px" : "16px"}; 
                 fill: #e2e8f0; 
                 opacity: 0.95;
               }
               .panel-info { 
-                font-size: ${exportConfig.highQuality ? '16px' : '12px'}; 
+                font-size: ${exportConfig.highQuality ? "16px" : "12px"}; 
                 fill: #cbd5e1; 
                 opacity: 0.85;
               }
             </style>
           </defs>
           
-          ${exportConfig.includeBackground ? `
+          ${
+            exportConfig.includeBackground
+              ? `
           <defs>
             <radialGradient id="bgGradient" cx="50%" cy="50%" r="70%">
               <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
@@ -204,9 +214,11 @@ export default function PanelLayoutEditor({
           <rect width="100%" height="100%" fill="url(#bgGradient)"/>
           <rect width="100%" height="100%" fill="url(#gridPattern)"/>
           <rect width="100%" height="100%" fill="url(#majorGridPattern)"/>
-          ` : `
+          `
+              : `
           <rect width="100%" height="100%" fill="#0f172a"/>
-          `}
+          `
+          }
           
           ${layoutConfig.paineis
             .map((panel, index) => {
@@ -218,33 +230,59 @@ export default function PanelLayoutEditor({
               return `
               <g>
                 <rect x="${realX + 4}" y="${realY + 4}" 
-                      width="${panel.pixelsWidth}" height="${panel.pixelsHeight}"
+                      width="${panel.pixelsWidth}" height="${
+                panel.pixelsHeight
+              }"
                       fill="#00000040" rx="4"/>
                 
                 <rect x="${realX}" y="${realY}" 
-                      width="${panel.pixelsWidth}" height="${panel.pixelsHeight}"
+                      width="${panel.pixelsWidth}" height="${
+                panel.pixelsHeight
+              }"
                       fill="${color}30" stroke="${color}" stroke-width="3" rx="4"/>
                 
                 ${createPanelSubdivisions(panel, realX, realY)}
                 
-                <text x="${realX + panel.pixelsWidth / 2}" y="${realY + panel.pixelsHeight / 2 - 20}"
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                realY + panel.pixelsHeight / 2 - 20
+              }"
                       text-anchor="middle" dominant-baseline="middle"
                       class="panel-text panel-name">${panel.nome}</text>
                       
-                <text x="${realX + panel.pixelsWidth / 2}" y="${realY + panel.pixelsHeight / 2 + 8}"
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                realY + panel.pixelsHeight / 2 + 8
+              }"
                       text-anchor="middle" dominant-baseline="middle"
-                      class="panel-text panel-resolution">${panel.pixelsWidth}×${panel.pixelsHeight} px</text>
+                      class="panel-text panel-resolution">${
+                        panel.pixelsWidth
+                      }×${panel.pixelsHeight} px</text>
                 
-                ${panel.largura && panel.altura && exportConfig.showDimensions ? `
-                <text x="${realX + panel.pixelsWidth / 2}" y="${realY + panel.pixelsHeight / 2 + 28}"
+                ${
+                  panel.largura && panel.altura && exportConfig.showDimensions
+                    ? `
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                        realY + panel.pixelsHeight / 2 + 28
+                      }"
                       text-anchor="middle" dominant-baseline="middle"
-                      class="panel-text panel-info">${(panel.largura).toFixed(2)}×${(panel.altura).toFixed(2)} m</text>
-                ` : ''}
+                      class="panel-text panel-info">${panel.largura.toFixed(
+                        2
+                      )}×${panel.altura.toFixed(2)} m</text>
+                `
+                    : ""
+                }
                 
-                <circle cx="${realX + 8}" cy="${realY + 8}" r="3" fill="${color}" opacity="0.6"/>
-                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${realY + 8}" r="3" fill="${color}" opacity="0.6"/>
-                <circle cx="${realX + 8}" cy="${realY + panel.pixelsHeight - 8}" r="3" fill="${color}" opacity="0.6"/>
-                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${realY + panel.pixelsHeight - 8}" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + 8}" cy="${
+                realY + 8
+              }" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${
+                realY + 8
+              }" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + 8}" cy="${
+                realY + panel.pixelsHeight - 8
+              }" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${
+                realY + panel.pixelsHeight - 8
+              }" r="3" fill="${color}" opacity="0.6"/>
               </g>
             `;
             })
@@ -255,7 +293,6 @@ export default function PanelLayoutEditor({
       const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
       const url = URL.createObjectURL(svgBlob);
       setPreviewImage(url);
-      
     } catch (error) {
       console.error("Erro ao gerar preview:", error);
       setPreviewImage(null);
@@ -276,74 +313,91 @@ export default function PanelLayoutEditor({
 
       // Função para criar subdivisões avançadas de um painel (como no Pixel Grid)
       const createPanelSubdivisions = (panel, realX, realY) => {
-        if (!exportConfig.showSubdivisions) return '';
-        
+        if (!exportConfig.showSubdivisions) return "";
+
         const subdivisions = [];
         const gridDivisions = exportConfig.subdivisionGrid; // Configurável
         const subWidth = panel.pixelsWidth / gridDivisions;
         const subHeight = panel.pixelsHeight / gridDivisions;
-        
+
         // Grid fino de subdivisões (mais transparente)
         const fineOpacity = Math.max(0.05, 0.15 - (gridDivisions - 8) * 0.01); // Menos opaco para grids maiores
         const fineStrokeWidth = Math.max(0.1, 0.3 - (gridDivisions - 8) * 0.01);
-        
+
         for (let i = 0; i <= gridDivisions; i++) {
-          const x = realX + (i * subWidth);
+          const x = realX + i * subWidth;
           subdivisions.push(`
-            <line x1="${x}" y1="${realY}" x2="${x}" y2="${realY + panel.pixelsHeight}"
+            <line x1="${x}" y1="${realY}" x2="${x}" y2="${
+            realY + panel.pixelsHeight
+          }"
                   stroke="#ffffff" stroke-width="${fineStrokeWidth}" opacity="${fineOpacity}"/>
           `);
         }
         for (let j = 0; j <= gridDivisions; j++) {
-          const y = realY + (j * subHeight);
+          const y = realY + j * subHeight;
           subdivisions.push(`
-            <line x1="${realX}" y1="${y}" x2="${realX + panel.pixelsWidth}" y2="${y}"
+            <line x1="${realX}" y1="${y}" x2="${
+            realX + panel.pixelsWidth
+          }" y2="${y}"
                   stroke="#ffffff" stroke-width="${fineStrokeWidth}" opacity="${fineOpacity}"/>
           `);
         }
-        
+
         // Divisões de 4x4 ou da metade do grid (mais visíveis)
         const midDivisions = Math.max(4, Math.floor(gridDivisions / 4));
         for (let i = 0; i <= midDivisions; i++) {
-          const x = realX + (i * panel.pixelsWidth / midDivisions);
+          const x = realX + (i * panel.pixelsWidth) / midDivisions;
           subdivisions.push(`
-            <line x1="${x}" y1="${realY}" x2="${x}" y2="${realY + panel.pixelsHeight}"
+            <line x1="${x}" y1="${realY}" x2="${x}" y2="${
+            realY + panel.pixelsHeight
+          }"
                   stroke="#ffffff" stroke-width="0.6" opacity="0.25"/>
           `);
         }
         for (let j = 0; j <= midDivisions; j++) {
-          const y = realY + (j * panel.pixelsHeight / midDivisions);
+          const y = realY + (j * panel.pixelsHeight) / midDivisions;
           subdivisions.push(`
-            <line x1="${realX}" y1="${y}" x2="${realX + panel.pixelsWidth}" y2="${y}"
+            <line x1="${realX}" y1="${y}" x2="${
+            realX + panel.pixelsWidth
+          }" y2="${y}"
                   stroke="#ffffff" stroke-width="0.6" opacity="0.25"/>
           `);
         }
-        
+
         // Divisões principais (quadrantes - mais destacadas)
         subdivisions.push(`
-          <line x1="${realX + panel.pixelsWidth/2}" y1="${realY}" 
-                x2="${realX + panel.pixelsWidth/2}" y2="${realY + panel.pixelsHeight}"
+          <line x1="${realX + panel.pixelsWidth / 2}" y1="${realY}" 
+                x2="${realX + panel.pixelsWidth / 2}" y2="${
+          realY + panel.pixelsHeight
+        }"
                 stroke="#ffffff50" stroke-width="1.2"/>
-          <line x1="${realX}" y1="${realY + panel.pixelsHeight/2}" 
-                x2="${realX + panel.pixelsWidth}" y2="${realY + panel.pixelsHeight/2}"
+          <line x1="${realX}" y1="${realY + panel.pixelsHeight / 2}" 
+                x2="${realX + panel.pixelsWidth}" y2="${
+          realY + panel.pixelsHeight / 2
+        }"
                 stroke="#ffffff50" stroke-width="1.2"/>
         `);
-        
+
         // Pontos de referência nos cantos dos quadrantes (adapta ao grid)
-        const refPoints = Math.min(6, Math.max(3, Math.floor(gridDivisions / 4))); // Entre 3 e 6 pontos
+        const refPoints = Math.min(
+          6,
+          Math.max(3, Math.floor(gridDivisions / 4))
+        ); // Entre 3 e 6 pontos
         const stepWidth = panel.pixelsWidth / refPoints;
         const stepHeight = panel.pixelsHeight / refPoints;
-        
+
         for (let i = 1; i < refPoints; i++) {
           for (let j = 1; j < refPoints; j++) {
             subdivisions.push(`
-              <circle cx="${realX + i * stepWidth}" cy="${realY + j * stepHeight}" 
+              <circle cx="${realX + i * stepWidth}" cy="${
+              realY + j * stepHeight
+            }" 
                       r="1.2" fill="#ffffff" opacity="0.4"/>
             `);
           }
         }
-        
-        return subdivisions.join('');
+
+        return subdivisions.join("");
       };
 
       // Criar um SVG temporário com apenas os painéis no bounding box
@@ -362,24 +416,26 @@ export default function PanelLayoutEditor({
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
               }
               .panel-name { 
-                font-size: ${exportConfig.highQuality ? '32px' : '24px'}; 
+                font-size: ${exportConfig.highQuality ? "32px" : "24px"}; 
                 fill: white; 
                 letter-spacing: 1.2px;
               }
               .panel-resolution { 
-                font-size: ${exportConfig.highQuality ? '20px' : '16px'}; 
+                font-size: ${exportConfig.highQuality ? "20px" : "16px"}; 
                 fill: #e2e8f0; 
                 opacity: 0.95;
               }
               .panel-info { 
-                font-size: ${exportConfig.highQuality ? '16px' : '12px'}; 
+                font-size: ${exportConfig.highQuality ? "16px" : "12px"}; 
                 fill: #cbd5e1; 
                 opacity: 0.85;
               }
             </style>
           </defs>
           
-          ${exportConfig.includeBackground ? `
+          ${
+            exportConfig.includeBackground
+              ? `
           <!-- Fundo com gradiente aprimorado -->
           <defs>
             <radialGradient id="bgGradient" cx="50%" cy="50%" r="70%">
@@ -397,9 +453,11 @@ export default function PanelLayoutEditor({
           <rect width="100%" height="100%" fill="url(#bgGradient)"/>
           <rect width="100%" height="100%" fill="url(#gridPattern)"/>
           <rect width="100%" height="100%" fill="url(#majorGridPattern)"/>
-          ` : `
+          `
+              : `
           <rect width="100%" height="100%" fill="#0f172a"/>
-          `}
+          `
+          }
           
           ${layoutConfig.paineis
             .map((panel, index) => {
@@ -413,38 +471,64 @@ export default function PanelLayoutEditor({
               <g>
                 <!-- Sombra do painel -->
                 <rect x="${realX + 4}" y="${realY + 4}" 
-                      width="${panel.pixelsWidth}" height="${panel.pixelsHeight}"
+                      width="${panel.pixelsWidth}" height="${
+                panel.pixelsHeight
+              }"
                       fill="#00000040" rx="4"/>
                 
                 <!-- Painel principal -->
                 <rect x="${realX}" y="${realY}" 
-                      width="${panel.pixelsWidth}" height="${panel.pixelsHeight}"
+                      width="${panel.pixelsWidth}" height="${
+                panel.pixelsHeight
+              }"
                       fill="${color}30" stroke="${color}" stroke-width="3" rx="4"/>
                 
                 <!-- Subdivisões tipo Pixel Grid -->
                 ${createPanelSubdivisions(panel, realX, realY)}
                 
                 <!-- Informações do painel com melhor layout -->
-                <text x="${realX + panel.pixelsWidth / 2}" y="${realY + panel.pixelsHeight / 2 - 20}"
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                realY + panel.pixelsHeight / 2 - 20
+              }"
                       text-anchor="middle" dominant-baseline="middle"
                       class="panel-text panel-name">${panel.nome}</text>
                       
-                <text x="${realX + panel.pixelsWidth / 2}" y="${realY + panel.pixelsHeight / 2 + 8}"
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                realY + panel.pixelsHeight / 2 + 8
+              }"
                       text-anchor="middle" dominant-baseline="middle"
-                      class="panel-text panel-resolution">${panel.pixelsWidth}×${panel.pixelsHeight} px</text>
+                      class="panel-text panel-resolution">${
+                        panel.pixelsWidth
+                      }×${panel.pixelsHeight} px</text>
                 
                 <!-- Informações adicionais -->
-                ${panel.largura && panel.altura && exportConfig.showDimensions ? `
-                <text x="${realX + panel.pixelsWidth / 2}" y="${realY + panel.pixelsHeight / 2 + 28}"
+                ${
+                  panel.largura && panel.altura && exportConfig.showDimensions
+                    ? `
+                <text x="${realX + panel.pixelsWidth / 2}" y="${
+                        realY + panel.pixelsHeight / 2 + 28
+                      }"
                       text-anchor="middle" dominant-baseline="middle"
-                      class="panel-text panel-info">${(panel.largura).toFixed(2)}×${(panel.altura).toFixed(2)} m</text>
-                ` : ''}
+                      class="panel-text panel-info">${panel.largura.toFixed(
+                        2
+                      )}×${panel.altura.toFixed(2)} m</text>
+                `
+                    : ""
+                }
                 
                 <!-- Cantos arredondados decorativos -->
-                <circle cx="${realX + 8}" cy="${realY + 8}" r="3" fill="${color}" opacity="0.6"/>
-                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${realY + 8}" r="3" fill="${color}" opacity="0.6"/>
-                <circle cx="${realX + 8}" cy="${realY + panel.pixelsHeight - 8}" r="3" fill="${color}" opacity="0.6"/>
-                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${realY + panel.pixelsHeight - 8}" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + 8}" cy="${
+                realY + 8
+              }" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${
+                realY + 8
+              }" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + 8}" cy="${
+                realY + panel.pixelsHeight - 8
+              }" r="3" fill="${color}" opacity="0.6"/>
+                <circle cx="${realX + panel.pixelsWidth - 8}" cy="${
+                realY + panel.pixelsHeight - 8
+              }" r="3" fill="${color}" opacity="0.6"/>
               </g>
             `;
             })
@@ -456,12 +540,12 @@ export default function PanelLayoutEditor({
       const scale = exportConfig.exportScale; // Usar escala configurável
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      
+
       // Configurar canvas para alta qualidade
       canvas.width = boundingBox.width * scale;
       canvas.height = boundingBox.height * scale;
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
+      ctx.imageSmoothingQuality = "high";
 
       const img = new Image();
       const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
@@ -473,21 +557,28 @@ export default function PanelLayoutEditor({
         ctx.drawImage(img, 0, 0);
 
         // Fazer download da imagem em alta qualidade
-        canvas.toBlob((blob) => {
-          const downloadUrl = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = downloadUrl;
-          const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-          a.download = `layout_paineis_${boundingBox.width}x${boundingBox.height}_${timestamp}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(downloadUrl);
+        canvas.toBlob(
+          (blob) => {
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            const timestamp = new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace(/:/g, "-");
+            a.download = `layout_paineis_${boundingBox.width}x${boundingBox.height}_${timestamp}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
 
-          if (onFeedback) {
-            onFeedback("🎨 Layout exportado como PNG em alta qualidade!");
-          }
-        }, 'image/png', 1.0); // Máxima qualidade PNG
+            if (onFeedback) {
+              onFeedback("🎨 Layout exportado como PNG em alta qualidade!");
+            }
+          },
+          "image/png",
+          1.0
+        ); // Máxima qualidade PNG
 
         URL.revokeObjectURL(url);
       };
@@ -1078,7 +1169,9 @@ export default function PanelLayoutEditor({
                     layoutConfig.paineis.length === 0 ? "#374151" : "#3b82f6",
                   color: "#fff",
                   cursor:
-                    layoutConfig.paineis.length === 0 ? "not-allowed" : "pointer",
+                    layoutConfig.paineis.length === 0
+                      ? "not-allowed"
+                      : "pointer",
                   fontSize: "0.9em",
                   fontWeight: "500",
                   opacity: layoutConfig.paineis.length === 0 ? 0.5 : 1,
@@ -1099,7 +1192,9 @@ export default function PanelLayoutEditor({
                     layoutConfig.paineis.length === 0 ? "#374151" : "#6b7280",
                   color: "#fff",
                   cursor:
-                    layoutConfig.paineis.length === 0 ? "not-allowed" : "pointer",
+                    layoutConfig.paineis.length === 0
+                      ? "not-allowed"
+                      : "pointer",
                   fontSize: "0.8em",
                   fontWeight: "500",
                   opacity: layoutConfig.paineis.length === 0 ? 0.5 : 1,
@@ -1127,53 +1222,69 @@ export default function PanelLayoutEditor({
             <h4 style={{ color: "#fff", marginBottom: 16, fontSize: "1em" }}>
               🎨 Opções de Exportação PNG
             </h4>
-            
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "1fr 1fr", 
-              gap: "16px",
-              fontSize: "0.9em"
-            }}>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "16px",
+                fontSize: "0.9em",
+              }}
+            >
               {/* Coluna 1 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <label style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px", 
-                  color: "#e2e8f0",
-                  cursor: "pointer"
-                }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#e2e8f0",
+                    cursor: "pointer",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={exportConfig.showSubdivisions}
-                    onChange={(e) => setExportConfig(prev => ({ 
-                      ...prev, 
-                      showSubdivisions: e.target.checked 
-                    }))}
-                    style={{ 
+                    onChange={(e) =>
+                      setExportConfig((prev) => ({
+                        ...prev,
+                        showSubdivisions: e.target.checked,
+                      }))
+                    }
+                    style={{
                       accentColor: "#3b82f6",
-                      transform: "scale(1.1)"
+                      transform: "scale(1.1)",
                     }}
                   />
                   <span>🔲 Mostrar subdivisões</span>
                 </label>
 
                 {exportConfig.showSubdivisions && (
-                  <div style={{ 
-                    marginLeft: "24px", 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    gap: "6px" 
-                  }}>
+                  <div
+                    style={{
+                      marginLeft: "24px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "6px",
+                    }}
+                  >
                     <label style={{ color: "#cbd5e1", fontSize: "0.85em" }}>
                       Grid de subdivisões:
                     </label>
                     <select
                       value={exportConfig.subdivisionGrid}
-                      onChange={(e) => setExportConfig(prev => ({ 
-                        ...prev, 
-                        subdivisionGrid: Number(e.target.value) 
-                      }))}
+                      onChange={(e) =>
+                        setExportConfig((prev) => ({
+                          ...prev,
+                          subdivisionGrid: Number(e.target.value),
+                        }))
+                      }
                       style={{
                         padding: "3px 6px",
                         borderRadius: 4,
@@ -1181,7 +1292,7 @@ export default function PanelLayoutEditor({
                         background: "#2d3748",
                         color: "#e2e8f0",
                         fontSize: "0.8em",
-                        width: "120px"
+                        width: "120px",
                       }}
                     >
                       <option value={8}>8×8</option>
@@ -1194,45 +1305,53 @@ export default function PanelLayoutEditor({
                   </div>
                 )}
 
-                <label style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px", 
-                  color: "#e2e8f0",
-                  cursor: "pointer"
-                }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#e2e8f0",
+                    cursor: "pointer",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={exportConfig.showDimensions}
-                    onChange={(e) => setExportConfig(prev => ({ 
-                      ...prev, 
-                      showDimensions: e.target.checked 
-                    }))}
-                    style={{ 
+                    onChange={(e) =>
+                      setExportConfig((prev) => ({
+                        ...prev,
+                        showDimensions: e.target.checked,
+                      }))
+                    }
+                    style={{
                       accentColor: "#3b82f6",
-                      transform: "scale(1.1)"
+                      transform: "scale(1.1)",
                     }}
                   />
                   <span>📏 Mostrar dimensões físicas</span>
                 </label>
 
-                <label style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px", 
-                  color: "#e2e8f0",
-                  cursor: "pointer"
-                }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#e2e8f0",
+                    cursor: "pointer",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={exportConfig.includeBackground}
-                    onChange={(e) => setExportConfig(prev => ({ 
-                      ...prev, 
-                      includeBackground: e.target.checked 
-                    }))}
-                    style={{ 
+                    onChange={(e) =>
+                      setExportConfig((prev) => ({
+                        ...prev,
+                        includeBackground: e.target.checked,
+                      }))
+                    }
+                    style={{
                       accentColor: "#3b82f6",
-                      transform: "scale(1.1)"
+                      transform: "scale(1.1)",
                     }}
                   />
                   <span>🌈 Incluir fundo gradiente + grid</span>
@@ -1240,46 +1359,64 @@ export default function PanelLayoutEditor({
               </div>
 
               {/* Coluna 2 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <label style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px", 
-                  color: "#e2e8f0",
-                  cursor: "pointer"
-                }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#e2e8f0",
+                    cursor: "pointer",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={exportConfig.highQuality}
-                    onChange={(e) => setExportConfig(prev => ({ 
-                      ...prev, 
-                      highQuality: e.target.checked 
-                    }))}
-                    style={{ 
+                    onChange={(e) =>
+                      setExportConfig((prev) => ({
+                        ...prev,
+                        highQuality: e.target.checked,
+                      }))
+                    }
+                    style={{
                       accentColor: "#3b82f6",
-                      transform: "scale(1.1)"
+                      transform: "scale(1.1)",
                     }}
                   />
                   <span>✨ Fonte e qualidade alta</span>
                 </label>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px",
+                  }}
+                >
                   <label style={{ color: "#e2e8f0", fontSize: "0.85em" }}>
                     📐 Escala de exportação:
                   </label>
                   <select
                     value={exportConfig.exportScale}
-                    onChange={(e) => setExportConfig(prev => ({ 
-                      ...prev, 
-                      exportScale: Number(e.target.value) 
-                    }))}
+                    onChange={(e) =>
+                      setExportConfig((prev) => ({
+                        ...prev,
+                        exportScale: Number(e.target.value),
+                      }))
+                    }
                     style={{
                       padding: "4px 8px",
                       borderRadius: 4,
                       border: "1px solid #4a5568",
                       background: "#2d3748",
                       color: "#e2e8f0",
-                      fontSize: "0.85em"
+                      fontSize: "0.85em",
                     }}
                   >
                     <option value={1}>1x (Normal)</option>
@@ -1293,34 +1430,44 @@ export default function PanelLayoutEditor({
             </div>
 
             {/* Preview das configurações */}
-            <div style={{
-              marginTop: 16,
-              padding: 12,
-              background: "#1a202c",
-              borderRadius: 8,
-              fontSize: "0.8em",
-              color: "#a0aec0"
-            }}>
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center",
-                marginBottom: 8
-              }}>
+            <div
+              style={{
+                marginTop: 16,
+                padding: 12,
+                background: "#1a202c",
+                borderRadius: 8,
+                fontSize: "0.8em",
+                color: "#a0aec0",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 8,
+                }}
+              >
                 <div>
                   <div style={{ marginBottom: 4 }}>
-                    📋 <strong>Preview:</strong> Exportação {exportConfig.highQuality ? 'alta qualidade' : 'padrão'} 
+                    📋 <strong>Preview:</strong> Exportação{" "}
+                    {exportConfig.highQuality ? "alta qualidade" : "padrão"}
                     em escala {exportConfig.exportScale}x
-                    {exportConfig.includeBackground ? ' com fundo estilizado' : ' com fundo simples'}
+                    {exportConfig.includeBackground
+                      ? " com fundo estilizado"
+                      : " com fundo simples"}
                   </div>
                   <div>
-                    {exportConfig.showSubdivisions 
-                      ? `✅ Subdivisões ${exportConfig.subdivisionGrid}×${exportConfig.subdivisionGrid} ativas` 
-                      : '❌ Subdivisões desabilitadas'} | 
-                    {exportConfig.showDimensions ? ' ✅ Dimensões exibidas' : ' ❌ Dimensões ocultas'}
+                    {exportConfig.showSubdivisions
+                      ? `✅ Subdivisões ${exportConfig.subdivisionGrid}×${exportConfig.subdivisionGrid} ativas`
+                      : "❌ Subdivisões desabilitadas"}{" "}
+                    |
+                    {exportConfig.showDimensions
+                      ? " ✅ Dimensões exibidas"
+                      : " ❌ Dimensões ocultas"}
                   </div>
                 </div>
-                
+
                 <button
                   onClick={generatePreview}
                   disabled={layoutConfig.paineis.length === 0}
@@ -1328,9 +1475,13 @@ export default function PanelLayoutEditor({
                     padding: "6px 12px",
                     borderRadius: 6,
                     border: "none",
-                    background: layoutConfig.paineis.length === 0 ? "#374151" : "#059669",
+                    background:
+                      layoutConfig.paineis.length === 0 ? "#374151" : "#059669",
                     color: "#fff",
-                    cursor: layoutConfig.paineis.length === 0 ? "not-allowed" : "pointer",
+                    cursor:
+                      layoutConfig.paineis.length === 0
+                        ? "not-allowed"
+                        : "pointer",
                     fontSize: "0.8em",
                     fontWeight: "500",
                     opacity: layoutConfig.paineis.length === 0 ? 0.5 : 1,
@@ -1340,31 +1491,35 @@ export default function PanelLayoutEditor({
                   👁️ Preview
                 </button>
               </div>
-              
+
               {/* Preview da imagem */}
               {previewImage && (
-                <div style={{
-                  marginTop: 12,
-                  padding: 8,
-                  background: "#0f172a",
-                  borderRadius: 6,
-                  textAlign: "center"
-                }}>
-                  <img 
-                    src={previewImage} 
+                <div
+                  style={{
+                    marginTop: 12,
+                    padding: 8,
+                    background: "#0f172a",
+                    borderRadius: 6,
+                    textAlign: "center",
+                  }}
+                >
+                  <img
+                    src={previewImage}
                     alt="Preview da exportação"
                     style={{
                       maxWidth: "100%",
                       maxHeight: "200px",
                       borderRadius: 4,
-                      border: "1px solid #374151"
+                      border: "1px solid #374151",
                     }}
                   />
-                  <div style={{ 
-                    fontSize: "0.75em", 
-                    color: "#6b7280", 
-                    marginTop: 4 
-                  }}>
+                  <div
+                    style={{
+                      fontSize: "0.75em",
+                      color: "#6b7280",
+                      marginTop: 4,
+                    }}
+                  >
                     Preview da exportação PNG
                   </div>
                 </div>
@@ -1374,21 +1529,21 @@ export default function PanelLayoutEditor({
         )}
 
         {/* Exportador Resolume */}
-        <ResolumeExporter 
+        <ResolumeExporter
           layoutConfig={layoutConfig}
           onFeedback={onFeedback}
           availablePanels={availablePanels}
         />
 
         {/* Importador Resolume */}
-        <ResolumeImporter 
+        <ResolumeImporter
           onLayoutImport={onLayoutUpdate}
           onFeedback={onFeedback}
           availablePanels={availablePanels}
         />
 
         {/* Assistente de Coordenadas Resolume */}
-        <ResolumeCoordinateHelper 
+        <ResolumeCoordinateHelper
           layoutConfig={layoutConfig}
           onCoordinateUpdate={onLayoutUpdate}
           onFeedback={onFeedback}

@@ -2,7 +2,7 @@
 export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
   // gabinete: objeto do banco de gabinetes
   // qtdLargura, qtdAltura: quantidade de gabinetes em cada direção
-  
+
   // Validação e conversão segura de valores
   const larguraGab = Number(gabinete.largura) || 0;
   const alturaGab = Number(gabinete.altura) || 0;
@@ -10,7 +10,7 @@ export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
   const pixelsAlturaGab = Number(gabinete.pixels_altura) || 0;
   const pesoGab = Number(gabinete.peso) || 0;
   const potenciaGab = Number(gabinete.potencia) || 0;
-  
+
   const largura = (larguraGab * qtdLargura) / 1000; // metros
   const altura = (alturaGab * qtdAltura) / 1000; // metros
   const area = largura * altura;
@@ -26,7 +26,7 @@ export function calcularPainelPorMetro(gabinete, larguraM, alturaM) {
   // larguraM, alturaM: dimensões desejadas em metros
   const larguraGab = Number(gabinete.largura) || 1;
   const alturaGab = Number(gabinete.altura) || 1;
-  
+
   const qtdLargura = Math.round((larguraM * 1000) / larguraGab);
   const qtdAltura = Math.round((alturaM * 1000) / alturaGab);
   return calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura);

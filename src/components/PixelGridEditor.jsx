@@ -15,28 +15,30 @@ export default function PixelGridEditor({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [dragZone, setDragZone] = useState(null);
   const [resizeHandle, setResizeHandle] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { pixelsLargura: width, pixelsAltura: height } = painelConfig;
   const viewBoxWidth = 800;
   const viewBoxHeight = (height / width) * viewBoxWidth;
   const pixelSize = viewBoxWidth / width;
 
-  // Cores para zonas e universos
+  // Cores modernas com glassmorphism
   const zoneColors = [
-    "#ef4444",
-    "#f59e0b",
-    "#10b981",
-    "#3b82f6",
-    "#8b5cf6",
-    "#ec4899",
+    "#3B82F6", // Blue
+    "#F59E0B", // Orange  
+    "#22C55E", // Green
+    "#A855F7", // Purple
+    "#EF4444", // Red
+    "#EC4899", // Pink
   ];
+  
   const universeColors = [
-    "#ef444440",
-    "#f59e0b40",
-    "#10b98140",
-    "#3b82f640",
-    "#8b5cf640",
-    "#ec489940",
+    "rgba(59, 130, 246, 0.15)",  // Blue/15
+    "rgba(245, 158, 11, 0.15)",  // Orange/15
+    "rgba(34, 197, 94, 0.15)",   // Green/15
+    "rgba(168, 85, 247, 0.15)",  // Purple/15
+    "rgba(239, 68, 68, 0.15)",   // Red/15
+    "rgba(236, 72, 153, 0.15)",  // Pink/15
   ];
 
   // Converter coordenadas do SVG para coordenadas de pixel
@@ -356,7 +358,76 @@ export default function PixelGridEditor({
   };
 
   return (
-    <div style={{ position: "relative", userSelect: "none" }}>
+    <div style={{ 
+      position: "relative", 
+      userSelect: "none",
+      background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)",
+      backdropFilter: "blur(16px)",
+      borderRadius: "16px",
+      border: "1px solid rgba(255, 255, 255, 0.1)",
+      padding: "20px",
+      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)"
+    }}>
+      {/* Header com modo atual */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: "16px"
+      }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px"
+        }}>
+          <div style={{
+            padding: "8px 16px",
+            background: "rgba(59, 130, 246, 0.15)",
+            border: "1px solid rgba(59, 130, 246, 0.3)",
+            borderRadius: "8px",
+            color: "#3B82F6",
+            fontSize: "0.875rem",
+            fontWeight: "600",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}>
+            {previewMode === "zones" && "🎯 Modo Zonas"}
+            {previewMode === "universes" && "🌐 Modo Universos"}
+            {previewMode === "grid" && "⬜ Modo Grid"}
+          </div>
+          
+          <div style={{
+            color: "rgba(255, 255, 255, 0.7)",
+            fontSize: "0.875rem"
+          }}>
+            {width}×{height} pixels
+          </div>
+        </div>
+
+        {/* Status indicator */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "6px 12px",
+          background: "rgba(34, 197, 94, 0.15)",
+          border: "1px solid rgba(34, 197, 94, 0.3)", 
+          borderRadius: "6px",
+          color: "#22C55E",
+          fontSize: "0.75rem",
+          fontWeight: "500"
+        }}>
+          <div style={{
+            width: "6px",
+            height: "6px",
+            borderRadius: "50%",
+            background: "#22C55E"
+          }}></div>
+          Pronto
+        </div>
+      </div>
+
       <svg
         ref={svgRef}
         viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
@@ -364,17 +435,19 @@ export default function PixelGridEditor({
           width: "100%",
           height: "auto",
           maxWidth: "800px",
-          border: "2px solid #3a4161",
-          borderRadius: "8px",
-          background: "#1a1d29",
+          border: "2px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "12px",
+          background: "linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)",
+          backdropFilter: "blur(8px)",
           cursor: previewMode === "zones" ? "crosshair" : "default",
+          transition: "all 0.3s ease"
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onDoubleClick={handleDoubleClick}
       >
-        {/* Grid de fundo */}
+        {/* Grid de fundo melhorado */}
         <defs>
           <pattern
             id="grid"
@@ -386,11 +459,25 @@ export default function PixelGridEditor({
               width={pixelSize}
               height={pixelSize}
               fill="none"
-              stroke="#2a2d3a"
+              stroke="rgba(255, 255, 255, 0.1)"
               strokeWidth="0.5"
             />
           </pattern>
+          
+          {/* Gradiente para zonas */}
+          <linearGradient id="zoneGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style={{stopColor: "rgba(255, 255, 255, 0.2)", stopOpacity: 1}} />
+            <stop offset="100%" style={{stopColor: "rgba(255, 255, 255, 0.05)", stopOpacity: 1}} />
+          </linearGradient>
+          
+          {/* Filtro de brilho para hover */}
+          <filter id="brightness">
+            <feComponentTransfer>
+              <feFuncA type="discrete" tableValues="1.2"/>
+            </feComponentTransfer>
+          </filter>
         </defs>
+        
         <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#grid)" />
 
         {/* Renderizar universos como background */}

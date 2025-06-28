@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
 
-export default function ResolumeCoordinateHelper({ 
-  layoutConfig, 
+export default function ResolumeCoordinateHelper({
+  layoutConfig,
   onCoordinateUpdate,
-  onFeedback 
+  onFeedback,
 }) {
   const [helperConfig, setHelperConfig] = useState({
     resolumeCanvasWidth: 4320,
@@ -12,61 +12,73 @@ export default function ResolumeCoordinateHelper({
     offsetY: 0,
     scaleFactor: 1.0,
     flipX: false,
-    flipY: false
+    flipY: false,
   });
 
   // Converter coordenadas do nosso sistema para Resolume
-  const convertToResolume = useCallback((panel) => {
-    const baseScale = 0.2; // Escala do nosso sistema visual
-    
-    // Posição real em pixels
-    let realX = panel.x / baseScale;
-    let realY = panel.y / baseScale;
-    
-    // Aplicar transformações
-    if (helperConfig.flipX) {
-      realX = helperConfig.resolumeCanvasWidth - realX - panel.pixelsWidth;
-    }
-    if (helperConfig.flipY) {
-      realY = helperConfig.resolumeCanvasHeight - realY - panel.pixelsHeight;
-    }
-    
-    // Aplicar offset e escala
-    realX = (realX * helperConfig.scaleFactor) + helperConfig.offsetX;
-    realY = (realY * helperConfig.scaleFactor) + helperConfig.offsetY;
-    
-    return {
-      x: Math.round(realX),
-      y: Math.round(realY),
-      width: Math.round(panel.pixelsWidth * helperConfig.scaleFactor),
-      height: Math.round(panel.pixelsHeight * helperConfig.scaleFactor)
-    };
-  }, [helperConfig]);
+  const convertToResolume = useCallback(
+    (panel) => {
+      const baseScale = 0.2; // Escala do nosso sistema visual
+
+      // Posição real em pixels
+      let realX = panel.x / baseScale;
+      let realY = panel.y / baseScale;
+
+      // Aplicar transformações
+      if (helperConfig.flipX) {
+        realX = helperConfig.resolumeCanvasWidth - realX - panel.pixelsWidth;
+      }
+      if (helperConfig.flipY) {
+        realY = helperConfig.resolumeCanvasHeight - realY - panel.pixelsHeight;
+      }
+
+      // Aplicar offset e escala
+      realX = realX * helperConfig.scaleFactor + helperConfig.offsetX;
+      realY = realY * helperConfig.scaleFactor + helperConfig.offsetY;
+
+      return {
+        x: Math.round(realX),
+        y: Math.round(realY),
+        width: Math.round(panel.pixelsWidth * helperConfig.scaleFactor),
+        height: Math.round(panel.pixelsHeight * helperConfig.scaleFactor),
+      };
+    },
+    [helperConfig]
+  );
 
   // Converter coordenadas do Resolume para nosso sistema
-  const convertFromResolume = useCallback((resolumeX, resolumeY, width, height) => {
-    const baseScale = 0.2;
-    
-    // Remover offset e escala
-    let realX = (resolumeX - helperConfig.offsetX) / helperConfig.scaleFactor;
-    let realY = (resolumeY - helperConfig.offsetY) / helperConfig.scaleFactor;
-    
-    // Reverter flip
-    if (helperConfig.flipX) {
-      realX = helperConfig.resolumeCanvasWidth - realX - (width / helperConfig.scaleFactor);
-    }
-    if (helperConfig.flipY) {
-      realY = helperConfig.resolumeCanvasHeight - realY - (height / helperConfig.scaleFactor);
-    }
-    
-    // Converter para coordenadas visuais
-    return {
-      x: realX * baseScale,
-      y: realY * baseScale,
-      visualWidth: (width / helperConfig.scaleFactor) * baseScale,
-      visualHeight: (height / helperConfig.scaleFactor) * baseScale
-    };
-  }, [helperConfig]);
+  const convertFromResolume = useCallback(
+    (resolumeX, resolumeY, width, height) => {
+      const baseScale = 0.2;
+
+      // Remover offset e escala
+      let realX = (resolumeX - helperConfig.offsetX) / helperConfig.scaleFactor;
+      let realY = (resolumeY - helperConfig.offsetY) / helperConfig.scaleFactor;
+
+      // Reverter flip
+      if (helperConfig.flipX) {
+        realX =
+          helperConfig.resolumeCanvasWidth -
+          realX -
+          width / helperConfig.scaleFactor;
+      }
+      if (helperConfig.flipY) {
+        realY =
+          helperConfig.resolumeCanvasHeight -
+          realY -
+          height / helperConfig.scaleFactor;
+      }
+
+      // Converter para coordenadas visuais
+      return {
+        x: realX * baseScale,
+        y: realY * baseScale,
+        visualWidth: (width / helperConfig.scaleFactor) * baseScale,
+        visualHeight: (height / helperConfig.scaleFactor) * baseScale,
+      };
+    },
+    [helperConfig]
+  );
 
   // Aplicar configurações de coordenadas
   const applyCoordinateTransform = useCallback(() => {
@@ -77,15 +89,15 @@ export default function ResolumeCoordinateHelper({
       return;
     }
 
-    const transformedPanels = layoutConfig.paineis.map(panel => {
+    const transformedPanels = layoutConfig.paineis.map((panel) => {
       const resolumeCoords = convertToResolume(panel);
       const backConverted = convertFromResolume(
-        resolumeCoords.x, 
-        resolumeCoords.y, 
-        resolumeCoords.width, 
+        resolumeCoords.x,
+        resolumeCoords.y,
+        resolumeCoords.width,
         resolumeCoords.height
       );
-      
+
       return {
         ...panel,
         x: backConverted.x,
@@ -94,14 +106,14 @@ export default function ResolumeCoordinateHelper({
         height: backConverted.visualHeight,
         resolume: {
           ...panel.resolume,
-          transformedCoords: resolumeCoords
-        }
+          transformedCoords: resolumeCoords,
+        },
       };
     });
 
     const newLayoutConfig = {
       ...layoutConfig,
-      paineis: transformedPanels
+      paineis: transformedPanels,
     };
 
     if (onCoordinateUpdate) {
@@ -109,19 +121,30 @@ export default function ResolumeCoordinateHelper({
     }
 
     if (onFeedback) {
-      onFeedback("🔄 Coordenadas transformadas para compatibilidade com Resolume!");
+      onFeedback(
+        "🔄 Coordenadas transformadas para compatibilidade com Resolume!"
+      );
     }
-  }, [layoutConfig, convertToResolume, convertFromResolume, onCoordinateUpdate, onFeedback]);
+  }, [
+    layoutConfig,
+    convertToResolume,
+    convertFromResolume,
+    onCoordinateUpdate,
+    onFeedback,
+  ]);
 
   // Auto-ajustar baseado no layout atual
   const autoAdjust = useCallback(() => {
     if (!layoutConfig.paineis || layoutConfig.paineis.length === 0) return;
 
     const baseScale = 0.2;
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
 
     // Calcular bounds
-    layoutConfig.paineis.forEach(panel => {
+    layoutConfig.paineis.forEach((panel) => {
       const realX = panel.x / baseScale;
       const realY = panel.y / baseScale;
       const realMaxX = realX + panel.pixelsWidth;
@@ -147,52 +170,83 @@ export default function ResolumeCoordinateHelper({
     const centerX = (helperConfig.resolumeCanvasWidth - finalWidth) / 2;
     const centerY = (helperConfig.resolumeCanvasHeight - finalHeight) / 2;
 
-    setHelperConfig(prev => ({
+    setHelperConfig((prev) => ({
       ...prev,
       scaleFactor: optimalScale,
-      offsetX: centerX - (minX * optimalScale),
-      offsetY: centerY - (minY * optimalScale)
+      offsetX: centerX - minX * optimalScale,
+      offsetY: centerY - minY * optimalScale,
     }));
 
     if (onFeedback) {
-      onFeedback(`🎯 Auto-ajuste: escala ${optimalScale.toFixed(3)}, centralizado no canvas!`);
+      onFeedback(
+        `🎯 Auto-ajuste: escala ${optimalScale.toFixed(
+          3
+        )}, centralizado no canvas!`
+      );
     }
-  }, [layoutConfig.paineis, helperConfig.resolumeCanvasWidth, helperConfig.resolumeCanvasHeight, onFeedback]);
+  }, [
+    layoutConfig.paineis,
+    helperConfig.resolumeCanvasWidth,
+    helperConfig.resolumeCanvasHeight,
+    onFeedback,
+  ]);
 
   return (
-    <div style={{
-      background: "linear-gradient(145deg, #7c2d12, #a16207)",
-      borderRadius: 12,
-      padding: 16,
-      marginTop: 16,
-      border: "1px solid #a16207",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    }}>
-      <h4 style={{ color: "#fff", marginBottom: 16, fontSize: "1em", display: "flex", alignItems: "center", gap: "8px" }}>
+    <div
+      style={{
+        background: "linear-gradient(145deg, #7c2d12, #a16207)",
+        borderRadius: 12,
+        padding: 16,
+        marginTop: 16,
+        border: "1px solid #a16207",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      }}
+    >
+      <h4
+        style={{
+          color: "#fff",
+          marginBottom: 16,
+          fontSize: "1em",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
         🎯 Assistente de Coordenadas Resolume
       </h4>
-      
-      <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "1fr 1fr", 
-        gap: "16px",
-        fontSize: "0.9em",
-        marginBottom: "16px"
-      }}>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "16px",
+          fontSize: "0.9em",
+          marginBottom: "16px",
+        }}
+      >
         {/* Canvas e Posicionamento */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div style={{ display: "flex", gap: "8px" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ color: "#fbbf24", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  color: "#fbbf24",
+                  fontSize: "0.85em",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Canvas Width:
               </label>
               <input
                 type="number"
                 value={helperConfig.resolumeCanvasWidth}
-                onChange={(e) => setHelperConfig(prev => ({ 
-                  ...prev, 
-                  resolumeCanvasWidth: Number(e.target.value) 
-                }))}
+                onChange={(e) =>
+                  setHelperConfig((prev) => ({
+                    ...prev,
+                    resolumeCanvasWidth: Number(e.target.value),
+                  }))
+                }
                 style={{
                   width: "100%",
                   padding: "6px 8px",
@@ -200,21 +254,30 @@ export default function ResolumeCoordinateHelper({
                   border: "1px solid #a16207",
                   background: "#451a03",
                   color: "#fbbf24",
-                  fontSize: "0.85em"
+                  fontSize: "0.85em",
                 }}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ color: "#fbbf24", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  color: "#fbbf24",
+                  fontSize: "0.85em",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Canvas Height:
               </label>
               <input
                 type="number"
                 value={helperConfig.resolumeCanvasHeight}
-                onChange={(e) => setHelperConfig(prev => ({ 
-                  ...prev, 
-                  resolumeCanvasHeight: Number(e.target.value) 
-                }))}
+                onChange={(e) =>
+                  setHelperConfig((prev) => ({
+                    ...prev,
+                    resolumeCanvasHeight: Number(e.target.value),
+                  }))
+                }
                 style={{
                   width: "100%",
                   padding: "6px 8px",
@@ -222,7 +285,7 @@ export default function ResolumeCoordinateHelper({
                   border: "1px solid #a16207",
                   background: "#451a03",
                   color: "#fbbf24",
-                  fontSize: "0.85em"
+                  fontSize: "0.85em",
                 }}
               />
             </div>
@@ -230,16 +293,25 @@ export default function ResolumeCoordinateHelper({
 
           <div style={{ display: "flex", gap: "8px" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ color: "#fbbf24", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  color: "#fbbf24",
+                  fontSize: "0.85em",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Offset X:
               </label>
               <input
                 type="number"
                 value={helperConfig.offsetX}
-                onChange={(e) => setHelperConfig(prev => ({ 
-                  ...prev, 
-                  offsetX: Number(e.target.value) 
-                }))}
+                onChange={(e) =>
+                  setHelperConfig((prev) => ({
+                    ...prev,
+                    offsetX: Number(e.target.value),
+                  }))
+                }
                 style={{
                   width: "100%",
                   padding: "6px 8px",
@@ -247,21 +319,30 @@ export default function ResolumeCoordinateHelper({
                   border: "1px solid #a16207",
                   background: "#451a03",
                   color: "#fbbf24",
-                  fontSize: "0.85em"
+                  fontSize: "0.85em",
                 }}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ color: "#fbbf24", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  color: "#fbbf24",
+                  fontSize: "0.85em",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Offset Y:
               </label>
               <input
                 type="number"
                 value={helperConfig.offsetY}
-                onChange={(e) => setHelperConfig(prev => ({ 
-                  ...prev, 
-                  offsetY: Number(e.target.value) 
-                }))}
+                onChange={(e) =>
+                  setHelperConfig((prev) => ({
+                    ...prev,
+                    offsetY: Number(e.target.value),
+                  }))
+                }
                 style={{
                   width: "100%",
                   padding: "6px 8px",
@@ -269,7 +350,7 @@ export default function ResolumeCoordinateHelper({
                   border: "1px solid #a16207",
                   background: "#451a03",
                   color: "#fbbf24",
-                  fontSize: "0.85em"
+                  fontSize: "0.85em",
                 }}
               />
             </div>
@@ -279,7 +360,14 @@ export default function ResolumeCoordinateHelper({
         {/* Transformações */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div>
-            <label style={{ color: "#fbbf24", fontSize: "0.85em", display: "block", marginBottom: "4px" }}>
+            <label
+              style={{
+                color: "#fbbf24",
+                fontSize: "0.85em",
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
               Fator de Escala:
             </label>
             <input
@@ -288,10 +376,12 @@ export default function ResolumeCoordinateHelper({
               min="0.1"
               max="5.0"
               value={helperConfig.scaleFactor}
-              onChange={(e) => setHelperConfig(prev => ({ 
-                ...prev, 
-                scaleFactor: Number(e.target.value) 
-              }))}
+              onChange={(e) =>
+                setHelperConfig((prev) => ({
+                  ...prev,
+                  scaleFactor: Number(e.target.value),
+                }))
+              }
               style={{
                 width: "100%",
                 padding: "6px 8px",
@@ -299,51 +389,59 @@ export default function ResolumeCoordinateHelper({
                 border: "1px solid #a16207",
                 background: "#451a03",
                 color: "#fbbf24",
-                fontSize: "0.85em"
+                fontSize: "0.85em",
               }}
             />
           </div>
 
           <div style={{ display: "flex", gap: "16px" }}>
-            <label style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px", 
-              color: "#fbbf24",
-              cursor: "pointer"
-            }}>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#fbbf24",
+                cursor: "pointer",
+              }}
+            >
               <input
                 type="checkbox"
                 checked={helperConfig.flipX}
-                onChange={(e) => setHelperConfig(prev => ({ 
-                  ...prev, 
-                  flipX: e.target.checked 
-                }))}
-                style={{ 
+                onChange={(e) =>
+                  setHelperConfig((prev) => ({
+                    ...prev,
+                    flipX: e.target.checked,
+                  }))
+                }
+                style={{
                   accentColor: "#f59e0b",
-                  transform: "scale(1.1)"
+                  transform: "scale(1.1)",
                 }}
               />
               <span>🔄 Flip X</span>
             </label>
 
-            <label style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px", 
-              color: "#fbbf24",
-              cursor: "pointer"
-            }}>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#fbbf24",
+                cursor: "pointer",
+              }}
+            >
               <input
                 type="checkbox"
                 checked={helperConfig.flipY}
-                onChange={(e) => setHelperConfig(prev => ({ 
-                  ...prev, 
-                  flipY: e.target.checked 
-                }))}
-                style={{ 
+                onChange={(e) =>
+                  setHelperConfig((prev) => ({
+                    ...prev,
+                    flipY: e.target.checked,
+                  }))
+                }
+                style={{
                   accentColor: "#f59e0b",
-                  transform: "scale(1.1)"
+                  transform: "scale(1.1)",
                 }}
               />
               <span>🔄 Flip Y</span>
@@ -354,14 +452,16 @@ export default function ResolumeCoordinateHelper({
 
       {/* Preview das transformações */}
       {layoutConfig.paineis && layoutConfig.paineis.length > 0 && (
-        <div style={{
-          padding: 12,
-          background: "#451a03",
-          borderRadius: 8,
-          fontSize: "0.8em",
-          color: "#fbbf24",
-          marginBottom: "16px"
-        }}>
+        <div
+          style={{
+            padding: 12,
+            background: "#451a03",
+            borderRadius: 8,
+            fontSize: "0.8em",
+            color: "#fbbf24",
+            marginBottom: "16px",
+          }}
+        >
           <div style={{ marginBottom: 8 }}>
             <strong>📊 Preview das Coordenadas:</strong>
           </div>
@@ -369,8 +469,9 @@ export default function ResolumeCoordinateHelper({
             const resolumeCoords = convertToResolume(panel);
             return (
               <div key={index} style={{ marginBottom: 4, fontSize: "0.75em" }}>
-                <strong>{panel.nome}:</strong> {Math.round(panel.x / 0.2)}, {Math.round(panel.y / 0.2)} 
-                → {resolumeCoords.x}, {resolumeCoords.y} (Resolume)
+                <strong>{panel.nome}:</strong> {Math.round(panel.x / 0.2)},{" "}
+                {Math.round(panel.y / 0.2)}→ {resolumeCoords.x},{" "}
+                {resolumeCoords.y} (Resolume)
               </div>
             );
           })}
@@ -392,19 +493,26 @@ export default function ResolumeCoordinateHelper({
             padding: "10px",
             borderRadius: 6,
             border: "none",
-            background: (!layoutConfig.paineis || layoutConfig.paineis.length === 0) 
-              ? "#374151" 
-              : "linear-gradient(145deg, #f59e0b, #d97706)",
+            background:
+              !layoutConfig.paineis || layoutConfig.paineis.length === 0
+                ? "#374151"
+                : "linear-gradient(145deg, #f59e0b, #d97706)",
             color: "#000",
-            cursor: (!layoutConfig.paineis || layoutConfig.paineis.length === 0) ? "not-allowed" : "pointer",
+            cursor:
+              !layoutConfig.paineis || layoutConfig.paineis.length === 0
+                ? "not-allowed"
+                : "pointer",
             fontSize: "0.9em",
             fontWeight: "600",
-            opacity: (!layoutConfig.paineis || layoutConfig.paineis.length === 0) ? 0.5 : 1
+            opacity:
+              !layoutConfig.paineis || layoutConfig.paineis.length === 0
+                ? 0.5
+                : 1,
           }}
         >
           🎯 Auto-Ajustar
         </button>
-        
+
         <button
           onClick={applyCoordinateTransform}
           disabled={!layoutConfig.paineis || layoutConfig.paineis.length === 0}
@@ -413,14 +521,21 @@ export default function ResolumeCoordinateHelper({
             padding: "10px",
             borderRadius: 6,
             border: "none",
-            background: (!layoutConfig.paineis || layoutConfig.paineis.length === 0) 
-              ? "#374151" 
-              : "linear-gradient(145deg, #dc2626, #b91c1c)",
+            background:
+              !layoutConfig.paineis || layoutConfig.paineis.length === 0
+                ? "#374151"
+                : "linear-gradient(145deg, #dc2626, #b91c1c)",
             color: "#fff",
-            cursor: (!layoutConfig.paineis || layoutConfig.paineis.length === 0) ? "not-allowed" : "pointer",
+            cursor:
+              !layoutConfig.paineis || layoutConfig.paineis.length === 0
+                ? "not-allowed"
+                : "pointer",
             fontSize: "0.9em",
             fontWeight: "600",
-            opacity: (!layoutConfig.paineis || layoutConfig.paineis.length === 0) ? 0.5 : 1
+            opacity:
+              !layoutConfig.paineis || layoutConfig.paineis.length === 0
+                ? 0.5
+                : 1,
           }}
         >
           🔄 Aplicar Transformação
