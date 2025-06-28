@@ -10,6 +10,7 @@ import { Monitor } from "lucide-react";
 import GabinetesToolbar from "./components/gabinetes/GabinetesToolbar";
 import GabinetesListNew from "./components/gabinetes/GabinetesListNew";
 import GabinetesDetalhesNew from "./components/gabinetes/GabinetesDetalhesNew";
+import GabineteDetalhesModal from "./components/gabinetes/GabineteDetalhesModal";
 import GabinetesModal from "./components/gabinetes/GabinetesModal";
 import DeleteConfirmModal from "./components/gabinetes/DeleteConfirmModal";
 
@@ -22,7 +23,7 @@ export default function Gabinetes({ isActive }) {
     updateData: salvarGabinetes,
   } = useApiData("gabinetes", isActive);
 
-  const { mensagemFeedback, showFeedback } = useTemporaryFeedback();
+  const [mensagemFeedback, showFeedback] = useTemporaryFeedback();
 
   // Estados locais
   const [showModal, setShowModal] = useState(false);
@@ -37,6 +38,10 @@ export default function Gabinetes({ isActive }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [gabineteParaDeletar, setGabineteParaDeletar] = useState(null);
   const [deletandoGabinete, setDeletandoGabinete] = useState(false);
+
+  // Estados para modal de detalhes
+  const [showDetalhesModal, setShowDetalhesModal] = useState(false);
+  const [gabineteDetalhes, setGabineteDetalhes] = useState(null);
 
   // Hooks customizados
   const gabinetesFiltrados = useGabineteFiltering(
@@ -53,7 +58,13 @@ export default function Gabinetes({ isActive }) {
     handleChange,
     handleSubmit,
     editarGabinete,
-  } = useGabineteForm(gabinetes, setGabinetes, salvarGabinetes, showFeedback);
+  } = useGabineteForm(
+    gabinetes,
+    setGabinetes,
+    salvarGabinetes,
+    showFeedback,
+    () => setShowModal(false) // Callback para fechar modal após sucesso
+  );
 
   // Duplicar gabinete
   const duplicarGabinete = async (index) => {
@@ -110,6 +121,12 @@ export default function Gabinetes({ isActive }) {
       setShowDeleteModal(false);
       setGabineteParaDeletar(null);
     }
+  };
+
+  // Função para abrir modal de detalhes
+  const abrirDetalhes = (index) => {
+    setGabineteDetalhes(gabinetes[index]);
+    setShowDetalhesModal(true);
   };
 
   if (loading) {
@@ -188,41 +205,27 @@ export default function Gabinetes({ isActive }) {
           </motion.div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
-          {/* Coluna 1: Gabinetes Cadastrados (2/3 = 8 colunas) */}
-          <div className="lg:col-span-8">
-            <GabinetesListNew
-              gabinetesFiltrados={gabinetesFiltrados}
-              gabinetes={gabinetes}
-              viewMode={viewMode}
-              gabineteSelecionado={gabineteSelecionado}
-              setGabineteSelecionado={setGabineteSelecionado}
-              duplicarGabinete={duplicarGabinete}
-              editarGabinete={(index) => {
-                editarGabinete(index);
-                setShowModal(true);
-              }}
-              removerGabinete={removerGabinete}
-              resetForm={resetForm}
-              setShowModal={setShowModal}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              filterBy={filterBy}
-              setFilterBy={setFilterBy}
-            />
-          </div>
-
-          {/* Coluna 2: Detalhes do Gabinete (1/3 = 4 colunas) */}
-          <div className="lg:col-span-4">
-            <GabinetesDetalhesNew
-              gabineteSelecionado={gabineteSelecionado}
-              gabinetes={gabinetes}
-              editarGabinete={(index) => {
-                editarGabinete(index);
-                setShowModal(true);
-              }}
-            />
-          </div>
+        <div className="w-full">
+          {/* Lista de Gabinetes (largura total) */}
+          <GabinetesListNew
+            gabinetesFiltrados={gabinetesFiltrados}
+            gabinetes={gabinetes}
+            viewMode={viewMode}
+            gabineteSelecionado={gabineteSelecionado}
+            setGabineteSelecionado={abrirDetalhes}
+            duplicarGabinete={duplicarGabinete}
+            editarGabinete={(index) => {
+              editarGabinete(index);
+              setShowModal(true);
+            }}
+            removerGabinete={removerGabinete}
+            resetForm={resetForm}
+            setShowModal={setShowModal}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+          />
         </div>
 
         {/* Modal de Formulário */}
@@ -234,6 +237,31 @@ export default function Gabinetes({ isActive }) {
           handleChange={handleChange}
           handleSubmit={handleSubmit}
           resetForm={resetForm}
+        />
+
+        {/* Modal de Detalhes do Gabinete */}
+        <GabineteDetalhesModal
+          isOpen={showDetalhesModal}
+          onClose={() => {
+            setShowDetalhesModal(false);
+            setGabineteDetalhes(null);
+          }}
+          gabinete={gabineteDetalhes}
+          onEdit={() => {
+            if (gabineteDetalhes) {
+              const index = gabinetes.findIndex(
+                (g) =>
+                  g.nome === gabineteDetalhes.nome &&
+                  g.largura === gabineteDetalhes.largura &&
+                  g.altura === gabineteDetalhes.altura
+              );
+              if (index !== -1) {
+                editarGabinete(index);
+                setShowModal(true);
+                setShowDetalhesModal(false);
+              }
+            }
+          }}
         />
 
         {/* Modal de Confirmação de Exclusão */}

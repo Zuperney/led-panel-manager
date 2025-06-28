@@ -14,8 +14,8 @@ export default function GabineteListItemNew({
   removerGabinete,
 }) {
   const isSelected = gabineteSelecionado === originalIndex;
-  const isPremium = (gabinete.pitch || gabinete.pixelPitch) <= 5;
-  const isIndoor = (gabinete.pitch || gabinete.pixelPitch) <= 10;
+  // Usar o tipo real do gabinete em vez de calcular baseado no pitch
+  const isIndoor = gabinete.tipo === "indoor";
 
   return (
     <motion.div
@@ -75,9 +75,10 @@ export default function GabineteListItemNew({
           </div>
 
           <div className="flex items-center gap-2">
-            {isPremium && <Tag variant="premium">Premium</Tag>}
             <Tag variant={isIndoor ? "indoor" : "outdoor"}>
-              {isIndoor ? "Indoor" : "Outdoor"}
+              {gabinete.tipo
+                ? gabinete.tipo.charAt(0).toUpperCase() + gabinete.tipo.slice(1)
+                : "Não definido"}
             </Tag>
           </div>
         </div>

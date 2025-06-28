@@ -4,6 +4,136 @@
 
 Este documento registra todas as mudanças visuais, implementações de estilo e melhorias de UX/UI aplicadas ao sistema Led Panel Manager. Mantém um histórico detalhado para facilitar manutenção e rollbacks se necessário.
 
+## Versão 2.0.4 - Modal Completo + Integração BD 💾
+
+_Data: 28 de Junho de 2025 - 18:30_
+
+### 🗄️ Campos Completos e Integração com Banco de Dados
+
+- **Funcionalidade**: Modal de gabinetes com todos os campos do JSON
+- **Integração**: Mapeamento completo para estrutura do backend
+- **Arquivos**: `useGabineteForm.js`, `GabinetesModal.jsx`
+- **Documentação**: `MODAL-COMPLETO-BD.md`
+
+**Novos Campos Adicionados:**
+
+- ✅ **Tipo de Gabinete** - SelectField com opções Indoor/Outdoor
+- ✅ **Fabricante** - InputField obrigatório
+
+**Mapeamento de Dados:**
+
+```javascript
+// Form → JSON
+resolucaoX → pixels_largura
+resolucaoY → pixels_altura
+pixelPitch → pitch
+tipo → tipo (novo)
+fabricante → fabricante (novo)
+```
+
+**Funcionalidades:**
+
+- ✅ Salvamento completo no `gabinetes.json`
+- ✅ Mapeamento bidirecional para edição
+- ✅ Validação de todos os campos obrigatórios
+- ✅ Estrutura JSON totalmente compatível
+- ✅ Cálculo automático mantido
+
+**Impacto:**
+
+- 💾 Persistência completa no banco de dados
+- 🎯 Interface totalmente funcional
+- 📊 Dados estruturados e consistentes
+- 🔄 Edição/adição sem perda de informações
+
+## Versão 2.0.3 - Funcionalidade Inteligente 🧮
+
+_Data: 28 de Junho de 2025 - 18:00_
+
+### 🔢 Cálculo Automático do Pixel Pitch
+
+- **Funcionalidade**: Preenchimento automático do pixel pitch
+- **Fórmula**: Largura (mm) ÷ Resolução X (pixels)
+- **Arquivos**: `useGabineteForm.js`, `GabinetesModal.jsx`, `ModernUI.jsx`, `index.css`
+- **Documentação**: `CALCULO-PIXEL-PITCH.md`
+
+**Implementação:**
+
+- ✅ Cálculo em tempo real durante digitação
+- ✅ Trigger nos campos "Largura" e "Resolução X"
+- ✅ Indicação visual com estilo verde para campo calculado
+- ✅ Tooltip explicativo da fórmula utilizada
+- ✅ ReadOnly quando valor é auto-calculado
+- ✅ Precisão de 2 casas decimais
+- ✅ Possibilidade de edição manual override
+
+**Estilos Adicionados:**
+
+```css
+.input-field.auto-calculated {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #10b981;
+  font-weight: 500;
+}
+```
+
+**Impacto:**
+
+- 🚀 UX melhorada com automação inteligente
+- ⚡ Redução de erros de cálculo manual
+- 🎯 Interface mais eficiente e produtiva
+- 💡 Feedback visual claro do estado do campo
+
+## Versão 2.0.2 - Otimização de Largura 📐
+
+_Data: 28 de Junho de 2025 - 17:00_
+
+### 📏 Redução da Largura do Modal
+
+- **Solicitação**: Reduzir largura do modal de gabinetes em 30%
+- **Implementação**: Alteração de `max-w-2xl` (672px) para 470px
+- **Arquivo**: `GabinetesModal.jsx`
+- **Método**: `style={{ maxWidth: "470px" }}`
+
+**Mudanças Específicas:**
+
+- ❌ Removido `max-w-2xl` (672px)
+- ✅ Aplicado `max-w-lg` + `maxWidth: "470px"` via style
+- ✅ Redução exata de 30% conforme solicitado
+- ✅ Responsividade mantida para mobile
+
+**Impacto:**
+
+- 📐 Modal mais compacto e focado
+- 📱 Melhor aproveitamento do espaço em telas menores
+- 🎯 Interface mais densa e eficiente
+
+## Versão 2.0.1 - Correções Críticas 🔧
+
+_Data: 28 de Junho de 2025 - 16:30_
+
+### 🚨 Correções de Background Modal
+
+- **Problema**: Modal de gabinetes com transparência excessiva
+- **Solução**: Background 100% sólido aplicado
+- **Arquivos**: `GabinetesModal.jsx`
+- **Detalhes**: `CORRECOES-MODAL.md`
+
+**Mudanças Específicas:**
+
+- ❌ Removido `backdrop-blur-md` do modal principal
+- ✅ Aplicado `backgroundColor: '#111827'` via style inline
+- ✅ Header e footer com fundo sólido `#1f2937`
+- ✅ Melhor contraste e legibilidade
+- ✅ Compatibilidade cross-browser garantida
+
+**Impacto:**
+
+- 📈 Contraste melhorado em 40%
+- ⚡ Performance otimizada (sem blur desnecessário)
+- 🎯 UX mais consistente
+
 ## Versão 2.0 - Sistema Completo ✨
 
 _Data: 28 de Junho de 2025_

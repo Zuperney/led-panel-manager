@@ -1,229 +1,2786 @@
 # 🎨 Bibliotecas e Técnicas de UI/UX - MCTRL4K Calculator
 
-**Guia completo para reutilização em outras aplicações**
+**Guia completo de estilização para reutilização em outras aplicações React**
+
+> 📚 Este guia documenta todas as técnicas, padrões e componentes utilizados no MCTRL4K Calculator, servindo como referência para projetos futuros. Cada seção inclui código prático, exemplos de uso e variações.
+
+---
+
+## 📋 **Índice**
+
+1. [Stack Tecnológico Principal](#stack-tecnológico-principal)
+2. [Sistema de Cores e Temas](#sistema-de-cores-e-temas)
+3. [Tipografia e Escalas](#tipografia-e-escalas)
+4. [Glassmorphism e Backdrop](#glassmorphism-e-backdrop)
+5. [Botões e Interações](#botões-e-interações)
+6. [Cards e Containers](#cards-e-containers)
+7. [Layouts Avançados (Flex/Grid)](#layouts-avançados-flexgrid)
+8. [Animações e Transições](#animações-e-transições)
+9. [Formulários e Inputs](#formulários-e-inputs)
+10. [Status, Feedback e Indicadores](#status-feedback-e-indicadores)
+11. [Charts e Visualizações](#charts-e-visualizações)
+12. [Performance e Otimizações](#performance-e-otimizações)
+13. [Estrutura de Arquivos UI](#estrutura-de-arquivos-ui)
+
+---
 
 ## 🛠️ **Stack Tecnológico Principal**
 
-### **Framework Base**
+### **Framework Core**
 
-- **React 18** - Framework principal com hooks modernos
-- **TypeScript** - Tipagem estática para maior robustez
-- **Vite** - Build tool rápido e moderno
+```json
+{
+  "react": "^18.2.0", // Framework base com hooks modernos
+  "typescript": "^5.0.2", // Type safety e intellisense
+  "vite": "^4.4.5" // Build tool rápido e moderno
+}
+```
 
-### **Styling & UI**
+### **Styling & UI Framework**
 
-- **Tailwind CSS** - Framework CSS utility-first
-- **Framer Motion** - Biblioteca de animações declarativas
-- **Lucide React** - Ícones SVG limpos e consistentes
-- **React Hot Toast** - Sistema de notificações elegante
+```json
+{
+  "tailwindcss": "^3.3.0", // Utility-first CSS framework
+  "framer-motion": "^10.16.4", // Animações fluidas e gestures
+  "lucide-react": "^0.292.0", // Ícones SVG otimizados
+  "react-hot-toast": "^2.4.1" // Notificações elegantes
+}
+```
 
-### **Charts & Data Visualization**
+### **Data Visualization**
 
-- **Chart.js** - Biblioteca de gráficos poderosa
-- **React-Chartjs-2** - Wrapper React para Chart.js
-- **Suporte a:** Line Charts, Pie Charts, Bar Charts, Real-time data
+```json
+{
+  "chart.js": "^4.4.0", // Biblioteca de gráficos robusta
+  "react-chartjs-2": "^5.2.0" // Wrapper React para Chart.js
+}
+```
 
-### **Performance & Optimization**
+### **Performance & UX**
 
-- **React.lazy()** - Lazy loading de componentes
-- **React.memo()** - Memoização de componentes
-- **useMemo()** e **useCallback()** - Otimização de re-renders
-- **Web Workers** - Processamento em background
+```json
+{
+  "react-hotkeys-hook": "^4.4.1" // Atalhos de teclado globais
+}
+```
+
+### **Configuração Vite + TypeScript**
+
+```typescript
+// vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    target: "esnext",
+    outDir: "dist",
+    assetsDir: "assets",
+    minify: true,
+  },
+  server: {
+    port: 3000,
+    open: true,
+  },
+});
+```
 
 ---
 
-## 🎨 **Técnicas de Design Implementadas**
+## 🎨 **Sistema de Cores e Temas**
 
-### **1. Glassmorphism Design**
+### **Paleta Primária com RGB Values**
 
 ```css
-/* Classes Tailwind utilizadas */
-.glass-card {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
+/* Definidas como CSS custom properties para fácil manutenção */
+:root {
+  /* Blues - Principais */
+  --blue-50: #eff6ff; /* rgb(239, 246, 255) */
+  --blue-100: #dbeafe; /* rgb(219, 234, 254) */
+  --blue-400: #60a5fa; /* rgb(96, 165, 250) */
+  --blue-500: #3b82f6; /* rgb(59, 130, 246) - Principal */
+  --blue-600: #2563eb; /* rgb(37, 99, 235) */
+  --blue-700: #1d4ed8; /* rgb(29, 78, 216) */
+
+  /* Greens - Sucesso */
+  --green-400: #4ade80; /* rgb(74, 222, 128) */
+  --green-500: #22c55e; /* rgb(34, 197, 94) - Principal */
+  --green-600: #16a34a; /* rgb(22, 163, 74) */
+
+  /* Purples - Accent */
+  --purple-400: #c084fc; /* rgb(192, 132, 252) */
+  --purple-500: #a855f7; /* rgb(168, 85, 247) - Principal */
+  --purple-600: #9333ea; /* rgb(147, 51, 234) */
+
+  /* Status Colors */
+  --orange-400: #fbbf24; /* rgb(251, 191, 36) - Warning */
+  --orange-500: #f59e0b; /* rgb(245, 158, 11) */
+  --red-400: #f87171; /* rgb(248, 113, 113) - Error */
+  --red-500: #ef4444; /* rgb(239, 68, 68) */
+}
+```
+
+### **Background Gradients (Principais)**
+
+```css
+/* Gradiente principal da aplicação */
+.app-main-gradient {
+  background: linear-gradient(
+    135deg,
+    #1f2937 0%,
+    /* gray-800 */ #1e3a8a 50%,
+    /* blue-800 */ #581c87 100% /* purple-800 */
+  );
+  /* Tailwind: bg-gradient-to-br from-gray-800 via-blue-800 to-purple-800 */
 }
 
-/* Efeito glass em diferentes intensidades */
-bg-white/5   /* Sutil */
-bg-white/10  /* Padrão */
-bg-white/20  /* Mais opaco */
+/* Header com brilho sutil */
+.header-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    /* blue-500/10 */ rgba(168, 85, 247, 0.1) 100% /* purple-500/10 */
+  );
+}
 
-/* Backdrop blur para efeito vidro */
-backdrop-blur-sm
-backdrop-blur-md
-backdrop-blur-lg
+/* Cards e elementos destacados */
+.card-gradient-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.card-gradient-green {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+}
+
+.card-gradient-purple {
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+}
 ```
 
-### **2. Sistema de Cores Consistente**
-
-```css
-/* Palette principal */
-Blue:    rgb(59, 130, 246)   /* #3B82F6 */
-Green:   rgb(34, 197, 94)    /* #22C55E */
-Purple:  rgb(168, 85, 247)   /* #A855F7 */
-Orange:  rgb(245, 158, 11)   /* #F59E0B */
-Red:     rgb(239, 68, 68)    /* #EF4444 */
-
-/* Grays para texto e backgrounds */
-text-gray-300   /* Texto secundário */
-text-gray-400   /* Texto terciário */
-text-white      /* Texto principal */
-```
-
-### **3. Layout Responsivo com Grid**
-
-```css
-/* Grid adaptativo */
-grid-cols-1 md:grid-cols-2 lg:grid-cols-3
-grid-cols-1 lg:grid-cols-2
-
-/* Flexbox responsivo */
-flex-col lg:flex-row
-flex flex-col lg:items-center lg:justify-between
-
-/* Gaps consistentes */
-gap-2, gap-4, gap-6 (8px, 16px, 24px)
-```
-
----
-
-## 🔧 **Patterns e Hooks Customizados**
-
-### **1. Hook de Calculator Context**
+### **Sistema de Temas (Dark/Light)**
 
 ```typescript
-const useCalculator = () => {
-  const context = useContext(CalculatorContext);
-  if (!context) {
-    throw new Error("useCalculator must be used within CalculatorProvider");
-  }
-  return context;
-};
-```
+// ThemeProvider.tsx - Sistema de temas
+export type Theme = "light" | "dark" | "auto";
 
-### **2. Hook de Performance com Debounce**
+interface ThemeColors {
+  background: string;
+  surface: string;
+  text: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+  };
+  glass: {
+    background: string;
+    border: string;
+  };
+}
 
-```typescript
-const useDebounce = (value: any, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-};
-```
-
-### **3. Hook de Keyboard Shortcuts**
-
-```typescript
-const useKeyboardShortcuts = () => {
-  useHotkeys("ctrl+e", () => openExportModal());
-  useHotkeys("ctrl+r", () => resetInputs());
-  useHotkeys("ctrl+/", () => toggleKeyboardHelp());
-};
-```
-
-### **4. Hook de Theme System**
-
-```typescript
-const useTheme = () => {
-  const [theme, setTheme] = useState<"light" | "dark" | "auto">("auto");
-  const [actualTheme, setActualTheme] = useState<"light" | "dark">("dark");
-
-  // Auto theme detection
-  useEffect(() => {
-    if (theme === "auto") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      setActualTheme(mediaQuery.matches ? "dark" : "light");
-    }
-  }, [theme]);
+export const themeConfig: Record<Theme, ThemeColors> = {
+  dark: {
+    background: "from-gray-900 via-blue-900 to-purple-900",
+    surface: "bg-white/10",
+    text: {
+      primary: "text-white",
+      secondary: "text-gray-200",
+      tertiary: "text-gray-400",
+    },
+    glass: {
+      background: "bg-white/10",
+      border: "border-white/20",
+    },
+  },
+  light: {
+    background: "from-gray-50 via-blue-50 to-purple-50",
+    surface: "bg-black/5",
+    text: {
+      primary: "text-gray-900",
+      secondary: "text-gray-700",
+      tertiary: "text-gray-500",
+    },
+    glass: {
+      background: "bg-black/5",
+      border: "border-black/10",
+    },
+  },
+  auto: {
+    // Define baseado em prefers-color-scheme
+    background: "from-gray-900 via-blue-900 to-purple-900",
+    surface: "bg-white/10",
+    text: {
+      primary: "text-white",
+      secondary: "text-gray-200",
+      tertiary: "text-gray-400",
+    },
+    glass: {
+      background: "bg-white/10",
+      border: "border-white/20",
+    },
+  },
 };
 ```
 
 ---
 
-## 🏗️ **Arquitetura de Componentes**
+## 📝 **Tipografia e Escalas**
 
-### **1. Lazy Loading Pattern**
+### **Escala de Tamanhos com Line Heights**
 
-```typescript
-// Lazy wrapper para componentes pesados
-const LazyWrapper: React.FC<LazyWrapperProps> = ({
-  children,
-  fallback = <div>Loading...</div>,
-  errorBoundary = true,
-}) => {
+```css
+/* Sistema harmonioso baseado em 1.25x scale */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem - Labels pequenos */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem - Body secundário */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem - Body principal */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem - Leads */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem - Subtítulos */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem - Títulos de seção */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem - Títulos principais */
+.text-4xl {
+  font-size: 36px;
+  line-height: 40px;
+} /* 2.25rem - Hero titles */
+```
+
+### **Pesos de Fonte e Uso**
+
+```css
+.font-light {
+  font-weight: 300;
+} /* Texto delicado, quotes */
+.font-normal {
+  font-weight: 400;
+} /* Body text padrão */
+.font-medium {
+  font-weight: 500;
+} /* Labels, subtítulos */
+.font-semibold {
+  font-weight: 600;
+} /* Títulos de cards */
+.font-bold {
+  font-weight: 700;
+} /* Títulos importantes */
+.font-black {
+  font-weight: 900;
+} /* Hero titles, logos */
+```
+
+### **Letter Spacing e Variações**
+
+```css
+.tracking-tighter { letter-spacing: -0.05em; }  /* Títulos compactos */
+.tracking-tight   { letter-spacing: -0.025em; /* Subtítulos */
+.tracking-normal  { letter-spacing: 0em; }      /* Body text */
+.tracking-wide    { letter-spacing: 0.025em; }  /* Labels, botões */
+.tracking-wider   { letter-spacing: 0.05em; }   /* Versões, badges */
+```
+
+### **Hierarquia Tipográfica (Exemplo Real)**
+
+```tsx
+// Header principal da aplicação
+<h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+  MCTRL4K Calculator
+</h1>
+
+// Subtítulo
+<div className="text-base text-blue-100 font-medium">
+  Ultra High Resolution Settings Generator
+</div>
+
+// Versão
+<p className="text-blue-100 text-sm font-medium">Rev 1.0</p>
+
+// Títulos de seção
+<h2 className="text-xl font-semibold text-white mb-4">
+  Performance Analytics
+</h2>
+
+// Labels de formulário
+<label className="block text-sm font-medium text-gray-300 mb-2 tracking-wide">
+  Resolution Width
+</label>
+
+// Body text
+<p className="text-base text-gray-200 leading-relaxed">
+  Configure your display settings...
+</p>
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
   return (
-    <Suspense fallback={fallback}>
-      {errorBoundary ? <ErrorBoundary>{children}</ErrorBoundary> : children}
-    </Suspense>
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
   );
 };
+```
 
-// Componentes lazy
-const LazyAnalyticsDashboard = lazy(() =>
-  import("./AdvancedAnalyticsDashboard").then((m) => ({
-    default: m.AdvancedAnalyticsDashboard,
-  }))
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🔘 **Botões e Interações**
+
+````
+
+### **Escala de Grays**
+```css
+/* Sistema de grays para texto e UI */
+.text-gray-100 { color: #F3F4F6; }  /* Texto muito claro */
+.text-gray-200 { color: #E5E7EB; }  /* Texto claro */
+.text-gray-300 { color: #D1D5DB; }  /* Texto secundário */
+.text-gray-400 { color: #9CA3AF; }  /* Texto terciário */
+.text-gray-500 { color: #6B7280; }  /* Texto disabled */
+
+/* Backgrounds em gray */
+.bg-gray-800 { background-color: #1F2937; }
+.bg-gray-900 { background-color: #111827; }
+````
+
+### **Transparências e Opacidades**
+
+```css
+/* Sistema de transparência para glassmorphism */
+.bg-white-5 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-white-10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Borders transparentes */
+.border-white-20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white-30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+---
+
+## 📝 **Tipografia e Tamanhos**
+
+### **Escala de Texto**
+
+```css
+/* Sistema de tamanhos de texto */
+.text-xs {
+  font-size: 12px;
+  line-height: 16px;
+} /* 0.75rem */
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+} /* 0.875rem */
+.text-base {
+  font-size: 16px;
+  line-height: 24px;
+} /* 1rem */
+.text-lg {
+  font-size: 18px;
+  line-height: 28px;
+} /* 1.125rem */
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+} /* 1.25rem */
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+} /* 1.5rem */
+.text-3xl {
+  font-size: 30px;
+  line-height: 36px;
+} /* 1.875rem */
+```
+
+### **Pesos de Fonte**
+
+```css
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+```
+
+### **Espaçamentos**
+
+```css
+/* Sistema de spacing (padding e margin) */
+.p-1 {
+  padding: 4px;
+} /* 0.25rem */
+.p-2 {
+  padding: 8px;
+} /* 0.5rem */
+.p-3 {
+  padding: 12px;
+} /* 0.75rem */
+.p-4 {
+  padding: 16px;
+} /* 1rem */
+.p-6 {
+  padding: 24px;
+} /* 1.5rem */
+.p-8 {
+  padding: 32px;
+} /* 2rem */
+
+/* Gaps para flex e grid */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
+.gap-6 {
+  gap: 24px;
+}
+```
+
+---
+
+## ✨ **Glassmorphism e Backdrop**
+
+### **Classes Base Glass**
+
+```css
+/* Glass básico - mais comum */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Equivalente Tailwind */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+```
+
+### **Variações de Intensidade**
+
+```css
+/* Glass sutil - para elementos de fundo */
+.glass-subtle {
+  @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+}
+
+/* Glass padrão - para cards principais */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl;
+}
+
+/* Glass intenso - para modals e overlays */
+.glass-strong {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl;
+}
+
+/* Glass ultra - para elementos críticos */
+.glass-ultra {
+  @apply bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl;
+}
+```
+
+### **Glass com Cores Temáticas**
+
+```css
+/* Glass com tint azul */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass com tint verde (sucesso) */
+.glass-green {
+  background: rgba(34, 197, 94, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
+}
+
+/* Glass com tint roxo (destaque) */
+.glass-purple {
+  background: rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1);
+}
+
+/* Glass warning/error */
+.glass-orange {
+  @apply bg-orange-500/10 backdrop-blur-md border border-orange-400/20 rounded-xl;
+}
+
+.glass-red {
+  @apply bg-red-500/10 backdrop-blur-md border border-red-400/20 rounded-xl;
+}
+```
+
+### **Exemplo Prático - Header Component**
+
+```tsx
+// Header.tsx - Implementação real do glassmorphism
+export const Header = ({ title, subtitle, version, icon }: HeaderProps) => {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-8"
+    >
+      {/* Glass container principal */}
+      <div className="glass rounded-2xl p-6 mb-6 relative">
+        {/* Controles no canto superior direito */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Keyboard className="w-4 h-4 text-white/70 group-hover:text-white" />
+          </motion.button>
+        </div>
+
+        {/* Content principal */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mr-3">
+            {icon}
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">
+              {title}
+            </h1>
+            <div className="text-base text-blue-100 font-medium">
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm font-medium">{version}</p>
+      </div>
+    </motion.header>
+  );
+};
+```
+
+---
+
+## 🎭 **Animações e Transições**
+
+### **Framer Motion Animation Patterns**
+
+```typescript
+// Animation variants library
+export const animationVariants = {
+  // Page transitions
+  pageTransition: {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.3 },
+  },
+
+  // Card animations
+  cardHover: {
+    rest: { scale: 1, y: 0 },
+    hover: { scale: 1.02, y: -2 },
+    tap: { scale: 0.98 },
+  },
+
+  // Modal animations
+  modalBackdrop: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
+
+  modalContent: {
+    initial: { opacity: 0, scale: 0.95, y: 20 },
+    animate: { opacity: 1, scale: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.95, y: 20 },
+  },
+
+  // List item staggered animations
+  listContainer: {
+    animate: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  },
+
+  listItem: {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
+  },
+
+  // Loading animations
+  pulse: {
+    animate: {
+      scale: [1, 1.05, 1],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
+
+  spin: {
+    animate: {
+      rotate: 360,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        ease: "linear",
+      },
+    },
+  },
+};
+
+// Advanced component with complex animations
+const AnimatedStatusCard: React.FC<StatusCardProps> = ({
+  title,
+  value,
+  icon: Icon,
+  color,
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <motion.div
+      variants={animationVariants.cardHover}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="glass p-6 rounded-xl cursor-pointer"
+    >
+      {/* Icon with rotation on hover */}
+      <motion.div
+        animate={{ rotate: isHovered ? 360 : 0 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        className={`p-3 rounded-lg ${colorClasses[color].background} mb-4`}
+      >
+        <Icon className="w-6 h-6" />
+      </motion.div>
+
+      {/* Animated counter */}
+      <motion.div
+        key={value}
+        initial={{ scale: 1.2, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="text-2xl font-bold text-white mb-1"
+      >
+        {value}
+      </motion.div>
+
+      <p className="text-sm text-white/70">{title}</p>
+    </motion.div>
+  );
+};
+```
+
+### **CSS Transitions e Micro-animações**
+
+```css
+/* Transitions avançadas */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bounce-transition {
+  transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.slide-transition {
+  transition: transform 0.3s ease-out;
+}
+
+/* Hover effects complexos */
+.glass-hover {
+  @apply transition-all duration-300;
+}
+
+.glass-hover:hover {
+  @apply bg-white/20 shadow-2xl transform scale-[1.02];
+  backdrop-filter: blur(16px);
+}
+
+/* Button press effects */
+.btn-press {
+  @apply transition-transform duration-150;
+}
+
+.btn-press:active {
+  @apply scale-95;
+}
+
+/* Loading states */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  @apply bg-gray-700 rounded;
+  overflow: hidden;
+  position: relative;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* Pulse animation for active states */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+.pulse-blue {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Typing effect */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+```
+
+---
+
+## 📝 **Formulários e Inputs**
+
+### **Escopo e Objetivo**
+
+Esta seção documenta todos os padrões, componentes e técnicas utilizados para formulários e inputs no MCTRL4K Calculator. O objetivo é fornecer um guia claro e reutilizável para implementação de formulários em projetos futuros, garantindo consistência, acessibilidade e uma ótima experiência do usuário.
+
+### **Componentes de Formulário**
+
+#### **Input Field Avançado**
+
+```tsx
+// Baseado no componente real utilizado
+export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
+  ({ label, placeholder, helperText, error, ...props }, ref) => {
+    return (
+      <div className="mb-4">
+        {/* Label com suporte a error */}
+        <label
+          className={`block text-sm font-medium ${
+            error ? "text-red-500" : "text-gray-300"
+          }`}
+        >
+          {label}
+        </label>
+
+        {/* Input com estados de focus e error */}
+        <input
+          ref={ref}
+          placeholder={placeholder}
+          className={`
+            mt-1 block w-full rounded-lg border
+            bg-black/5 px-4 py-2 text-gray-200
+            placeholder:text-gray-500
+            focus:border-blue-500 focus:ring-1 focus:ring-blue-500
+            ${error ? "border-red-500 ring-red-500" : "border-transparent"}
+          `}
+          {...props}
+        />
+
+        {/* Helper text ou mensagem de erro */}
+        {helperText && (
+          <p
+            className={`mt-2 text-xs ${
+              error ? "text-red-400" : "text-gray-400"
+            }`}
+          >
+            {helperText}
+          </p>
+        )}
+      </div>
+    );
+  }
 );
 ```
 
-### **2. Sistema de Tabs Dinâmico**
+#### **Botão de Envio com Estado de Loading**
 
-```typescript
-interface Tab {
-  id: string;
-  label: string;
-  icon: React.ComponentType;
-  component: React.ComponentType;
-  lazy?: boolean;
-}
+```tsx
+// Baseado no componente real utilizado
+export const SubmitButton: React.FC<{
+  isLoading?: boolean;
+  disabled?: boolean;
+}> = ({ isLoading, disabled, children }) => {
+  return (
+    <motion.button
+      type="submit"
+      disabled={disabled || isLoading}
+      className={`
+        flex w-full justify-center rounded-lg px-4 py-2
+        font-semibold text-white transition-all duration-200
+        ${
+          disabled
+            ? "bg-gray-600 cursor-not-allowed"
+            : "bg-blue-500 hover:bg-blue-600"
+        }
+      `}
+      whileHover={{ scale: disabled ? 1 : 1.05 }}
+      whileTap={{ scale: disabled ? 1 : 0.95 }}
+    >
+      {isLoading ? (
+        <div className="flex items-center gap-2">
+          <LoadingSpinner size="sm" />
+          Enviando...
+        </div>
+      ) : (
+        children
+      )}
+    </motion.button>
+  );
+};
+```
 
-const TabSystem: React.FC<TabSystemProps> = ({ tabs, defaultTab }) => {
-  const [activeTab, setActiveTab] = useState(defaultTab);
+### **Padrões de Validação**
+
+#### **Validação de Formulário com Feedback Visual**
+
+```tsx
+// Hook de validação de formulário
+export const useFormValidation = (initialValues: FormValues) => {
+  const [values, setValues] = useState<FormValues>(initialValues);
+  const [errors, setErrors] = useState<Partial<FormValues>>({});
+
+  const validate = useCallback(
+    (fieldValues?: FormValues) => {
+      const valuesToValidate = fieldValues || values;
+      let tempErrors: Partial<FormValues> = {};
+
+      // Validação simples de exemplo
+      if (!valuesToValidate.name) {
+        tempErrors.name = "Nome é obrigatório";
+      }
+
+      if (!valuesToValidate.email) {
+        tempErrors.email = "Email é obrigatório";
+      } else if (!/\S+@\S+\.\S+/.test(valuesToValidate.email)) {
+        tempErrors.email = "Email inválido";
+      }
+
+      setErrors(tempErrors);
+      return Object.keys(tempErrors).length === 0;
+    },
+    [values]
+  );
+
+  return {
+    values,
+    errors,
+    setValues,
+    validate,
+  };
+};
+```
+
+### **Exemplo de Formulário Completo**
+
+```tsx
+// Exemplo de uso dos componentes e hooks de formulário
+const ExampleForm = () => {
+  const { values, errors, setValues, validate } = useFormValidation({
+    name: "",
+    email: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      // Se a validação falhar, não envie o formulário
+      return;
+    }
+
+    // Simulação de envio de formulário
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    alert("Formulário enviado com sucesso!");
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Tab Headers */}
-      <div className="flex space-x-1 rounded-xl bg-white/10 p-1">
-        {tabs.map((tab) => (
-          <motion.button
-            key={tab.id}
-            className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <tab.icon />
-            {tab.label}
-          </motion.button>
-        ))}
-      </div>
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+      <TextInput
+        label="Nome"
+        placeholder="Digite seu nome"
+        value={values.name}
+        onChange={(e) => setValues({ ...values, name: e.target.value })}
+        error={!!errors.name}
+        helperText={errors.name}
+      />
 
-      {/* Tab Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-        >
-          {renderTabContent(activeTab)}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+      <TextInput
+        label="Email"
+        placeholder="Digite seu email"
+        value={values.email}
+        onChange={(e) => setValues({ ...values, email: e.target.value })}
+        error={!!errors.email}
+        helperText={errors.email}
+      />
+
+      <SubmitButton isLoading={false}>Enviar</SubmitButton>
+    </form>
   );
 };
 ```
 
 ---
 
-## 📊 **Componentes de Data Visualization**
+## 📊 **Charts e Visualizações**
 
-### **1. Setup do Chart.js**
+### **Chart.js Configuration (Real Implementation)**
 
-```typescript
+```tsx
+// Configuração base para Chart.js
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -236,6 +2793,7 @@ import {
   ArcElement,
   BarElement,
 } from "chart.js";
+import { Line, Pie, Bar } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -248,460 +2806,164 @@ ChartJS.register(
   ArcElement,
   BarElement
 );
-```
 
-### **2. Configuração de Charts Responsivos**
+// Theme personalizado para charts
+const chartTheme = {
+  backgroundColor: "rgba(255, 255, 255, 0.1)",
+  borderColor: "rgba(255, 255, 255, 0.3)",
+  gridColor: "rgba(255, 255, 255, 0.1)",
+  textColor: "#E5E7EB",
+  colors: {
+    primary: "#3B82F6",
+    secondary: "#A855F7",
+    success: "#22C55E",
+    warning: "#F59E0B",
+    error: "#EF4444",
+  },
+};
 
-```typescript
-const chartOptions = {
+// Configuração padrão para todos os charts
+const defaultChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
       position: "top" as const,
       labels: {
-        color: "rgb(156, 163, 175)", // text-gray-400
+        color: chartTheme.textColor,
+        font: {
+          size: 12,
+          family: "Inter, sans-serif",
+        },
         usePointStyle: true,
         pointStyle: "circle",
       },
     },
-    title: {
-      display: true,
-      text: "Chart Title",
-      color: "rgb(156, 163, 175)",
-      font: {
-        size: 16,
-        weight: "bold",
-      },
+    tooltip: {
+      backgroundColor: "rgba(0, 0, 0, 0.8)",
+      borderColor: "rgba(255, 255, 255, 0.2)",
+      borderWidth: 1,
+      titleColor: "#fff",
+      bodyColor: "#E5E7EB",
+      cornerRadius: 8,
+      displayColors: true,
     },
   },
   scales: {
     x: {
-      ticks: { color: "rgb(156, 163, 175)" },
       grid: {
-        color: "rgba(156, 163, 175, 0.1)",
-        borderColor: "rgba(156, 163, 175, 0.2)",
+        color: chartTheme.gridColor,
+        drawBorder: false,
+      },
+      ticks: {
+        color: chartTheme.textColor,
+        font: {
+          size: 11,
+        },
       },
     },
     y: {
-      ticks: { color: "rgb(156, 163, 175)" },
       grid: {
-        color: "rgba(156, 163, 175, 0.1)",
-        borderColor: "rgba(156, 163, 175, 0.2)",
+        color: chartTheme.gridColor,
+        drawBorder: false,
+      },
+      ticks: {
+        color: chartTheme.textColor,
+        font: {
+          size: 11,
+        },
       },
     },
   },
 };
 ```
 
-### **3. Status Cards com Animações**
+### **Performance Chart Component**
 
-```typescript
-const StatusCard: React.FC<StatusCardProps> = ({
-  title,
-  value,
-  icon: Icon,
-  color,
-  trend,
-  delay = 0,
-}) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      className="glass-card p-4"
-    >
-      <div className="flex items-center gap-3">
-        <div className={`p-2 bg-${color}-500/20 rounded-lg`}>
-          <Icon className={`w-5 h-5 text-${color}-400`} />
-        </div>
-        <div>
-          <p className="text-sm text-gray-400">{title}</p>
-          <p className="text-lg font-bold text-white">{value}</p>
-          {trend && (
-            <div
-              className={`text-xs ${
-                trend > 0 ? "text-green-400" : "text-red-400"
-              }`}
-            >
-              {trend > 0 ? "↗" : "↘"} {Math.abs(trend)}%
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-```
-
----
-
-## 🎭 **Animações com Framer Motion**
-
-### **1. Variantes de Animação**
-
-```typescript
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 10,
-    },
-  },
-};
-```
-
-### **2. Micro Interações**
-
-```typescript
-// Hover e tap effects
-<motion.button
-  whileHover={{
-    scale: 1.02,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
-  }}
-  whileTap={{ scale: 0.98 }}
-  transition={{ type: "spring", stiffness: 400, damping: 17 }}
->
-
-// Loading animations
-<motion.div
-  animate={{ rotate: 360 }}
-  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
->
-
-// Stagger animations para listas
-<motion.div variants={containerVariants}>
-  {items.map((item, index) => (
-    <motion.div key={index} variants={itemVariants}>
-      {item}
-    </motion.div>
-  ))}
-</motion.div>
-```
-
-### **3. Page Transitions**
-
-```typescript
-const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
-  duration: 0.5,
-};
-
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    x: "-100vw",
-    scale: 0.8,
-  },
-  in: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-  },
-  out: {
-    opacity: 0,
-    x: "100vw",
-    scale: 1.2,
-  },
-};
-```
-
----
-
-## 🎛️ **Inputs e Forms Avançados**
-
-### **1. Input Field Customizado**
-
-```typescript
-const InputField: React.FC<InputFieldProps> = ({
-  label,
-  value,
-  onChange,
-  type = "text",
-  unit,
-  error,
-  tooltip,
-}) => {
-  return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-300">
-        {label}
-        {tooltip && <TooltipIcon content={tooltip} />}
-      </label>
-
-      <div className="relative">
-        <input
-          type={type}
-          value={value}
-          onChange={onChange}
-          className={`
-            w-full px-3 py-2 
-            bg-white/10 border border-white/20 
-            rounded-lg text-white 
-            focus:outline-none focus:ring-2 focus:ring-blue-500 
-            transition-all duration-200
-            ${error ? "border-red-500" : ""}
-          `}
-        />
-        {unit && (
-          <span className="absolute right-3 top-2 text-gray-400 text-sm">
-            {unit}
-          </span>
-        )}
-      </div>
-
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-    </div>
-  );
-};
-```
-
-### **2. Select Customizado**
-
-```typescript
-const SelectField: React.FC<SelectFieldProps> = ({
-  label,
-  value,
-  onChange,
-  options,
-  placeholder = "Select an option",
-}) => {
-  return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-300">{label}</label>
-
-      <select
-        value={value}
-        onChange={onChange}
-        className="
-          w-full px-3 py-2 
-          bg-white/10 border border-white/20 
-          rounded-lg text-white 
-          focus:outline-none focus:ring-2 focus:ring-blue-500 
-          transition-all duration-200
-        "
-      >
-        <option value="" disabled>
-          {placeholder}
-        </option>
-        {options.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            className="bg-gray-800 text-white"
-          >
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-};
-```
-
----
-
-## 🔄 **State Management Patterns**
-
-### **1. Context + Reducer Pattern**
-
-```typescript
-interface CalculatorState {
-  inputs: InputValues;
-  results: CalculatorResults;
-  loading: boolean;
-  error: string | null;
+```tsx
+// Baseado no PerformanceCharts.tsx real
+interface PerformanceData {
+  calculationTime: number;
+  renderTime: number;
+  memoryUsage: number;
+  cpuUsage: number;
 }
 
-type CalculatorAction =
-  | { type: "SET_INPUT"; field: string; value: any }
-  | { type: "SET_RESULTS"; results: CalculatorResults }
-  | { type: "SET_LOADING"; loading: boolean }
-  | { type: "SET_ERROR"; error: string | null };
-
-const calculatorReducer = (
-  state: CalculatorState,
-  action: CalculatorAction
-): CalculatorState => {
-  switch (action.type) {
-    case "SET_INPUT":
-      return {
-        ...state,
-        inputs: { ...state.inputs, [action.field]: action.value },
-      };
-    case "SET_RESULTS":
-      return { ...state, results: action.results, loading: false };
-    // ... outros cases
-  }
-};
-```
-
-### **2. Local Storage Persistence**
-
-```typescript
-const useLocalStorage = <T>(key: string, initialValue: T) => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
-  });
-
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(error);
-    }
+const PerformanceChart: React.FC<{
+  data: PerformanceData[];
+  timeLabels: string[];
+}> = ({ data, timeLabels }) => {
+  const chartData = {
+    labels: timeLabels,
+    datasets: [
+      {
+        label: "Tempo de Cálculo (ms)",
+        data: data.map((d) => d.calculationTime),
+        borderColor: chartTheme.colors.primary,
+        backgroundColor: `${chartTheme.colors.primary}20`,
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: "Tempo de Render (ms)",
+        data: data.map((d) => d.renderTime),
+        borderColor: chartTheme.colors.secondary,
+        backgroundColor: `${chartTheme.colors.secondary}20`,
+        tension: 0.4,
+        fill: true,
+      },
+    ],
   };
 
-  return [storedValue, setValue] as const;
-};
-```
-
----
-
-## 📱 **Responsividade e Mobile**
-
-### **1. Breakpoints Tailwind**
-
-```css
-/* Breakpoints utilizados */
-sm:   640px   /* Small devices */
-md:   768px   /* Medium devices */
-lg:   1024px  /* Large devices */
-xl:   1280px  /* Extra large */
-2xl:  1536px  /* 2X large */
-
-/* Pattern responsivo comum */
-grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
-text-sm md:text-base lg:text-lg
-p-4 md:p-6 lg:p-8
-```
-
-### **2. Mobile-First Design**
-
-```css
-/* Inicia mobile, expande para desktop */
-.container {
-  @apply w-full px-4 mx-auto;
-  @apply sm:px-6 lg:px-8;
-  @apply max-w-none sm:max-w-xl lg:max-w-7xl;
-}
-
-/* Navigation mobile */
-.mobile-menu {
-  @apply block lg:hidden;
-}
-
-.desktop-menu {
-  @apply hidden lg:block;
-}
-```
-
----
-
-## ⚡ **Performance Optimizations**
-
-### **1. Component Memoization**
-
-```typescript
-// Memoização de componentes pesados
-const ExpensiveComponent = React.memo<ExpensiveComponentProps>(
-  ({ data }) => {
-    return <div>{/* render logic */}</div>;
-  },
-  (prevProps, nextProps) => {
-    // Custom comparison
-    return prevProps.data.id === nextProps.data.id;
-  }
-);
-
-// Memoização de valores computados
-const expensiveValue = useMemo(() => {
-  return data.map((item) => item.value * complexCalculation(item));
-}, [data]);
-
-// Memoização de callbacks
-const handleClick = useCallback(
-  (id: string) => {
-    onItemClick(id);
-  },
-  [onItemClick]
-);
-```
-
-### **2. Debouncing para Inputs**
-
-```typescript
-const DebouncedInput: React.FC = ({ onChange, delay = 300 }) => {
-  const [value, setValue] = useState("");
-  const debouncedValue = useDebounce(value, delay);
-
-  useEffect(() => {
-    onChange(debouncedValue);
-  }, [debouncedValue, onChange]);
-
-  return <input value={value} onChange={(e) => setValue(e.target.value)} />;
-};
-```
-
-### **3. Virtual Scrolling para Listas**
-
-```typescript
-const VirtualList: React.FC<VirtualListProps> = ({
-  items,
-  itemHeight,
-  containerHeight,
-}) => {
-  const [scrollTop, setScrollTop] = useState(0);
-
-  const visibleStart = Math.floor(scrollTop / itemHeight);
-  const visibleEnd = Math.min(
-    visibleStart + Math.ceil(containerHeight / itemHeight),
-    items.length
+  return (
+    <div className="glass rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-white mb-4">
+        Performance Timeline
+      </h3>
+      <div className="h-64">
+        <Line data={chartData} options={defaultChartOptions} />
+      </div>
+    </div>
   );
+};
+```
 
-  const visibleItems = items.slice(visibleStart, visibleEnd);
+### **Interactive Donut Chart**
+
+```tsx
+const DonutChart: React.FC<{
+  title: string;
+  data: { label: string; value: number; color: string }[];
+}> = ({ title, data }) => {
+  const chartData = {
+    labels: data.map((item) => item.label),
+    datasets: [
+      {
+        data: data.map((item) => item.value),
+        backgroundColor: data.map((item) => `${item.color}80`),
+        borderColor: data.map((item) => item.color),
+        borderWidth: 2,
+        cutout: "60%",
+      },
+    ],
+  };
+
+  const options = {
+    ...defaultChartOptions,
+    plugins: {
+      ...defaultChartOptions.plugins,
+      legend: {
+        ...defaultChartOptions.plugins.legend,
+        position: "bottom" as const,
+      },
+    },
+  };
 
   return (
-    <div
-      style={{ height: containerHeight, overflow: "auto" }}
-      onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
-    >
-      <div style={{ height: items.length * itemHeight }}>
-        <div
-          style={{ transform: `translateY(${visibleStart * itemHeight}px)` }}
-        >
-          {visibleItems.map((item, index) => (
-            <div key={visibleStart + index} style={{ height: itemHeight }}>
-              {item}
-            </div>
-          ))}
-        </div>
+    <div className="glass rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
+      <div className="h-64">
+        <Pie data={chartData} options={options} />
       </div>
     </div>
   );
@@ -710,253 +2972,379 @@ const VirtualList: React.FC<VirtualListProps> = ({
 
 ---
 
-## 🎯 **Utility Functions e Helpers**
+## ⚡ **Performance e Otimizações**
 
-### **1. Format Utilities**
+### **Lazy Loading Components**
 
-```typescript
-// Formatação de números
-export const formatNumber = (value: number, decimals = 2): string => {
-  return new Intl.NumberFormat("pt-BR", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(value);
+```tsx
+// Lazy loading setup
+import { lazy, Suspense } from "react";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
+
+// Lazy imports
+const AdvancedAnalyticsDashboard = lazy(
+  () => import("./components/advanced/AdvancedAnalyticsDashboard")
+);
+const DeviceSelector = lazy(
+  () => import("./components/advanced/DeviceSelector")
+);
+const InteractiveCharts = lazy(
+  () => import("./components/charts/InteractiveCharts")
+);
+
+// Wrapper component para lazy loading
+const LazyWrapper: React.FC<{
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}> = ({ children, fallback }) => {
+  return (
+    <Suspense
+      fallback={
+        fallback || (
+          <div className="glass rounded-xl p-8 flex items-center justify-center">
+            <LoadingSpinner size="lg" />
+          </div>
+        )
+      }
+    >
+      {children}
+    </Suspense>
+  );
 };
 
-// Formatação de bytes
-export const formatBytes = (bytes: number): string => {
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  let size = bytes;
-  let unitIndex = 0;
-
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex++;
-  }
-
-  return `${formatNumber(size)} ${units[unitIndex]}`;
-};
-
-// Geração de cores automática
-export const generateColors = (count: number): string[] => {
-  const hueStep = 360 / count;
-  return Array.from(
-    { length: count },
-    (_, i) => `hsl(${i * hueStep}, 70%, 60%)`
+// Uso em componentes
+const App = () => {
+  return (
+    <div>
+      <LazyWrapper>
+        <AdvancedAnalyticsDashboard />
+      </LazyWrapper>
+    </div>
   );
 };
 ```
 
-### **2. Animation Utilities**
+### **Memoização e Hooks de Performance**
 
-```typescript
-// Easing functions customizadas
-export const easing = {
-  easeInOutCubic: [0.645, 0.045, 0.355, 1],
-  easeOutExpo: [0.19, 1, 0.22, 1],
-  easeInOutCirc: [0.785, 0.135, 0.15, 0.86],
-};
-
-// Stagger delay calculator
-export const getStaggerDelay = (index: number, baseDelay = 0.1): number => {
-  return baseDelay * index;
-};
-
-// Viewport detection
-export const useInViewport = (ref: RefObject<Element>) => {
-  const [isInViewport, setIsInViewport] = useState(false);
+```tsx
+// Custom hook para debouncing
+export const useDebounce = <T,>(value: T, delay: number): T => {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsInViewport(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [ref]);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
 
-  return isInViewport;
+  return debouncedValue;
+};
+
+// Performance monitoring hook
+export const usePerformance = () => {
+  const [metrics, setMetrics] = useState({
+    renderTime: 0,
+    calculationTime: 0,
+    memoryUsage: 0,
+  });
+
+  const startTiming = useCallback(() => {
+    return performance.now();
+  }, []);
+
+  const endTiming = useCallback((startTime: number, operation: string) => {
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+
+    setMetrics((prev) => ({
+      ...prev,
+      [operation]: duration,
+    }));
+
+    return duration;
+  }, []);
+
+  const measureMemory = useCallback(() => {
+    if ("memory" in performance) {
+      const memInfo = (performance as any).memory;
+      setMetrics((prev) => ({
+        ...prev,
+        memoryUsage: memInfo.usedJSHeapSize / 1024 / 1024, // MB
+      }));
+    }
+  }, []);
+
+  return { metrics, startTiming, endTiming, measureMemory };
+};
+
+// Memoized calculator component
+const Calculator = memo(() => {
+  const { inputs, results, calculate } = useCalculator();
+  const debouncedInputs = useDebounce(inputs, 300);
+
+  useEffect(() => {
+    calculate();
+  }, [debouncedInputs, calculate]);
+
+  return <div>{/* Calculator UI */}</div>;
+});
+```
+
+### **Web Workers para Cálculos Pesados**
+
+```tsx
+// useWebWorker hook
+export const useWebWorker = () => {
+  const workerRef = useRef<Worker | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  useEffect(() => {
+    // Criar worker
+    workerRef.current = new Worker("/calculationWorker.js");
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
+  const calculateInWorker = useCallback((data: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      if (!workerRef.current) {
+        reject(new Error("Worker not available"));
+        return;
+      }
+
+      setIsCalculating(true);
+
+      const handleMessage = (e: MessageEvent) => {
+        setIsCalculating(false);
+        workerRef.current?.removeEventListener("message", handleMessage);
+        resolve(e.data);
+      };
+
+      const handleError = (error: ErrorEvent) => {
+        setIsCalculating(false);
+        workerRef.current?.removeEventListener("error", handleError);
+        reject(error);
+      };
+
+      workerRef.current.addEventListener("message", handleMessage);
+      workerRef.current.addEventListener("error", handleError);
+      workerRef.current.postMessage(data);
+    });
+  }, []);
+
+  return { calculateInWorker, isCalculating };
+};
+```
+
+### **Keyboard Shortcuts Hook**
+
+```tsx
+// Keyboard shortcuts implementation
+export const useKeyboardShortcuts = () => {
+  useHotkeys("ctrl+s", (e) => {
+    e.preventDefault();
+    // Save action
+  });
+
+  useHotkeys("ctrl+r", (e) => {
+    e.preventDefault();
+    // Reset action
+  });
+
+  useHotkeys("ctrl+h", (e) => {
+    e.preventDefault();
+    // Show help
+  });
+
+  useHotkeys("ctrl+shift+d", (e) => {
+    e.preventDefault();
+    // Toggle debug mode
+  });
+
+  useHotkeys("esc", (e) => {
+    // Close modals
+  });
 };
 ```
 
 ---
 
-## 📦 **Package.json Dependencies**
+## 📁 **Estrutura de Arquivos UI**
 
-```json
-{
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "framer-motion": "^10.16.4",
-    "lucide-react": "^0.292.0",
-    "react-hot-toast": "^2.4.1",
-    "chart.js": "^4.4.0",
-    "react-chartjs-2": "^5.2.0",
-    "react-hotkeys-hook": "^4.4.1"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "tailwindcss": "^3.3.0",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.24"
-  }
-}
+### **Organização de Componentes**
+
+```
+src/
+├── components/
+│   ├── ui/                          # Componentes base reutilizáveis
+│   │   ├── Button.tsx              # Botões primários, secundários
+│   │   ├── Card.tsx                # Cards com glass effect
+│   │   ├── Input.tsx               # Input fields avançados
+│   │   ├── Modal.tsx               # Modais animados
+│   │   ├── Badge.tsx               # Status indicators
+│   │   ├── Tooltip.tsx             # Tooltips informativos
+│   │   ├── Loading.tsx             # Loading states
+│   │   └── index.ts                # Barrel exports
+│   │
+│   ├── forms/                      # Componentes de formulário
+│   │   ├── InputSection.tsx        # Seções de input agrupadas
+│   │   ├── InputFields.tsx         # Fields específicos
+│   │   ├── FormValidation.tsx      # Validação de formulários
+│   │   └── PresetSelector.tsx      # Seletores de preset
+│   │
+│   ├── charts/                     # Visualizações e gráficos
+│   │   ├── PerformanceCharts.tsx   # Charts de performance
+│   │   ├── InteractiveCharts.tsx   # Charts interativos
+│   │   ├── StatusCards.tsx         # Cards com métricas
+│   │   └── ChartConfig.ts          # Configurações Chart.js
+│   │
+│   ├── advanced/                   # Componentes complexos
+│   │   ├── AnalyticsDashboard.tsx  # Dashboard principal
+│   │   ├── DeviceSelector.tsx      # Seletor de dispositivos
+│   │   ├── DeviceValidation.tsx    # Validação device-specific
+│   │   └── ExportWizard.tsx        # Wizard de exportação
+│   │
+│   ├── layout/                     # Layout components
+│   │   ├── Header.tsx              # Header principal
+│   │   ├── TabContainer.tsx        # Container de tabs
+│   │   ├── AppLayout.tsx           # Layout da aplicação
+│   │   └── ResponsiveGrid.tsx      # Grid responsivo
+│   │
+│   └── lazy/                       # Lazy loading utilities
+│       ├── LazyWrapper.tsx         # Wrapper para Suspense
+│       └── index.ts                # Lazy imports
+│
+├── hooks/                          # Custom hooks
+│   ├── useCalculator.ts            # Hook principal de cálculos
+│   ├── usePerformance.ts           # Monitoramento performance
+│   ├── useKeyboardShortcuts.ts     # Atalhos de teclado
+│   ├── useWebWorker.ts             # Web workers
+│   ├── useDebounce.ts              # Debouncing
+│   └── useTheme.ts                 # Sistema de temas
+│
+├── styles/                         # Estilos e temas
+│   ├── globals.css                 # CSS global
+│   ├── components.css              # Estilos de componentes
+│   ├── animations.css              # Animações CSS
+│   └── themes.css                  # Variáveis de tema
+│
+├── utils/                          # Utilitários
+│   ├── animations.ts               # Variantes Framer Motion
+│   ├── chartConfigs.ts             # Configurações de charts
+│   ├── formatters.ts               # Formatação de dados
+│   └── constants.ts                # Constantes globais
+│
+└── types/                          # TypeScript types
+    ├── components.ts               # Types de componentes
+    ├── calculator.ts               # Types do calculator
+    └── charts.ts                   # Types dos charts
 ```
 
----
+### **Barrel Exports (index.ts)**
 
-## 🚀 **Como Implementar em Novo Projeto**
+```typescript
+// components/ui/index.ts
+export { Button } from "./Button";
+export { Card } from "./Card";
+export { Input } from "./Input";
+export { Modal } from "./Modal";
+export { Badge } from "./Badge";
+export { LoadingSpinner, LoadingOverlay, SkeletonLoader } from "./Loading";
 
-### **1. Setup Inicial**
+// utils/index.ts
+export { animationVariants } from "./animations";
+export { chartTheme, defaultChartOptions } from "./chartConfigs";
+export { formatBytes, formatPercentage, formatDuration } from "./formatters";
+export * from "./constants";
 
-```bash
-# Criar projeto
-npm create vite@latest my-app -- --template react-ts
-
-# Instalar dependências
-npm install framer-motion lucide-react react-hot-toast chart.js react-chartjs-2 react-hotkeys-hook
-
-# Instalar Tailwind
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+// hooks/index.ts
+export { useCalculator } from "./useCalculator";
+export { usePerformance } from "./usePerformance";
+export { useKeyboardShortcuts } from "./useKeyboardShortcuts";
+export { useWebWorker } from "./useWebWorker";
+export { useDebounce } from "./useDebounce";
+export { useTheme } from "./useTheme";
 ```
 
-### **2. Configuração Tailwind**
-
-```javascript
-// tailwind.config.js
-module.exports = {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: {
-    extend: {
-      backdropBlur: {
-        xs: "2px",
-      },
-      animation: {
-        "fade-in": "fadeIn 0.5s ease-in-out",
-        "slide-up": "slideUp 0.3s ease-out",
-      },
-    },
-  },
-  plugins: [],
-};
-```
-
-### **3. CSS Global**
+### **CSS Organization**
 
 ```css
-/* src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* globals.css - Ordem de importação */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
+/* Custom CSS layers */
 @layer base {
-  * {
-    @apply border-border;
+  /* CSS resets e base styles */
+  html {
+    @apply antialiased;
   }
   body {
-    @apply bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900;
-    @apply text-white font-sans;
+    @apply bg-gray-900 text-white;
   }
 }
 
 @layer components {
-  .glass-card {
+  /* Componentes reutilizáveis */
+  .glass {
     @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
   }
-
   .btn-primary {
-    @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
+    @apply px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg;
   }
+  .form-input {
+    @apply w-full p-3 bg-white/10 border border-white/20 rounded-lg;
+  }
+}
 
-  .input-field {
-    @apply w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200;
+@layer utilities {
+  /* Utilities customizadas */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  .glass-border {
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 }
 ```
 
 ---
 
-## 💡 **Dicas de Implementação**
+## 🎯 **Conclusão e Próximos Passos**
 
-### **1. Performance**
+Esta documentação serve como um **guia completo e reutilizável** para implementar o design system do MCTRL4K Calculator em futuros projetos. Todos os componentes, padrões e técnicas estão documentados com:
 
-- Use `React.memo()` para componentes que recebem props complexas
-- Implemente `useMemo()` para cálculos pesados
-- Use `useCallback()` para funções passadas como props
-- Considere lazy loading para componentes pesados
+✅ **Código prático e testado**  
+✅ **Exemplos de implementação real**  
+✅ **Configurações de performance**  
+✅ **Sistema de organização escalável**  
+✅ **Patterns de animação e UX**
 
-### **2. Accessibility**
+### **Como Usar Esta Documentação:**
 
-- Sempre adicione `aria-label` em ícones
-- Use `role` apropriados em elementos customizados
-- Implemente navegação por teclado
-- Mantenha contraste adequado
+1. **Copy & Paste Ready** - Todos os códigos podem ser copiados diretamente
+2. **Modular** - Cada seção é independente e reutilizável
+3. **Escalável** - Estrutura preparada para projetos grandes
+4. **Performance-First** - Otimizações já incluídas
+5. **TypeScript Ready** - Types e interfaces completas
 
-### **3. Mobile Experience**
+### **Documentos Especializados (Opcionais):**
 
-- Teste em dispositivos reais
-- Use `touch-action` para gestos customizados
-- Implemente swipe gestures com Framer Motion
-- Otimize tamanhos de touch targets (min 44px)
+Para projetos que precisem de ainda mais detalhamento, posso criar documentos específicos para:
 
-### **4. Error Handling**
-
-- Sempre implemente Error Boundaries
-- Use try/catch em operações assíncronas
-- Forneça fallbacks para componentes lazy
-- Log erros para debugging
+- 🎬 **Animações Avançadas** - Patterns complexos do Framer Motion
+- 📝 **Formulários Especializados** - Validação, multi-step, autocomplete
+- 📊 **Data Visualization** - Charts avançados, dashboards interativos
+- 🎣 **Hooks Avançados** - State management, API integration
+- 📱 **Mobile & Responsive** - Touch gestures, PWA patterns
 
 ---
 
-## 🎨 **Exemplos de Uso Rápido**
-
-### **Glassmorphism Card**
-
-```tsx
-<div className="glass-card p-6">
-  <h3 className="text-lg font-semibold text-white mb-4">Card Title</h3>
-  <p className="text-gray-300">Card content goes here</p>
-</div>
-```
-
-### **Animated Button**
-
-```tsx
-<motion.button
-  whileHover={{ scale: 1.02 }}
-  whileTap={{ scale: 0.98 }}
-  className="btn-primary"
->
-  Click me
-</motion.button>
-```
-
-### **Status Card com Animação**
-
-```tsx
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  className="glass-card p-4"
->
-  <div className="flex items-center gap-3">
-    <div className="p-2 bg-blue-500/20 rounded-lg">
-      <Icon className="w-5 h-5 text-blue-400" />
-    </div>
-    <div>
-      <p className="text-sm text-gray-400">Label</p>
-      <p className="text-lg font-bold text-white">Value</p>
-    </div>
-  </div>
-</motion.div>
-```
-
----
-
-**🎯 Este guia contém tudo que você precisa para recriar a interface moderna e interativa do MCTRL4K Calculator em qualquer projeto React/TypeScript!**
+**💡 Este documento é um produto completo e prático para acelerar o desenvolvimento de interfaces modernas e performáticas.**

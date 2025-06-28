@@ -80,7 +80,8 @@ export function useLocalStorage(key, defaultValue) {
 export function useTemporaryFeedback(duration = 3000) {
   const [feedback, setFeedback] = useState("");
 
-  const showFeedback = (message) => {
+  const showFeedback = (message, type = "info") => {
+    // Para compatibilidade, se receber type, usar apenas a message
     setFeedback(message);
     setTimeout(() => setFeedback(""), duration);
   };

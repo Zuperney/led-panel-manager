@@ -1,38 +1,98 @@
 [
   {
-    "nome": "P2.6",
-    "tipo": "indoor",
+    "nome": "P5.9",
+    "tipo": "outdoor",
     "largura": 500,
     "altura": 500,
-    "pixels_largura": 192,
-    "pixels_altura": 192,
-    "potencia": 85,
-    "peso": 6,
-    "pitch": 2.6,
-    "fabricante": "Yestech"
+    "pixels_largura": 84,
+    "pixels_altura": 84,
+    "potencia": 110,
+    "peso": 7,
+    "pitch": 5.95,
+    "fabricante": "123"
   },
   {
-    "nome": "P2.6 (Cópia)",
-    "tipo": "indoor",
-    "largura": 500,
-    "altura": 500,
-    "pixels_largura": 192,
-    "pixels_altura": 192,
-    "potencia": 85,
-    "peso": 6,
-    "pitch": 2.6,
-    "fabricante": "Yestech"
-  },
-  {
-    "nome": "P3.91 Indoor (Cópia)",
-    "tipo": "indoor",
+    "nome": "P3.9 - Sigpel",
+    "tipo": "outdoor",
     "largura": 500,
     "altura": 500,
     "pixels_largura": 128,
     "pixels_altura": 128,
-    "potencia": 350,
-    "peso": 6.5,
+    "potencia": 110,
+    "peso": 8,
     "pitch": 3.91,
-    "fabricante": "NovaLED"
+    "fabricante": "Sigpel"
+  },
+  {
+    "nome": "P3.9 - Yestech",
+    "tipo": "outdoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 128,
+    "pixels_altura": 128,
+    "potencia": 95,
+    "peso": 7,
+    "pitch": 3.91,
+    "fabricante": "Yestech"
+  },
+  {
+    "nome": "P2.9 - RGB",
+    "tipo": "indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 168,
+    "pixels_altura": 168,
+    "potencia": 100,
+    "peso": 9,
+    "pitch": 2.98,
+    "fabricante": "RGB Share"
+  },
+  {
+    "nome": "P2.9 - Unilumen",
+    "tipo": "indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 168,
+    "pixels_altura": 168,
+    "potencia": 90,
+    "peso": 8,
+    "pitch": 2.98,
+    "fabricante": "Unilumen"
+  },
+  {
+    "nome": "P2.6 - Lote 01",
+    "tipo": "indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 192,
+    "pixels_altura": 192,
+    "potencia": 80,
+    "peso": 6,
+    "pitch": 2.6,
+    "fabricante": "Yestech"
+  },
+  {
+    "nome": "P2.6 - Lote 02",
+    "tipo": "indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 192,
+    "pixels_altura": 192,
+    "potencia": 80,
+    "peso": 6,
+    "pitch": 2.6,
+    "fabricante": "Yestech"
+  },
+  {
+    "nome": "P2.6 - Lote 03",
+    "tipo": "indoor",
+    "largura": 500,
+    "altura": 500,
+    "pixels_largura": 192,
+    "pixels_altura": 192,
+    "potencia": 80,
+    "peso": 6,
+    "pitch": 2.6,
+    "fabricante": "Yestech"
   }
 ]

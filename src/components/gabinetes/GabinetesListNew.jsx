@@ -35,21 +35,21 @@ export default function GabinetesListNew({
       <MainContainer>
         {/* Header da Seção */}
         <SectionHeader>
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Settings className="text-purple-400" />
-              Gabinetes Cadastrados
-            </h2>
-            <Button
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
-              icon={Plus}
+          <motion.h2
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-xl font-semibold flex items-center gap-2"
+          >
+            <motion.div
+              initial={{ rotate: -180, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
             >
-              Novo Gabinete
-            </Button>
-          </div>
+              <Settings className="text-purple-400" />
+            </motion.div>
+            Gabinetes Cadastrados
+          </motion.h2>
         </SectionHeader>
 
         {/* Conteúdo da Lista */}
@@ -92,14 +92,23 @@ export default function GabinetesListNew({
               }
             />
           ) : (
-            <div
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: {
+                  transition: {
+                    staggerChildren: 0.05,
+                  },
+                },
+              }}
               className={
                 viewMode === "grid"
                   ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
                   : "space-y-4"
               }
             >
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {gabinetesFiltrados.map((gabinete, index) => {
                   // Encontrar o índice original do gabinete
                   const originalIndex = gabinetes.findIndex(
@@ -110,33 +119,49 @@ export default function GabinetesListNew({
                   );
 
                   return viewMode === "grid" ? (
-                    <GabineteCardNew
+                    <motion.div
                       key={`${gabinete.nome}-${index}`}
-                      gabinete={gabinete}
-                      originalIndex={originalIndex}
-                      index={index}
-                      gabineteSelecionado={gabineteSelecionado}
-                      setGabineteSelecionado={setGabineteSelecionado}
-                      duplicarGabinete={duplicarGabinete}
-                      editarGabinete={editarGabinete}
-                      removerGabinete={removerGabinete}
-                    />
+                      variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        visible: { opacity: 1, y: 0 },
+                      }}
+                      layout
+                    >
+                      <GabineteCardNew
+                        gabinete={gabinete}
+                        originalIndex={originalIndex}
+                        index={index}
+                        gabineteSelecionado={gabineteSelecionado}
+                        setGabineteSelecionado={setGabineteSelecionado}
+                        duplicarGabinete={duplicarGabinete}
+                        editarGabinete={editarGabinete}
+                        removerGabinete={removerGabinete}
+                      />
+                    </motion.div>
                   ) : (
-                    <GabineteListItemNew
+                    <motion.div
                       key={`${gabinete.nome}-${index}-list`}
-                      gabinete={gabinete}
-                      originalIndex={originalIndex}
-                      index={index}
-                      gabineteSelecionado={gabineteSelecionado}
-                      setGabineteSelecionado={setGabineteSelecionado}
-                      duplicarGabinete={duplicarGabinete}
-                      editarGabinete={editarGabinete}
-                      removerGabinete={removerGabinete}
-                    />
+                      variants={{
+                        hidden: { opacity: 0, x: -20 },
+                        visible: { opacity: 1, x: 0 },
+                      }}
+                      layout
+                    >
+                      <GabineteListItemNew
+                        gabinete={gabinete}
+                        originalIndex={originalIndex}
+                        index={index}
+                        gabineteSelecionado={gabineteSelecionado}
+                        setGabineteSelecionado={setGabineteSelecionado}
+                        duplicarGabinete={duplicarGabinete}
+                        editarGabinete={editarGabinete}
+                        removerGabinete={removerGabinete}
+                      />
+                    </motion.div>
                   );
                 })}
               </AnimatePresence>
-            </div>
+            </motion.div>
           )}
         </SectionContent>
       </MainContainer>

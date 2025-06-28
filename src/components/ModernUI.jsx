@@ -54,6 +54,7 @@ export const InputField = forwardRef(
             ${Icon ? "pl-10" : ""}
             ${unit ? "pr-12" : ""}
             ${error ? "border-red-500 focus:ring-red-500" : ""}
+            ${className}
           `}
             {...props}
           />

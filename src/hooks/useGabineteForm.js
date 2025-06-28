@@ -5,11 +5,13 @@ export function useGabineteForm(
   gabinetes,
   setGabinetes,
   salvarGabinetes,
-  showFeedback
+  showFeedback,
+  onSubmitSuccess
 ) {
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({
     nome: "",
+    tipo: "",
     largura: "",
     altura: "",
     pixelPitch: "",
@@ -17,12 +19,14 @@ export function useGabineteForm(
     peso: "",
     resolucaoX: "",
     resolucaoY: "",
+    fabricante: "",
   });
 
   // Reset form
   const resetForm = () => {
     setForm({
       nome: "",
+      tipo: "",
       largura: "",
       altura: "",
       pixelPitch: "",
@@ -30,6 +34,7 @@ export function useGabineteForm(
       peso: "",
       resolucaoX: "",
       resolucaoY: "",
+      fabricante: "",
     });
     setEditando(null);
   };
@@ -37,7 +42,28 @@ export function useGabineteForm(
   // Handle form change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    setForm((prev) => {
+      const newForm = { ...prev, [name]: value };
+
+      // Cálculo automático do pixel pitch
+      // Fórmula: largura (mm) / resolução X (pixels)
+      if (name === "largura" || name === "resolucaoX") {
+        const largura =
+          name === "largura" ? parseFloat(value) : parseFloat(newForm.largura);
+        const resolucaoX =
+          name === "resolucaoX"
+            ? parseFloat(value)
+            : parseFloat(newForm.resolucaoX);
+
+        if (largura > 0 && resolucaoX > 0) {
+          const pixelPitch = largura / resolucaoX;
+          newForm.pixelPitch = pixelPitch.toFixed(2); // Arredonda para 2 casas decimais
+        }
+      }
+
+      return newForm;
+    });
   };
 
   // Submit form
@@ -46,14 +72,16 @@ export function useGabineteForm(
 
     try {
       const novoGabinete = {
-        ...form,
+        nome: form.nome,
+        tipo: form.tipo,
         largura: Number(form.largura),
         altura: Number(form.altura),
-        pixelPitch: Number(form.pixelPitch),
+        pixels_largura: Number(form.resolucaoX),
+        pixels_altura: Number(form.resolucaoY),
         potencia: Number(form.potencia),
         peso: Number(form.peso),
-        resolucaoX: Number(form.resolucaoX),
-        resolucaoY: Number(form.resolucaoY),
+        pitch: Number(form.pixelPitch),
+        fabricante: form.fabricante,
       };
 
       // Verificar duplicidade
@@ -92,6 +120,11 @@ export function useGabineteForm(
       setGabinetes(novosGabinetes);
       await salvarGabinetes(novosGabinetes);
       resetForm();
+
+      // Chamar callback de sucesso se fornecido (para fechar modal, etc.)
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      }
     } catch (error) {
       console.error("Erro ao salvar gabinete:", error);
       showFeedback("Erro ao salvar gabinete. Tente novamente.", "error");
@@ -101,7 +134,18 @@ export function useGabineteForm(
   // Editar gabinete
   const editarGabinete = (index) => {
     const gabinete = gabinetes[index];
-    setForm(gabinete);
+    setForm({
+      nome: gabinete.nome || "",
+      tipo: gabinete.tipo || "",
+      largura: gabinete.largura || "",
+      altura: gabinete.altura || "",
+      resolucaoX: gabinete.pixels_largura || "",
+      resolucaoY: gabinete.pixels_altura || "",
+      pixelPitch: gabinete.pitch || "",
+      potencia: gabinete.potencia || "",
+      peso: gabinete.peso || "",
+      fabricante: gabinete.fabricante || "",
+    });
     setEditando(index);
   };
 

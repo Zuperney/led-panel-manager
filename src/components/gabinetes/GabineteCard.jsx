@@ -123,19 +123,16 @@ export default function GabineteCard({
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          {gabinete.pixelPitch <= 5 && (
-            <span className="px-3 py-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 text-xs rounded-full font-medium border border-green-500/30">
-              Premium
-            </span>
-          )}
           <span
             className={`px-3 py-1 text-xs rounded-full font-medium border ${
-              gabinete.pixelPitch <= 10
+              gabinete.tipo === "indoor"
                 ? "bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 border-blue-500/30"
                 : "bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border-orange-500/30"
             }`}
           >
-            {gabinete.pixelPitch <= 10 ? "Indoor" : "Outdoor"}
+            {gabinete.tipo
+              ? gabinete.tipo.charAt(0).toUpperCase() + gabinete.tipo.slice(1)
+              : "Não definido"}
           </span>
         </div>
       </div>
