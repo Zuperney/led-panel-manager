@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   PDFDownloadLink,
   Page,
@@ -13,6 +14,28 @@ import {
 import { calcularPotenciaFinal, calcularEnergia } from "./painelCalculos";
 import { useApiData } from "./hooks";
 import ListaMaterialModal from "./components/ListaMaterialModal";
+import {
+  InputField,
+  SelectField,
+  Button,
+  StatusCard,
+  Modal,
+  LoadingSpinner,
+} from "./components/ModernUI";
+import {
+  FileText,
+  Download,
+  Edit3,
+  Eye,
+  Calculator,
+  Zap,
+  Ruler,
+  Package,
+  MoreVertical,
+  TrendingUp,
+  BarChart3,
+  PieChart,
+} from "lucide-react";
 
 export default function Relatorio({ isActive, onNavigateToTab }) {
   const { data: projetos } = useApiData("projetos", isActive);
@@ -468,8 +491,25 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h2>📊 Relatório de Projetos</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen p-6"
+    >
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+            <FileText className="text-blue-400" />
+            Relatório de Projetos
+          </h1>
+          <p className="text-gray-400">Visualize e exporte relatórios detalhados dos projetos</p>
+        </motion.div>
       {projetos.length === 0 ? (
         <div className="info-box" style={{ textAlign: "center" }}>
           <p>📋 Nenhum projeto cadastrado ainda.</p>
@@ -686,7 +726,8 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
             : []
         }
       />
-    </div>
+      </div>
+    </motion.div>
   );
 }
 

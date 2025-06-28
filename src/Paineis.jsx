@@ -1,14 +1,35 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useProjeto } from "./contextProjeto";
 import { useApiData, useLocalStorage, useTemporaryFeedback } from "./hooks";
 import PainelCard from "./components/PainelCard";
 import FeedbackMessage from "./components/FeedbackMessage";
+import {
+  InputField,
+  SelectField,
+  Button,
+  StatusCard,
+  Modal,
+  LoadingSpinner,
+} from "./components/ModernUI";
 import {
   calcularPainelPorGabinete,
   calcularPainelPorMetro,
   calcularEnergia,
   calcularPotenciaFinal,
 } from "./painelCalculos";
+import {
+  Monitor,
+  Calculator,
+  Save,
+  Edit3,
+  Trash2,
+  Zap,
+  Ruler,
+  Eye,
+  Plus,
+  Settings,
+} from "lucide-react";
 
 export default function Paineis({ isActive }) {
   const { state } = useProjeto();
@@ -292,35 +313,106 @@ export default function Paineis({ isActive }) {
       ? paineis.filter((p) => p.projeto === selectedProjectId)
       : paineis;
 
+  // Cards de estatísticas
+  const statsCards = [
+    {
+      title: "Painéis Criados",
+      value: paineisFiltrados.length,
+      icon: Monitor,
+      color: "blue",
+    },
+    {
+      title: "Potência Total",
+      value: paineisFiltrados.reduce((acc, p) => {
+        const gabinete = gabinetes.find((g) => g.nome === p.gabinete);
+        if (gabinete) {
+          const qtdGab = (p.qtdLargura || 1) * (p.qtdAltura || 1);
+          return acc + gabinete.potencia * qtdGab;
+        }
+        return acc;
+      }, 0).toLocaleString("pt-BR") + "W",
+      icon: Zap,
+      color: "yellow",
+    },
+    {
+      title: "Área Total",
+      value: paineisFiltrados.reduce((acc, p) => acc + (p.area || 0), 0).toFixed(2) + "m²",
+      icon: Ruler,
+      color: "green",
+    },
+  ];
+
   return (
-    <div style={{ display: "flex", gap: 32 }}>
-      <div style={{ flex: 1, minWidth: 340 }}>
-        <h2>Painéis</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen p-6"
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+            <Monitor className="text-blue-400" />
+            Painéis LED
+          </h1>
+          <p className="text-gray-400">Configure e calcule as especificações dos painéis LED</p>
+        </motion.div>
+
+        {/* Cards de Estatísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {statsCards.map((card, index) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <StatusCard {...card} />
+            </motion.div>
+          ))}
+        </div>
 
         {/* Mensagem de feedback */}
         <FeedbackMessage message={mensagemFeedback} type="success" />
 
-        <div style={{ marginBottom: 16 }}>
-          <label>
-            Projeto:&nbsp;
-            <select
-              value={selectedProjectId}
-              onChange={(e) => {
-                setSelectedProjectId(e.target.value);
-                setSelectedPanelIndex(null);
-                setForm((f) => ({ ...f, projeto: e.target.value }));
-                setPreviewPainel(null);
-              }}
-            >
-              <option value="">Selecione o Projeto</option>
-              {state.projetos.map((p, i) => (
-                <option key={i} value={p.nome}>
-                  {p.nome}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Formulário */}
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="glass-card p-6">
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <Calculator className="text-blue-400" />
+                Configuração do Painel
+              </h2>
+
+              <div className="mb-6">
+                <SelectField
+                  label="Projeto"
+                  value={selectedProjectId}
+                  onChange={(e) => {
+                    setSelectedProjectId(e.target.value);
+                    setSelectedPanelIndex(null);
+                    setForm((f) => ({ ...f, projeto: e.target.value }));
+                    setPreviewPainel(null);
+                  }}
+                  options={[
+                    { value: "", label: "Selecione o Projeto" },
+                    ...state.projetos.map((p) => ({
+                      value: p.nome,
+                      label: p.nome,
+                    })),
+                  ]}
+                />
+              </div>
         {/* Formulário só aparece se um projeto estiver selecionado */}
         {selectedProjectId && (
           <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
@@ -605,63 +697,77 @@ export default function Paineis({ isActive }) {
               </div>
             );
           })()}
-      </div>
-      {/* Lista lateral de painéis do projeto selecionado */}
-      <div style={{ minWidth: 320, maxWidth: 450 }}>
-        <h3>Painéis do Projeto</h3>
-        {paineisFiltrados.length === 0 ? (
-          <div
-            style={{
-              background: "#23283a",
-              borderRadius: 12,
-              padding: 24,
-              textAlign: "center",
-              color: "#b6c1e0",
-            }}
+            </div>
+          </motion.div>
+
+          {/* Lista lateral de painéis do projeto selecionado */}
+          <motion.div
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
           >
-            <p>Nenhum painel cadastrado para este projeto.</p>
-            <p style={{ fontSize: "0.9em", marginTop: 8 }}>
-              Preencha o formulário ao lado para adicionar o primeiro painel.
-            </p>
-          </div>
-        ) : (
-          <div
-            style={{
-              background: "#23283a",
-              borderRadius: 12,
-              boxShadow: "0 2px 8px #0003",
-              padding: "12px 0",
-            }}
-          >
-            {paineisFiltrados.map((p, i) => (
-              <PainelCard
-                key={i}
-                painel={p}
-                index={i}
-                gabinetes={gabinetes}
-                isSelected={selectedPanelIndex === i}
-                isRecenteAdicionado={painelRecenteAdicionado === p.nome}
-                onSelect={(index, painel) => {
-                  setSelectedPanelIndex(index);
-                  setPreviewPainel(painel);
-                  setEditando(null);
-                }}
-                onEdit={(index) => {
-                  setForm({
-                    ...paineisFiltrados[index],
-                    projeto: selectedProjectId,
-                  });
-                  setEditando(index);
-                  setPreviewPainel(null);
-                  setPainelRecenteAdicionado(null);
-                }}
-                onDuplicate={duplicarPainel}
-                onRemove={removerPainel}
-              />
-            ))}
-          </div>
-        )}
+            <div className="glass-card p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Settings className="text-purple-400" />
+                Painéis do Projeto
+              </h3>
+              
+              {paineisFiltrados.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <Monitor className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 mb-2">Nenhum painel cadastrado</p>
+                  <p className="text-sm text-gray-500">
+                    Preencha o formulário ao lado para adicionar o primeiro painel.
+                  </p>
+                </motion.div>
+              ) : (
+                <div className="space-y-3">
+                  <AnimatePresence>
+                    {paineisFiltrados.map((p, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <PainelCard
+                          painel={p}
+                          index={i}
+                          gabinetes={gabinetes}
+                          isSelected={selectedPanelIndex === i}
+                          isRecenteAdicionado={painelRecenteAdicionado === p.nome}
+                          onSelect={(index, painel) => {
+                            setSelectedPanelIndex(index);
+                            setPreviewPainel(painel);
+                            setEditando(null);
+                          }}
+                          onEdit={(index) => {
+                            setForm({
+                              ...paineisFiltrados[index],
+                              projeto: selectedProjectId,
+                            });
+                            setEditando(index);
+                            setPreviewPainel(null);
+                            setPainelRecenteAdicionado(null);
+                          }}
+                          onDuplicate={duplicarPainel}
+                          onRemove={removerPainel}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
