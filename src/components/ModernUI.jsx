@@ -25,45 +25,64 @@ export const InputField = forwardRef(
         animate={{ opacity: 1, y: 0 }}
         className={`space-y-2 ${className}`}
       >
-        {label && (
-          <label className="block text-sm font-medium text-gray-300">
-            {label}
-            {tooltip && (
-              <span className="ml-1 text-gray-500 cursor-help" title={tooltip}>
-                ℹ️
-              </span>
-            )}
-          </label>
-        )}
+        <div className="flex items-start gap-3">
+          {/* Espaço para ícone quando presente */}
+          {Icon && <div className="w-10" />}
 
-        <div className="relative">
+          {/* Label alinhado com a caixa de texto */}
+          <div className="flex-1">
+            {label && (
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                {label}
+                {tooltip && (
+                  <span
+                    className="ml-1 text-gray-500 cursor-help"
+                    title={tooltip}
+                  >
+                    ℹ️
+                  </span>
+                )}
+              </label>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
           {Icon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <Icon size={16} />
+            <div
+              className={`flex items-center justify-center w-10 h-10 rounded-lg ${
+                type === "date"
+                  ? "bg-blue-500/20 text-blue-400 ring-1 ring-blue-400/30 cursor-pointer hover:bg-blue-500/30 transition-colors duration-200"
+                  : "bg-gray-700/50 text-gray-200"
+              }`}
+            >
+              <Icon size={18} />
             </div>
           )}
 
-          <input
-            ref={ref}
-            type={type}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            className={`
-            input-field
-            ${Icon ? "pl-10" : ""}
-            ${unit ? "pr-12" : ""}
-            ${error ? "border-red-500 focus:ring-red-500" : ""}
-            ${className}
-          `}
-            {...props}
-          />
+          <div className="flex-1 relative">
+            <input
+              ref={ref}
+              type={type}
+              value={value}
+              onChange={onChange}
+              placeholder={placeholder}
+              className={`
+                input-field w-full
+                ${type === "date" ? "date-input-highlight" : ""}
+                ${unit ? "pr-12" : ""}
+                ${error ? "border-red-500 focus:ring-red-500" : ""}
+                ${className}
+              `}
+              {...props}
+            />
 
-          {unit && (
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
-              {unit}
-            </span>
-          )}
+            {unit && (
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
+                {unit}
+              </span>
+            )}
+          </div>
         </div>
 
         {error && (
@@ -105,48 +124,60 @@ export const SelectField = forwardRef(
         animate={{ opacity: 1, y: 0 }}
         className={`space-y-2 ${className}`}
       >
-        {label && (
-          <label className="block text-sm font-medium text-gray-300">
-            {label}
-            {tooltip && (
-              <span className="ml-1 text-gray-500 cursor-help" title={tooltip}>
-                ℹ️
-              </span>
-            )}
-          </label>
-        )}
+        <div className="flex items-start gap-3">
+          {/* Espaço para ícone quando presente */}
+          {Icon && <div className="w-10" />}
 
-        <div className="relative">
+          {/* Label alinhado com a caixa de texto */}
+          <div className="flex-1">
+            {label && (
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                {label}
+                {tooltip && (
+                  <span
+                    className="ml-1 text-gray-500 cursor-help"
+                    title={tooltip}
+                  >
+                    ℹ️
+                  </span>
+                )}
+              </label>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
           {Icon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10">
-              <Icon size={16} />
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-700/50 text-gray-200">
+              <Icon size={18} />
             </div>
           )}
 
-          <select
-            ref={ref}
-            value={value}
-            onChange={onChange}
-            className={`
-            select-field
-            ${Icon ? "pl-10" : ""}
-            ${error ? "border-red-500 focus:ring-red-500" : ""}
-          `}
-            {...props}
-          >
-            <option value="" disabled>
-              {placeholder}
-            </option>
-            {options.map((option) => (
-              <option
-                key={option.value}
-                value={option.value}
-                className="bg-gray-800 text-white"
-              >
-                {option.label}
+          <div className="flex-1">
+            <select
+              ref={ref}
+              value={value}
+              onChange={onChange}
+              className={`
+              select-field w-full
+              ${error ? "border-red-500 focus:ring-red-500" : ""}
+            `}
+              {...props}
+            >
+              <option value="" disabled>
+                {placeholder}
               </option>
-            ))}
-          </select>
+              {options.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                  className="bg-gray-800 text-white"
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {error && (
@@ -367,3 +398,83 @@ export const LoadingSpinner = ({ size = "md", className = "" }) => {
 
 // Toast personalizado usando react-hot-toast
 export { toast } from "react-hot-toast";
+
+// TextArea Field Moderno
+export const TextAreaField = forwardRef(
+  (
+    {
+      label,
+      value,
+      onChange,
+      error,
+      tooltip,
+      placeholder,
+      icon: Icon,
+      className = "",
+      rows = 4,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`space-y-2 ${className}`}
+      >
+        <div className="flex items-start gap-3">
+          {/* Ícone */}
+          {Icon && (
+            <div className="flex items-center justify-center w-10 h-10 mt-8 bg-blue-500/20 rounded-lg ring-1 ring-blue-400/30">
+              <Icon className="w-4 h-4 text-blue-400" />
+            </div>
+          )}
+
+          {/* Label e TextArea */}
+          <div className="flex-1">
+            {label && (
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                {label}
+                {tooltip && (
+                  <span
+                    className="ml-1 text-gray-500 cursor-help"
+                    title={tooltip}
+                  >
+                    ℹ️
+                  </span>
+                )}
+              </label>
+            )}
+
+            <textarea
+              ref={ref}
+              value={value}
+              onChange={onChange}
+              placeholder={placeholder}
+              rows={rows}
+              className={`
+                input-field
+                resize-none
+                ${error ? "border-red-500 focus:ring-red-500" : ""}
+                ${className}
+              `}
+              {...props}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="text-red-400 text-sm"
+          >
+            {error}
+          </motion.p>
+        )}
+      </motion.div>
+    );
+  }
+);
+
+TextAreaField.displayName = "TextAreaField";

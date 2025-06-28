@@ -10,7 +10,7 @@ import {
   Plus,
 } from "lucide-react";
 
-export default function GabinetesToolbar({
+export default function ProjetosToolbar({
   searchTerm,
   setSearchTerm,
   filterBy,
@@ -21,10 +21,9 @@ export default function GabinetesToolbar({
   setSortOrder,
   viewMode,
   setViewMode,
-  resetForm,
-  setShowModal,
-  gabinetesFiltrados,
-  gabinetes,
+  abrirModal,
+  projetosFiltrados,
+  projetos,
 }) {
   return (
     <motion.div
@@ -36,7 +35,7 @@ export default function GabinetesToolbar({
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5" />
 
-      <div className="relative flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      <div className="relative flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
         {/* Busca */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -58,7 +57,7 @@ export default function GabinetesToolbar({
             </motion.div>
             <input
               type="text"
-              placeholder="Buscar gabinetes..."
+              placeholder="Buscar projetos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 bg-gray-800/90 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm transition-all duration-200 hover:bg-gray-700/90 hover:border-blue-400/50 h-10"
@@ -103,20 +102,14 @@ export default function GabinetesToolbar({
               <option value="todos" className="bg-gray-800 text-white">
                 Todos
               </option>
-              <option value="indoor" className="bg-gray-800 text-white">
-                Indoor
+              <option value="em_andamento" className="bg-gray-800 text-white">
+                Em Andamento
               </option>
-              <option value="outdoor" className="bg-gray-800 text-white">
-                Outdoor
+              <option value="atrasados" className="bg-gray-800 text-white">
+                Atrasados
               </option>
-              <option value="alta_potencia" className="bg-gray-800 text-white">
-                Alta Potência
-              </option>
-              <option
-                value="baixo_pixel_pitch"
-                className="bg-gray-800 text-white"
-              >
-                Baixo Pixel Pitch
+              <option value="urgentes" className="bg-gray-800 text-white">
+                Urgentes
               </option>
             </select>
           </motion.div>
@@ -141,84 +134,75 @@ export default function GabinetesToolbar({
               <option value="nome" className="bg-gray-800 text-white">
                 Nome
               </option>
-              <option value="potencia" className="bg-gray-800 text-white">
-                Potência
+              <option value="cliente" className="bg-gray-800 text-white">
+                Cliente
               </option>
-              <option value="peso" className="bg-gray-800 text-white">
-                Peso
+              <option value="dataEntrega" className="bg-gray-800 text-white">
+                Data de Entrega
               </option>
-              <option value="pixelPitch" className="bg-gray-800 text-white">
-                Pixel Pitch
-              </option>
-              <option value="area" className="bg-gray-800 text-white">
-                Área
+              <option value="status" className="bg-gray-800 text-white">
+                Status
               </option>
             </select>
-            <motion.div
-              whileHover={{ rotate: 180 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                }
-                icon={sortOrder === "asc" ? SortAsc : SortDesc}
-                className="hover:bg-green-500/20 hover:text-green-300"
-              />
-            </motion.div>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={sortOrder === "asc" ? SortAsc : SortDesc}
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+              className="h-10 w-10 p-0 hover:bg-green-500/20"
+              title={`Ordenar ${
+                sortOrder === "asc" ? "Decrescente" : "Crescente"
+              }`}
+            />
           </motion.div>
 
-          {/* Modo de visualização */}
+          {/* Modo de Visualização */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.9 }}
-            className="flex items-center gap-1 bg-white/10 border border-white/20 rounded-lg p-1 backdrop-blur-sm group hover:bg-white/15 hover:border-blue-400/30 transition-all duration-300"
+            className="flex bg-gray-800/60 border border-white/20 rounded-lg overflow-hidden"
           >
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant={viewMode === "grid" ? "primary" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                icon={Grid3X3}
-              />
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant={viewMode === "list" ? "primary" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-                icon={List}
-              />
-            </motion.div>
+            <Button
+              variant={viewMode === "grid" ? "primary" : "ghost"}
+              size="sm"
+              icon={Grid3X3}
+              onClick={() => setViewMode("grid")}
+              className="rounded-none border-0 h-10 w-12"
+              title="Visualização em Grade"
+            />
+            <Button
+              variant={viewMode === "list" ? "primary" : "ghost"}
+              size="sm"
+              icon={List}
+              onClick={() => setViewMode("list")}
+              className="rounded-none border-0 border-l border-white/10 h-10 w-12"
+              title="Visualização em Lista"
+            />
           </motion.div>
 
-          {/* Botão Novo Gabinete */}
+          {/* Botão Adicionar */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 20 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ delay: 1.0, type: "spring", stiffness: 300 }}
-            whileHover={{ scale: 1.05, y: -2 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.0, type: "spring", stiffness: 400 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <Button
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
+              variant="primary"
+              size="lg"
               icon={Plus}
-              className="hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+              onClick={abrirModal}
+              className="shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
             >
-              Novo Gabinete
+              Novo Projeto
             </Button>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Indicadores de filtro ativo */}
+      {/* Indicador de Filtros Ativos */}
       <AnimatePresence>
         {(searchTerm || filterBy !== "todos") && (
           <motion.div
@@ -226,59 +210,36 @@ export default function GabinetesToolbar({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-white/20"
+            className="mt-4 pt-4 border-t border-gray-700/50"
           >
-            <AnimatePresence>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <span className="text-gray-400">Filtros ativos:</span>
               {searchTerm && (
                 <motion.span
-                  initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, x: -10 }}
-                  whileHover={{ scale: 1.05 }}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm backdrop-blur-sm border border-blue-500/30 hover:bg-blue-500/30 transition-all duration-200"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-500/30"
                 >
-                  <Search className="w-3 h-3" />"{searchTerm}"
-                  <motion.button
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setSearchTerm("")}
-                    className="ml-1 hover:text-blue-300 transition-colors duration-200 rounded-full hover:bg-blue-500/20 w-4 h-4 flex items-center justify-center"
-                  >
-                    ×
-                  </motion.button>
+                  Busca: "{searchTerm}"
                 </motion.span>
               )}
-            </AnimatePresence>
-            {filterBy !== "todos" && (
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.8, x: -10 }}
-                whileHover={{ scale: 1.05 }}
-                className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm backdrop-blur-sm border border-purple-500/30 hover:bg-purple-500/30 transition-all duration-200"
-              >
-                <Filter className="w-3 h-3" />
-                {filterBy === "indoor" && "Indoor"}
-                {filterBy === "outdoor" && "Outdoor"}
-                {filterBy === "alta_potencia" && "Alta Potência"}
-                {filterBy === "baixo_pixel_pitch" && "Baixo Pixel Pitch"}
-                <motion.button
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setFilterBy("todos")}
-                  className="ml-1 hover:text-purple-300 transition-colors duration-200 rounded-full hover:bg-purple-500/20 w-4 h-4 flex items-center justify-center"
+              {filterBy !== "todos" && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full border border-purple-500/30"
                 >
-                  ×
-                </motion.button>
+                  Filtro: {filterBy.replace("_", " ")}
+                </motion.span>
+              )}
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="px-2 py-1 bg-gray-500/20 text-gray-400 rounded-full border border-gray-500/30"
+              >
+                {projetosFiltrados.length} de {projetos.length} projetos
               </motion.span>
-            )}
-            <motion.span
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-gray-300 text-sm"
-            >
-              {gabinetesFiltrados.length} de {gabinetes.length} gabinetes
-            </motion.span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

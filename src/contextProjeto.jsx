@@ -11,6 +11,13 @@ function reducer(state, action) {
       return { ...state, projetos: action.payload };
     case "ADICIONAR_PROJETO":
       return { ...state, projetos: [...state.projetos, action.payload] };
+    case "ATUALIZAR_PROJETO":
+      return {
+        ...state,
+        projetos: state.projetos.map((p, i) =>
+          i === action.payload.index ? action.payload.projeto : p
+        ),
+      };
     case "EDITAR_PROJETO":
       return {
         ...state,
@@ -22,7 +29,7 @@ function reducer(state, action) {
     case "REMOVER_PROJETO":
       return {
         ...state,
-        projetos: state.projetos.filter((_, i) => i !== action.index),
+        projetos: state.projetos.filter((_, i) => i !== action.payload),
       };
     case "SET_EDITANDO":
       return { ...state, projetoEditando: action.payload };

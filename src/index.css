@@ -218,6 +218,23 @@ body {
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
+/* Ícone de calendário destacado */
+.calendar-icon-highlight {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #60a5fa !important;
+  padding: 6px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.calendar-icon-highlight:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  transform: scale(1.05) !important;
+}
+
 .select-field {
   width: 100%;
   padding: 10px 12px;
@@ -884,4 +901,231 @@ body {
 
 .modal-button:hover {
   background-color: #4b5563 !important;
+}
+
+/* Destaque para o ícone nativo do input de data */
+.date-input-highlight::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%)
+    hue-rotate(204deg) brightness(119%) contrast(119%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 18px;
+  height: 18px;
+  opacity: 1 !important;
+}
+
+.date-input-highlight::-webkit-calendar-picker-indicator:hover {
+  filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%)
+    hue-rotate(204deg) brightness(135%) contrast(135%);
+  transform: scale(1.1);
+}
+
+/* Para Firefox */
+.date-input-highlight::-moz-calendar-picker {
+  color: #60a5fa !important;
+  background: transparent;
+  width: 18px;
+  height: 18px;
+  opacity: 1 !important;
+}
+
+/* Estilos para o Modern DatePicker */
+.modern-datepicker {
+  z-index: 1000 !important;
+  /* Centralização inteligente */
+  position: fixed !important;
+  transform: translateX(-50%) !important;
+  left: 50% !important;
+}
+
+/* Container específico para centralização no modal */
+.modern-datepicker .react-datepicker__popper {
+  transform: none !important;
+  position: fixed !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1001 !important;
+}
+
+.modern-datepicker .react-datepicker {
+  background: #111827 !important; /* gray-900 */
+  border: 2px solid rgba(96, 165, 250, 0.3) !important; /* blue-400/30 */
+  border-radius: 12px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(12px) !important;
+  color: white !important;
+  font-family: inherit !important;
+  margin: 0 auto !important;
+}
+
+.modern-datepicker .react-datepicker__header {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(139, 92, 246, 0.2)
+  ) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px 12px 0 0 !important;
+  color: white !important;
+  padding: 16px !important;
+}
+
+.modern-datepicker .react-datepicker__current-month {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.modern-datepicker .react-datepicker__day-names {
+  margin-bottom: 8px !important;
+}
+
+.modern-datepicker .react-datepicker__day-name {
+  color: #9ca3af !important; /* gray-400 */
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  width: 36px !important;
+  line-height: 36px !important;
+}
+
+.modern-datepicker .react-datepicker__month {
+  padding: 12px !important;
+  margin: 0 !important;
+}
+
+.modern-datepicker .react-datepicker__week {
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+.modern-datepicker .react-datepicker__day {
+  color: #d1d5db !important; /* gray-300 */
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  margin: 2px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modern-datepicker .react-datepicker__day:hover {
+  background: rgba(96, 165, 250, 0.2) !important; /* blue-400/20 */
+  color: #60a5fa !important; /* blue-400 */
+  transform: scale(1.05) !important;
+}
+
+.modern-datepicker .react-datepicker__day--selected {
+  background: #3b82f6 !important; /* blue-500 */
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.modern-datepicker .react-datepicker__day--selected:hover {
+  background: #2563eb !important; /* blue-600 */
+  transform: scale(1.05) !important;
+}
+
+.modern-datepicker .react-datepicker__day--today {
+  background: rgba(34, 197, 94, 0.2) !important; /* green-500/20 */
+  color: #10b981 !important; /* emerald-500 */
+  font-weight: 600 !important;
+}
+
+.modern-datepicker .react-datepicker__day--outside-month {
+  color: #6b7280 !important; /* gray-500 */
+  opacity: 0.5 !important;
+}
+
+.modern-datepicker .react-datepicker__day--disabled {
+  color: #4b5563 !important; /* gray-600 */
+  cursor: not-allowed !important;
+  opacity: 0.4 !important;
+}
+
+.modern-datepicker .react-datepicker__day--disabled:hover {
+  background: transparent !important;
+  transform: none !important;
+}
+
+.modern-datepicker .react-datepicker__navigation {
+  top: 20px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.modern-datepicker .react-datepicker__navigation:hover {
+  background: rgba(96, 165, 250, 0.2) !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
+}
+
+.modern-datepicker .react-datepicker__navigation-icon::before {
+  border-color: #d1d5db !important; /* gray-300 */
+  border-width: 2px 2px 0 0 !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.modern-datepicker .react-datepicker__navigation--previous {
+  left: 16px !important;
+}
+
+.modern-datepicker .react-datepicker__navigation--next {
+  right: 16px !important;
+}
+
+/* Animação de entrada */
+.modern-datepicker .react-datepicker {
+  animation: fadeInScale 0.2s ease-out !important;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Ajustes responsivos para o calendário */
+@media (max-width: 640px) {
+  .modern-datepicker {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 32px) !important;
+    max-width: 320px !important;
+  }
+
+  .modern-datepicker .react-datepicker {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* Garantir que o calendário não ultrapasse os limites */
+.modern-datepicker .react-datepicker {
+  position: relative !important;
+  max-width: 320px !important;
+  width: 100% !important;
+}
+
+/* Posicionamento inteligente baseado no viewport */
+.modern-datepicker[data-popper-placement^="bottom"] {
+  margin-top: 8px !important;
+}
+
+.modern-datepicker[data-popper-placement^="top"] {
+  margin-bottom: 8px !important;
 }

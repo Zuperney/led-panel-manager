@@ -1,28 +1,79 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FolderOpen, 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  Save, 
+import {
+  FolderOpen,
+  Plus,
+  Edit2,
+  Trash2,
+  Save,
   X,
   User,
   Calendar,
   Clock,
-  Building2
+  Building2,
+  FileText,
+  AlertTriangle,
 } from "lucide-react";
 import { useProjeto } from "./contextProjeto";
 import { useApiData } from "./hooks";
-import { InputField, Button, StatusCard, Modal } from "./components/ModernUI";
+import { useProjetoFiltering } from "./hooks/useProjetoFiltering";
+import {
+  InputField,
+  TextAreaField,
+  Button,
+  StatusCard,
+} from "./components/ModernUI";
 import { toast } from "react-hot-toast";
+
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  InfoGrid,
+  InfoCell,
+  Tag,
+  DividerVertical,
+  MainContainer,
+  SectionHeader,
+  SectionContent,
+  EmptyState,
+} from "./components/ui/BaseComponents";
+import ProjetosToolbar from "./components/projetos/ProjetosToolbar";
+import ProjetoCard from "./components/projetos/ProjetoCard";
+import ProjetoListItem from "./components/projetos/ProjetoListItem";
 
 export default function Projetos({ isActive }) {
   const { state, dispatch } = useProjeto();
   const { updateData: salvarProjetos } = useApiData("projetos", isActive);
-  const [form, setForm] = useState({ nome: "", cliente: "", dataEntrega: "" });
+  const [form, setForm] = useState({
+    nome: "",
+    cliente: "",
+    dataEntrega: "",
+    descricao: "",
+  });
   const [modalAberto, setModalAberto] = useState(false);
+  const [modalDeleteAberto, setModalDeleteAberto] = useState(false);
+  const [projetoParaDeletar, setProjetoParaDeletar] = useState(null);
+  const [carregandoDelete, setCarregandoDelete] = useState(false);
   const [carregando, setCarregando] = useState(false);
+
+  // Estados para busca e filtros
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterBy, setFilterBy] = useState("todos");
+  const [sortBy, setSortBy] = useState("nome");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [viewMode, setViewMode] = useState("grid");
+  const [projetoSelecionado, setProjetoSelecionado] = useState(null);
+
+  // Hook para filtragem
+  const projetosFiltrados = useProjetoFiltering(
+    state.projetos,
+    searchTerm,
+    filterBy,
+    sortBy,
+    sortOrder
+  );
 
   // Carregar projetos do backend ao iniciar e quando a aba se torna ativa
   useEffect(() => {
@@ -54,11 +105,19 @@ export default function Projetos({ isActive }) {
   }, [dispatch, isActive]);
 
   // Função otimizada para salvar projetos
-  const salvarProjetosBackend = async (novosProjetos) => {
+  const salvarProjetosBackend = async (novosProjetos, operacao = null) => {
     setCarregando(true);
     try {
       await salvarProjetos(novosProjetos);
-      toast.success(state.projetoEditando !== null ? "Projeto atualizado!" : "Projeto criado!");
+
+      // Só mostra toast se não for uma operação de delete (que tem seu próprio toast)
+      if (operacao !== "delete") {
+        toast.success(
+          state.projetoEditando !== null
+            ? "Projeto atualizado!"
+            : "Projeto criado!"
+        );
+      }
     } catch (error) {
       toast.error("Erro ao salvar projeto");
       console.error(error);
@@ -71,14 +130,27 @@ export default function Projetos({ isActive }) {
     e.preventDefault();
     let novos;
     if (state.projetoEditando !== null) {
+      // Adicionar timestamp de atualização para forçar re-renderização
+      const projetoAtualizado = {
+        ...form,
+        _updatedAt: Date.now(),
+      };
       novos = state.projetos.map((p, i) =>
-        i === state.projetoEditando ? form : p
+        i === state.projetoEditando ? projetoAtualizado : p
       );
-      dispatch({ type: "ATUALIZAR_PROJETO", payload: { index: state.projetoEditando, projeto: form } });
+      dispatch({
+        type: "ATUALIZAR_PROJETO",
+        payload: { index: state.projetoEditando, projeto: projetoAtualizado },
+      });
       dispatch({ type: "SET_EDITANDO", payload: null });
     } else {
-      novos = [...state.projetos, form];
-      dispatch({ type: "ADICIONAR_PROJETO", payload: form });
+      const novoProjeto = {
+        ...form,
+        _createdAt: Date.now(),
+        _updatedAt: Date.now(),
+      };
+      novos = [...state.projetos, novoProjeto];
+      dispatch({ type: "ADICIONAR_PROJETO", payload: novoProjeto });
     }
     salvarProjetosBackend(novos);
     resetForm();
@@ -86,7 +158,7 @@ export default function Projetos({ isActive }) {
   }
 
   function resetForm() {
-    setForm({ nome: "", cliente: "", dataEntrega: "" });
+    setForm({ nome: "", cliente: "", dataEntrega: "", descricao: "" });
     dispatch({ type: "SET_EDITANDO", payload: null });
   }
 
@@ -97,16 +169,39 @@ export default function Projetos({ isActive }) {
   }
 
   function removerProjeto(index) {
-    if (window.confirm("Remover este projeto?")) {
-      const novos = state.projetos.filter((_, i) => i !== index);
-      dispatch({ type: "REMOVER_PROJETO", payload: index });
-      salvarProjetosBackend(novos);
+    setProjetoParaDeletar({ index, projeto: state.projetos[index] });
+    setModalDeleteAberto(true);
+  }
+
+  async function confirmarDelete() {
+    if (projetoParaDeletar !== null) {
+      setCarregandoDelete(true);
+      try {
+        const novos = state.projetos.filter(
+          (_, i) => i !== projetoParaDeletar.index
+        );
+        dispatch({
+          type: "REMOVER_PROJETO",
+          payload: projetoParaDeletar.index,
+        });
+        await salvarProjetosBackend(novos, "delete");
+        toast.success(
+          `Projeto "${projetoParaDeletar.projeto.nome}" excluído com sucesso!`
+        );
+        setModalDeleteAberto(false);
+        setProjetoParaDeletar(null);
+      } catch (error) {
+        toast.error("Erro ao excluir projeto");
+        console.error("Erro ao excluir projeto:", error);
+      } finally {
+        setCarregandoDelete(false);
+      }
     }
   }
 
-  function selecionarProjeto(index) {
-    dispatch({ type: "SELECIONAR_PROJETO", payload: index });
-    toast.success(`Projeto "${state.projetos[index].nome}" selecionado!`);
+  function cancelarDelete() {
+    setModalDeleteAberto(false);
+    setProjetoParaDeletar(null);
   }
 
   function abrirModal() {
@@ -118,13 +213,12 @@ export default function Projetos({ isActive }) {
   const hoje = new Date();
   const stats = {
     total: state.projetos.length,
-    ativo: state.projetoSelecionado !== null ? 1 : 0,
-    pendentes: state.projetos.filter(p => {
+    pendentes: state.projetos.filter((p) => {
       if (!p.dataEntrega) return true;
       const dataEntrega = new Date(p.dataEntrega);
       return dataEntrega >= hoje;
     }).length,
-    atrasados: state.projetos.filter(p => {
+    atrasados: state.projetos.filter((p) => {
       if (!p.dataEntrega) return false;
       const dataEntrega = new Date(p.dataEntrega);
       return dataEntrega < hoje;
@@ -132,10 +226,10 @@ export default function Projetos({ isActive }) {
   };
 
   // Formatar data para exibição
-  const formatarData = (data) => {
+  const formatarData = useCallback((data) => {
     if (!data) return "Não definida";
     return new Date(data).toLocaleDateString("pt-BR");
-  };
+  }, []);
 
   // Verificar se projeto está atrasado
   const isAtrasado = (dataEntrega) => {
@@ -144,266 +238,458 @@ export default function Projetos({ isActive }) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header com título e botão */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-      >
-        <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen p-6"
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
             <FolderOpen className="text-green-400" />
             Projetos
-          </h2>
-          <p className="text-gray-400 text-sm mt-1">
-            Gerencie seus projetos de painéis LED
-          </p>
-        </div>
-
-        <Button
-          onClick={abrirModal}
-          icon={Plus}
-          className="self-start sm:self-auto"
-        >
-          Novo Projeto
-        </Button>
-      </motion.div>
-
-      {/* Cards de estatísticas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatusCard
-          title="Total"
-          value={stats.total}
-          icon={FolderOpen}
-          color="blue"
-          delay={0.1}
-        />
-        <StatusCard
-          title="Projeto Ativo"
-          value={stats.ativo}
-          icon={Building2}
-          color="green"
-          delay={0.2}
-        />
-        <StatusCard
-          title="Pendentes"
-          value={stats.pendentes}
-          icon={Clock}
-          color="orange"
-          delay={0.3}
-        />
-        <StatusCard
-          title="Atrasados"
-          value={stats.atrasados}
-          icon={Calendar}
-          color="red"
-          delay={0.4}
-        />
-      </div>
-
-      {/* Projeto ativo */}
-      {state.projetoSelecionado !== null && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="glass-card border-l-4 border-green-500"
-        >
-          <div className="p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Building2 className="text-green-400" size={20} />
-              <h3 className="text-lg font-semibold text-white">Projeto Ativo</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-gray-400 text-sm">Nome</p>
-                <p className="text-white font-medium">{state.projetos[state.projetoSelecionado]?.nome}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-sm">Cliente</p>
-                <p className="text-white font-medium">{state.projetos[state.projetoSelecionado]?.cliente}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-sm">Data de Entrega</p>
-                <p className="text-white font-medium">
-                  {formatarData(state.projetos[state.projetoSelecionado]?.dataEntrega)}
-                </p>
-              </div>
-            </div>
-          </div>
+          </h1>
+          <p className="text-gray-400">Gerencie seus projetos de painéis LED</p>
         </motion.div>
-      )}
 
-      {/* Lista de projetos */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="glass-card"
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Todos os Projetos
-          </h3>
+        {/* Toolbar de Filtros e Busca */}
+        <ProjetosToolbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filterBy={filterBy}
+          setFilterBy={setFilterBy}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          abrirModal={abrirModal}
+          projetosFiltrados={projetosFiltrados}
+          projetos={state.projetos}
+        />
 
-          {state.projetos.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-12"
-            >
-              <FolderOpen size={48} className="text-gray-500 mx-auto mb-4" />
-              <p className="text-gray-400 mb-4">
-                Nenhum projeto cadastrado ainda
-              </p>
-              <Button onClick={abrirModal} icon={Plus} variant="secondary">
-                Criar Primeiro Projeto
-              </Button>
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <AnimatePresence>
-                {state.projetos.map((projeto, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`glass-card p-4 hover:bg-white/15 transition-all duration-200 ${
-                      state.projetoSelecionado === index ? 'border-l-4 border-green-500' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-white text-lg">
-                            {projeto.nome}
-                          </h4>
-                          {state.projetoSelecionado === index && (
-                            <span className="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded-full">
-                              Ativo
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400 text-sm mt-1">
-                          <User size={14} />
-                          <span>{projeto.cliente || "Cliente não informado"}</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={Edit2}
-                          onClick={() => editarProjeto(index)}
-                          className="p-2"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={Trash2}
-                          onClick={() => removerProjeto(index)}
-                          className="p-2 text-red-400 hover:text-red-300"
-                        />
-                      </div>
-                    </div>
+        {/* Lista de projetos */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <MainContainer>
+            {/* Header da Seção */}
+            <SectionHeader>
+              <motion.h3
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+                className="text-xl font-semibold flex items-center gap-2"
+              >
+                <motion.div
+                  initial={{ rotate: -180, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.5 }}
+                >
+                  <FolderOpen className="text-blue-400" />
+                </motion.div>
+                Todos os Projetos
+              </motion.h3>
+            </SectionHeader>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar size={14} className="text-gray-400" />
-                        <span className={`${
-                          isAtrasado(projeto.dataEntrega) ? 'text-red-400' : 'text-gray-300'
-                        }`}>
-                          {formatarData(projeto.dataEntrega)}
-                          {isAtrasado(projeto.dataEntrega) && (
-                            <span className="ml-1 text-red-400">• Atrasado</span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <Button
-                        onClick={() => selecionarProjeto(index)}
-                        variant={state.projetoSelecionado === index ? "secondary" : "primary"}
-                        size="sm"
-                        className="w-full"
-                      >
-                        {state.projetoSelecionado === index ? "Projeto Ativo" : "Selecionar Projeto"}
+            {/* Conteúdo da Lista */}
+            <SectionContent>
+              {projetosFiltrados.length === 0 ? (
+                <EmptyState
+                  icon={FolderOpen}
+                  title={
+                    state.projetos.length === 0
+                      ? "Nenhum projeto cadastrado"
+                      : "Nenhum projeto encontrado"
+                  }
+                  description={
+                    state.projetos.length === 0
+                      ? "Adicione o primeiro projeto para começar."
+                      : "Tente ajustar os filtros ou termos de busca."
+                  }
+                  action={
+                    state.projetos.length === 0 ? (
+                      <Button onClick={abrirModal} icon={Plus}>
+                        Criar Primeiro Projeto
                       </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setSearchTerm("");
+                          setFilterBy("todos");
+                        }}
+                        icon={FolderOpen}
+                      >
+                        Limpar Filtros
+                      </Button>
+                    )
+                  }
+                />
+              ) : (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.05,
+                      },
+                    },
+                  }}
+                  className={
+                    viewMode === "grid"
+                      ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
+                      : "space-y-3"
+                  }
+                >
+                  {/* Cabeçalho do modo lista */}
+                  {viewMode === "list" && projetosFiltrados.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl p-4 mb-2"
+                    >
+                      <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 items-center text-sm font-medium text-gray-400">
+                        <div className="lg:col-span-1">Projeto</div>
+                        <div className="hidden lg:block">Cliente</div>
+                        <div>Data de Entrega</div>
+                        <div>Status</div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <AnimatePresence mode="popLayout">
+                    {projetosFiltrados.map((projeto, index) => {
+                      const originalIndex = state.projetos.findIndex(
+                        (p) => p === projeto
+                      );
+                      return (
+                        <motion.div
+                          key={`projeto-${originalIndex}-${
+                            projeto.dataEntrega
+                          }-${projeto.nome}-${
+                            projeto.cliente
+                          }-${projeto.descricao?.slice(0, 20)}-${
+                            projeto._updatedAt || 0
+                          }`}
+                          variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0 },
+                          }}
+                          layout
+                        >
+                          {viewMode === "grid" ? (
+                            <ProjetoCard
+                              projeto={projeto}
+                              originalIndex={originalIndex}
+                              index={index}
+                              editarProjeto={editarProjeto}
+                              removerProjeto={removerProjeto}
+                              formatarData={formatarData}
+                              isAtrasado={isAtrasado}
+                              projetoSelecionado={projetoSelecionado}
+                              setProjetoSelecionado={setProjetoSelecionado}
+                            />
+                          ) : (
+                            <ProjetoListItem
+                              projeto={projeto}
+                              originalIndex={originalIndex}
+                              index={index}
+                              editarProjeto={editarProjeto}
+                              removerProjeto={removerProjeto}
+                              formatarData={formatarData}
+                            />
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </SectionContent>
+          </MainContainer>
+        </motion.div>
+
+        {/* Modal de formulário */}
+        <AnimatePresence>
+          {modalAberto && (
+            <>
+              {/* Backdrop com glassmorphism */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+                onClick={() => {
+                  setModalAberto(false);
+                  resetForm();
+                }}
+              />
+
+              {/* Modal Container */}
+              <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeOut",
+                    scale: { type: "spring", stiffness: 300, damping: 25 },
+                  }}
+                  className="bg-gray-900 border-2 border-gray-600/80 
+                           rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden
+                           ring-1 ring-white/10"
+                  style={{ backgroundColor: "#111827", maxWidth: "470px" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Header */}
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                    className="flex items-center gap-3 px-6 py-4 border-b border-gray-700/50
+                             bg-gradient-to-r from-blue-600/20 to-purple-600/20"
+                  >
+                    <div
+                      className="flex items-center justify-center w-8 h-8 
+                                  bg-blue-500/20 rounded-lg ring-1 ring-blue-400/30"
+                    >
+                      <FolderOpen className="w-4 h-4 text-blue-400" />
                     </div>
+                    <h2 className="text-lg font-semibold text-white">
+                      {state.projetoEditando !== null
+                        ? "Editar Projeto"
+                        : "Novo Projeto"}
+                    </h2>
                   </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
+
+                  {/* Body */}
+                  <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      {/* Seção: Informações Básicas */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                      >
+                        <div className="space-y-4">
+                          <InputField
+                            label="Nome do Projeto"
+                            name="nome"
+                            value={form.nome}
+                            onChange={(e) =>
+                              setForm({ ...form, nome: e.target.value })
+                            }
+                            placeholder="Ex: Painel LED Shopping Center"
+                            icon={FolderOpen}
+                            required
+                          />
+
+                          <InputField
+                            label="Cliente"
+                            name="cliente"
+                            value={form.cliente}
+                            onChange={(e) =>
+                              setForm({ ...form, cliente: e.target.value })
+                            }
+                            placeholder="Ex: Empresa ABC Ltda"
+                            icon={User}
+                          />
+
+                          <InputField
+                            label="Data de Entrega"
+                            name="dataEntrega"
+                            type="date"
+                            value={form.dataEntrega}
+                            onChange={(e) =>
+                              setForm({ ...form, dataEntrega: e.target.value })
+                            }
+                            icon={Calendar}
+                          />
+
+                          <TextAreaField
+                            label="Descrição do Projeto"
+                            name="descricao"
+                            value={form.descricao}
+                            onChange={(e) =>
+                              setForm({ ...form, descricao: e.target.value })
+                            }
+                            placeholder="Descreva os detalhes do projeto, especificações técnicas, requisitos especiais..."
+                            icon={FileText}
+                            rows={4}
+                          />
+                        </div>
+                      </motion.div>
+                    </form>
+                  </div>
+
+                  {/* Footer */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                    className="flex flex-col sm:flex-row gap-3 px-6 py-4 
+                             border-t border-gray-700/50 bg-gray-800/30"
+                  >
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        setModalAberto(false);
+                        resetForm();
+                      }}
+                      icon={X}
+                      className="flex-1 order-2 sm:order-1"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      onClick={handleSubmit}
+                      loading={carregando}
+                      icon={Save}
+                      className="flex-1 order-1 sm:order-2"
+                    >
+                      {state.projetoEditando !== null ? "Atualizar" : "Salvar"}
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </>
           )}
-        </div>
-      </motion.div>
+        </AnimatePresence>
 
-      {/* Modal de formulário */}
-      <Modal
-        isOpen={modalAberto}
-        onClose={() => {
-          setModalAberto(false);
-          resetForm();
-        }}
-        title={state.projetoEditando !== null ? "Editar Projeto" : "Novo Projeto"}
-        size="md"
-      >
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <InputField
-            label="Nome do Projeto"
-            name="nome"
-            value={form.nome}
-            onChange={(e) => setForm({ ...form, nome: e.target.value })}
-            placeholder="Ex: Painel LED Shopping Center"
-            icon={FolderOpen}
-            required
-          />
+        {/* Modal de confirmação de delete */}
+        <AnimatePresence>
+          {modalDeleteAberto && projetoParaDeletar && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+                onClick={cancelarDelete}
+              />
 
-          <InputField
-            label="Cliente"
-            name="cliente"
-            value={form.cliente}
-            onChange={(e) => setForm({ ...form, cliente: e.target.value })}
-            placeholder="Ex: Empresa ABC Ltda"
-            icon={User}
-          />
+              {/* Modal Container */}
+              <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeOut",
+                    scale: { type: "spring", stiffness: 300, damping: 25 },
+                  }}
+                  className="bg-gray-900 border-2 border-red-600/80 
+                           rounded-2xl shadow-2xl w-full max-w-md
+                           ring-1 ring-red-400/20"
+                  style={{ backgroundColor: "#111827" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Header */}
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                    className="flex items-center gap-3 px-6 py-4 border-b border-red-700/50
+                             bg-gradient-to-r from-red-600/20 to-red-800/20"
+                  >
+                    <div
+                      className="flex items-center justify-center w-8 h-8 
+                                  bg-red-500/20 rounded-lg ring-1 ring-red-400/30"
+                    >
+                      <AlertTriangle className="w-4 h-4 text-red-400" />
+                    </div>
+                    <h2 className="text-lg font-semibold text-white">
+                      Confirmar Exclusão
+                    </h2>
+                  </motion.div>
 
-          <InputField
-            label="Data de Entrega"
-            name="dataEntrega"
-            type="date"
-            value={form.dataEntrega}
-            onChange={(e) => setForm({ ...form, dataEntrega: e.target.value })}
-            icon={Calendar}
-          />
+                  {/* Body */}
+                  <div className="p-6">
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.3 }}
+                      className="text-center"
+                    >
+                      <p className="text-gray-300 mb-4">
+                        Tem certeza de que deseja excluir o projeto?
+                      </p>
+                      <div className="bg-gray-800/60 border border-gray-600/60 rounded-xl p-4 mb-4">
+                        <h3 className="font-semibold text-white text-lg mb-2">
+                          {projetoParaDeletar.projeto.nome}
+                        </h3>
+                        <p className="text-gray-400 text-sm">
+                          Cliente:{" "}
+                          {projetoParaDeletar.projeto.cliente ||
+                            "Não informado"}
+                        </p>
+                        {projetoParaDeletar.projeto.dataEntrega && (
+                          <p className="text-gray-400 text-sm">
+                            Entrega:{" "}
+                            {formatarData(
+                              projetoParaDeletar.projeto.dataEntrega
+                            )}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-red-400 text-sm font-medium">
+                        Esta ação não pode ser desfeita.
+                      </p>
+                    </motion.div>
+                  </div>
 
-          <div className="flex gap-3 pt-4 border-t border-white/10">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                setModalAberto(false);
-                resetForm();
-              }}
-              icon={X}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              loading={carregando}
-              icon={Save}
-              className="flex-1"
-            >
-              {state.projetoEditando !== null ? "Atualizar" : "Salvar"}
-            </Button>
-          </div>
-        </form>
-      </Modal>
-    </div>
+                  {/* Footer */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                    className="flex flex-col sm:flex-row gap-3 px-6 py-4 
+                             border-t border-red-700/50 bg-gray-800/30"
+                  >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={cancelarDelete}
+                      icon={X}
+                      className="flex-1 order-2 sm:order-1 hover:bg-gray-600/50"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="danger"
+                      onClick={confirmarDelete}
+                      loading={carregandoDelete}
+                      icon={Trash2}
+                      className="flex-1 order-1 sm:order-2 bg-red-600 hover:bg-red-700 
+                               text-white border-red-600 hover:border-red-700"
+                    >
+                      Excluir Projeto
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }
