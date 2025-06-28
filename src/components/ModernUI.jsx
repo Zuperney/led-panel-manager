@@ -2,155 +2,165 @@ import { motion } from "framer-motion";
 import { forwardRef } from "react";
 
 // Input Field Moderno
-export const InputField = forwardRef(({
-  label,
-  value,
-  onChange,
-  type = "text",
-  unit,
-  error,
-  tooltip,
-  placeholder,
-  icon: Icon,
-  className = "",
-  ...props
-}, ref) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
-    >
-      {label && (
-        <label className="block text-sm font-medium text-gray-300">
-          {label}
-          {tooltip && (
-            <span className="ml-1 text-gray-500 cursor-help" title={tooltip}>
-              ℹ️
+export const InputField = forwardRef(
+  (
+    {
+      label,
+      value,
+      onChange,
+      type = "text",
+      unit,
+      error,
+      tooltip,
+      placeholder,
+      icon: Icon,
+      className = "",
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`space-y-2 ${className}`}
+      >
+        {label && (
+          <label className="block text-sm font-medium text-gray-300">
+            {label}
+            {tooltip && (
+              <span className="ml-1 text-gray-500 cursor-help" title={tooltip}>
+                ℹ️
+              </span>
+            )}
+          </label>
+        )}
+
+        <div className="relative">
+          {Icon && (
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <Icon size={16} />
+            </div>
+          )}
+
+          <input
+            ref={ref}
+            type={type}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            className={`
+            input-field
+            ${Icon ? "pl-10" : ""}
+            ${unit ? "pr-12" : ""}
+            ${error ? "border-red-500 focus:ring-red-500" : ""}
+          `}
+            {...props}
+          />
+
+          {unit && (
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
+              {unit}
             </span>
           )}
-        </label>
-      )}
+        </div>
 
-      <div className="relative">
-        {Icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <Icon size={16} />
-          </div>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="text-red-400 text-sm"
+          >
+            {error}
+          </motion.p>
         )}
-        
-        <input
-          ref={ref}
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className={`
-            input-field
-            ${Icon ? 'pl-10' : ''}
-            ${unit ? 'pr-12' : ''}
-            ${error ? 'border-red-500 focus:ring-red-500' : ''}
-          `}
-          {...props}
-        />
-        
-        {unit && (
-          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
-            {unit}
-          </span>
-        )}
-      </div>
-
-      {error && (
-        <motion.p
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="text-red-400 text-sm"
-        >
-          {error}
-        </motion.p>
-      )}
-    </motion.div>
-  );
-});
+      </motion.div>
+    );
+  }
+);
 
 InputField.displayName = "InputField";
 
 // Select Field Moderno
-export const SelectField = forwardRef(({
-  label,
-  value,
-  onChange,
-  options = [],
-  placeholder = "Selecione uma opção",
-  error,
-  tooltip,
-  icon: Icon,
-  className = "",
-  ...props
-}, ref) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
-    >
-      {label && (
-        <label className="block text-sm font-medium text-gray-300">
-          {label}
-          {tooltip && (
-            <span className="ml-1 text-gray-500 cursor-help" title={tooltip}>
-              ℹ️
-            </span>
-          )}
-        </label>
-      )}
-
-      <div className="relative">
-        {Icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10">
-            <Icon size={16} />
-          </div>
+export const SelectField = forwardRef(
+  (
+    {
+      label,
+      value,
+      onChange,
+      options = [],
+      placeholder = "Selecione uma opção",
+      error,
+      tooltip,
+      icon: Icon,
+      className = "",
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`space-y-2 ${className}`}
+      >
+        {label && (
+          <label className="block text-sm font-medium text-gray-300">
+            {label}
+            {tooltip && (
+              <span className="ml-1 text-gray-500 cursor-help" title={tooltip}>
+                ℹ️
+              </span>
+            )}
+          </label>
         )}
-        
-        <select
-          ref={ref}
-          value={value}
-          onChange={onChange}
-          className={`
-            select-field
-            ${Icon ? 'pl-10' : ''}
-            ${error ? 'border-red-500 focus:ring-red-500' : ''}
-          `}
-          {...props}
-        >
-          <option value="" disabled>
-            {placeholder}
-          </option>
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              className="bg-gray-800 text-white"
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
 
-      {error && (
-        <motion.p
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="text-red-400 text-sm"
-        >
-          {error}
-        </motion.p>
-      )}
-    </motion.div>
-  );
-});
+        <div className="relative">
+          {Icon && (
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10">
+              <Icon size={16} />
+            </div>
+          )}
+
+          <select
+            ref={ref}
+            value={value}
+            onChange={onChange}
+            className={`
+            select-field
+            ${Icon ? "pl-10" : ""}
+            ${error ? "border-red-500 focus:ring-red-500" : ""}
+          `}
+            {...props}
+          >
+            <option value="" disabled>
+              {placeholder}
+            </option>
+            {options.map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+                className="bg-gray-800 text-white"
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="text-red-400 text-sm"
+          >
+            {error}
+          </motion.p>
+        )}
+      </motion.div>
+    );
+  }
+);
 
 SelectField.displayName = "SelectField";
 
@@ -167,19 +177,20 @@ export const Button = ({
   className = "",
   ...props
 }) => {
-  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed";
-  
+  const baseClasses =
+    "inline-flex items-center justify-center font-medium transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed";
+
   const variants = {
     primary: "btn-primary focus:ring-blue-500",
     secondary: "btn-secondary focus:ring-white/20",
     ghost: "btn-ghost focus:ring-white/20",
-    danger: "bg-red-500 hover:bg-red-600 text-white focus:ring-red-500",
-    success: "bg-green-500 hover:bg-green-600 text-white focus:ring-green-500",
+    danger: "btn-danger focus:ring-red-500",
+    success: "btn-success focus:ring-green-500",
   };
 
   const sizes = {
     sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2.5 text-sm",
+    md: "px-4 py-2 text-sm" /* Conforme manual: py-2 px-4 */,
     lg: "px-6 py-3 text-base",
   };
 
@@ -250,7 +261,7 @@ export const StatusCard = ({
       onClick={onClick}
       className={`
         status-card
-        ${onClick ? 'cursor-pointer' : ''}
+        ${onClick ? "cursor-pointer" : ""}
         ${className}
       `}
     >
@@ -264,7 +275,11 @@ export const StatusCard = ({
           {trend !== undefined && (
             <div
               className={`text-xs flex items-center gap-1 ${
-                trend > 0 ? "text-green-400" : trend < 0 ? "text-red-400" : "text-gray-400"
+                trend > 0
+                  ? "text-green-400"
+                  : trend < 0
+                  ? "text-red-400"
+                  : "text-gray-400"
               }`}
             >
               <span>{trend > 0 ? "↗" : trend < 0 ? "↘" : "→"}</span>

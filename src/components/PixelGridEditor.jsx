@@ -25,20 +25,20 @@ export default function PixelGridEditor({
   // Cores modernas com glassmorphism
   const zoneColors = [
     "#3B82F6", // Blue
-    "#F59E0B", // Orange  
+    "#F59E0B", // Orange
     "#22C55E", // Green
     "#A855F7", // Purple
     "#EF4444", // Red
     "#EC4899", // Pink
   ];
-  
+
   const universeColors = [
-    "rgba(59, 130, 246, 0.15)",  // Blue/15
-    "rgba(245, 158, 11, 0.15)",  // Orange/15
-    "rgba(34, 197, 94, 0.15)",   // Green/15
-    "rgba(168, 85, 247, 0.15)",  // Purple/15
-    "rgba(239, 68, 68, 0.15)",   // Red/15
-    "rgba(236, 72, 153, 0.15)",  // Pink/15
+    "rgba(59, 130, 246, 0.15)", // Blue/15
+    "rgba(245, 158, 11, 0.15)", // Orange/15
+    "rgba(34, 197, 94, 0.15)", // Green/15
+    "rgba(168, 85, 247, 0.15)", // Purple/15
+    "rgba(239, 68, 68, 0.15)", // Red/15
+    "rgba(236, 72, 153, 0.15)", // Pink/15
   ];
 
   // Converter coordenadas do SVG para coordenadas de pixel
@@ -358,72 +358,87 @@ export default function PixelGridEditor({
   };
 
   return (
-    <div style={{ 
-      position: "relative", 
-      userSelect: "none",
-      background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)",
-      backdropFilter: "blur(16px)",
-      borderRadius: "16px",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
-      padding: "20px",
-      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)"
-    }}>
+    <div
+      style={{
+        position: "relative",
+        userSelect: "none",
+        background:
+          "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)",
+        backdropFilter: "blur(16px)",
+        borderRadius: "16px",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        padding: "20px",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+      }}
+    >
       {/* Header com modo atual */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: "16px"
-      }}>
-        <div style={{
+      <div
+        style={{
           display: "flex",
           alignItems: "center",
-          gap: "12px"
-        }}>
-          <div style={{
-            padding: "8px 16px",
-            background: "rgba(59, 130, 246, 0.15)",
-            border: "1px solid rgba(59, 130, 246, 0.3)",
-            borderRadius: "8px",
-            color: "#3B82F6",
-            fontSize: "0.875rem",
-            fontWeight: "600",
+          justifyContent: "space-between",
+          marginBottom: "16px",
+        }}
+      >
+        <div
+          style={{
             display: "flex",
             alignItems: "center",
-            gap: "6px"
-          }}>
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              padding: "8px 16px",
+              background: "rgba(59, 130, 246, 0.15)",
+              border: "1px solid rgba(59, 130, 246, 0.3)",
+              borderRadius: "8px",
+              color: "#3B82F6",
+              fontSize: "0.875rem",
+              fontWeight: "600",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
             {previewMode === "zones" && "🎯 Modo Zonas"}
             {previewMode === "universes" && "🌐 Modo Universos"}
             {previewMode === "grid" && "⬜ Modo Grid"}
           </div>
-          
-          <div style={{
-            color: "rgba(255, 255, 255, 0.7)",
-            fontSize: "0.875rem"
-          }}>
+
+          <div
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontSize: "0.875rem",
+            }}
+          >
             {width}×{height} pixels
           </div>
         </div>
 
         {/* Status indicator */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "6px 12px",
-          background: "rgba(34, 197, 94, 0.15)",
-          border: "1px solid rgba(34, 197, 94, 0.3)", 
-          borderRadius: "6px",
-          color: "#22C55E",
-          fontSize: "0.75rem",
-          fontWeight: "500"
-        }}>
-          <div style={{
-            width: "6px",
-            height: "6px",
-            borderRadius: "50%",
-            background: "#22C55E"
-          }}></div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "6px 12px",
+            background: "rgba(34, 197, 94, 0.15)",
+            border: "1px solid rgba(34, 197, 94, 0.3)",
+            borderRadius: "6px",
+            color: "#22C55E",
+            fontSize: "0.75rem",
+            fontWeight: "500",
+          }}
+        >
+          <div
+            style={{
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              background: "#22C55E",
+            }}
+          ></div>
           Pronto
         </div>
       </div>
@@ -437,10 +452,11 @@ export default function PixelGridEditor({
           maxWidth: "800px",
           border: "2px solid rgba(255, 255, 255, 0.1)",
           borderRadius: "12px",
-          background: "linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)",
+          background:
+            "linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)",
           backdropFilter: "blur(8px)",
           cursor: previewMode === "zones" ? "crosshair" : "default",
-          transition: "all 0.3s ease"
+          transition: "all 0.3s ease",
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -463,21 +479,27 @@ export default function PixelGridEditor({
               strokeWidth="0.5"
             />
           </pattern>
-          
+
           {/* Gradiente para zonas */}
           <linearGradient id="zoneGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{stopColor: "rgba(255, 255, 255, 0.2)", stopOpacity: 1}} />
-            <stop offset="100%" style={{stopColor: "rgba(255, 255, 255, 0.05)", stopOpacity: 1}} />
+            <stop
+              offset="0%"
+              style={{ stopColor: "rgba(255, 255, 255, 0.2)", stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: "rgba(255, 255, 255, 0.05)", stopOpacity: 1 }}
+            />
           </linearGradient>
-          
+
           {/* Filtro de brilho para hover */}
           <filter id="brightness">
             <feComponentTransfer>
-              <feFuncA type="discrete" tableValues="1.2"/>
+              <feFuncA type="discrete" tableValues="1.2" />
             </feComponentTransfer>
           </filter>
         </defs>
-        
+
         <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#grid)" />
 
         {/* Renderizar universos como background */}

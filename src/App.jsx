@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
-import { 
-  Monitor, 
-  FolderOpen, 
-  Tv, 
-  FileText, 
-  Calendar, 
-  Grid3X3, 
+import {
+  Monitor,
+  FolderOpen,
+  Tv,
+  FileText,
+  Calendar,
+  Grid3X3,
   Settings,
   Menu,
-  X
+  X,
 } from "lucide-react";
 import { ProjetoProvider } from "./contextProjeto";
 import Gabinetes from "./Gabinetes";
@@ -27,7 +27,12 @@ const TABS = [
   { label: "Relatório", key: "relatorio", icon: FileText, color: "orange" },
   { label: "Agenda", key: "agenda", icon: Calendar, color: "red" },
   { label: "Layout", key: "pixelmapping", icon: Grid3X3, color: "indigo" },
-  { label: "Configurações", key: "configuracoes", icon: Settings, color: "gray" },
+  {
+    label: "Configurações",
+    key: "configuracoes",
+    icon: Settings,
+    color: "gray",
+  },
 ];
 
 // Animação das abas
@@ -92,10 +97,10 @@ function App() {
           toastOptions={{
             duration: 4000,
             style: {
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: 'white',
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              color: "white",
             },
           }}
         />
@@ -135,21 +140,23 @@ function App() {
               {TABS.map((tab, index) => {
                 const IconComponent = tab.icon;
                 const isActive = activeTab === tab.key;
-                
+
                 return (
                   <motion.button
                     key={tab.key}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
+                    animate={{
+                      opacity: 1,
                       y: 0,
-                      ...tabVariants[isActive ? "active" : "inactive"]
+                      ...tabVariants[isActive ? "active" : "inactive"],
                     }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleTabChange(tab.key)}
-                    className={`nav-tab flex items-center gap-2 ${isActive ? 'active' : ''}`}
+                    className={`nav-tab flex items-center gap-2 ${
+                      isActive ? "active" : ""
+                    }`}
                   >
                     <IconComponent size={16} />
                     <span>{tab.label}</span>
@@ -196,7 +203,7 @@ function App() {
                     {TABS.map((tab, index) => {
                       const IconComponent = tab.icon;
                       const isActive = activeTab === tab.key;
-                      
+
                       return (
                         <motion.button
                           key={tab.key}
@@ -206,9 +213,9 @@ function App() {
                           whileHover={{ x: 5 }}
                           onClick={() => handleTabChange(tab.key)}
                           className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                            isActive 
-                              ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' 
-                              : 'text-gray-300 hover:text-white hover:bg-white/10'
+                            isActive
+                              ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                              : "text-gray-300 hover:text-white hover:bg-white/10"
                           }`}
                         >
                           <IconComponent size={18} />

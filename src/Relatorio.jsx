@@ -508,224 +508,231 @@ export default function Relatorio({ isActive, onNavigateToTab }) {
             <FileText className="text-blue-400" />
             Relatório de Projetos
           </h1>
-          <p className="text-gray-400">Visualize e exporte relatórios detalhados dos projetos</p>
+          <p className="text-gray-400">
+            Visualize e exporte relatórios detalhados dos projetos
+          </p>
         </motion.div>
-      {projetos.length === 0 ? (
-        <div className="info-box" style={{ textAlign: "center" }}>
-          <p>📋 Nenhum projeto cadastrado ainda.</p>
-          <p>Vá para a aba "Projetos" para adicionar o primeiro projeto.</p>
-        </div>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {projetos.map((proj, i) => {
-            const paineisProjeto = paineis.filter(
-              (p) => p.projeto === proj.nome
-            );
-            return (
-              <li
-                key={i}
-                style={{
-                  background: "#23283a",
-                  borderRadius: 10,
-                  marginBottom: 18,
-                  padding: 18,
-                  color: "#fff",
-                  boxShadow: "0 1px 6px #0002",
-                  position: "relative",
-                }}
-              >
-                <div
+        {projetos.length === 0 ? (
+          <div className="info-box" style={{ textAlign: "center" }}>
+            <p>📋 Nenhum projeto cadastrado ainda.</p>
+            <p>Vá para a aba "Projetos" para adicionar o primeiro projeto.</p>
+          </div>
+        ) : (
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {projetos.map((proj, i) => {
+              const paineisProjeto = paineis.filter(
+                (p) => p.projeto === proj.nome
+              );
+              return (
+                <li
+                  key={i}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
+                    background: "#23283a",
+                    borderRadius: 10,
+                    marginBottom: 18,
+                    padding: 18,
+                    color: "#fff",
+                    boxShadow: "0 1px 6px #0002",
+                    position: "relative",
                   }}
                 >
                   <div
                     style={{
-                      fontWeight: 600,
-                      fontSize: "1.1em",
-                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
-                    {proj.nome}
-                  </div>
-                  <button
-                    style={{
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      fontSize: 22,
-                      color: "#b6c1e0",
-                      marginLeft: 8,
-                    }}
-                    title="Ações do projeto"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (isActive) {
-                        setMenuAberto(menuAberto === i ? null : i);
-                      }
-                    }}
-                  >
-                    ⚙️
-                  </button>
-                  {menuAberto === i && isActive && (
                     <div
                       style={{
-                        position: "absolute",
-                        right: 18,
-                        top: 38,
-                        background: "#23283a",
-                        border: "1px solid #444",
-                        borderRadius: 8,
-                        boxShadow: "0 2px 8px #0005",
-                        zIndex: 10,
-                        minWidth: 180,
+                        fontWeight: 600,
+                        fontSize: "1.1em",
+                        marginBottom: 6,
                       }}
                     >
-                      {/* Só renderizar PDF quando aba estiver ativa e dados carregados */}
-                      {isActive && paineisProjeto.length > 0 ? (
-                        <PDFDownloadLink
-                          document={
-                            <ProjetoPDF
-                              projeto={proj}
-                              paineisProjeto={paineisProjeto}
-                            />
-                          }
-                          fileName={`Relatorio_${proj.nome.replace(
-                            /\s+/g,
-                            "_"
-                          )}.pdf`}
-                          style={{
-                            ...menuBtnStyle,
-                            color: "#222",
-                            background: "#b6e0b6",
-                            borderBottom: "1px solid #333",
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {({ loading, url, blob }) =>
-                            loading ? "Gerando PDF..." : "Exportar Relatório"
-                          }
-                        </PDFDownloadLink>
-                      ) : (
+                      {proj.nome}
+                    </div>
+                    <button
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: 22,
+                        color: "#b6c1e0",
+                        marginLeft: 8,
+                      }}
+                      title="Ações do projeto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (isActive) {
+                          setMenuAberto(menuAberto === i ? null : i);
+                        }
+                      }}
+                    >
+                      ⚙️
+                    </button>
+                    {menuAberto === i && isActive && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: 18,
+                          top: 38,
+                          background: "#23283a",
+                          border: "1px solid #444",
+                          borderRadius: 8,
+                          boxShadow: "0 2px 8px #0005",
+                          zIndex: 10,
+                          minWidth: 180,
+                        }}
+                      >
+                        {/* Só renderizar PDF quando aba estiver ativa e dados carregados */}
+                        {isActive && paineisProjeto.length > 0 ? (
+                          <PDFDownloadLink
+                            document={
+                              <ProjetoPDF
+                                projeto={proj}
+                                paineisProjeto={paineisProjeto}
+                              />
+                            }
+                            fileName={`Relatorio_${proj.nome.replace(
+                              /\s+/g,
+                              "_"
+                            )}.pdf`}
+                            style={{
+                              ...menuBtnStyle,
+                              color: "#222",
+                              background: "#b6e0b6",
+                              borderBottom: "1px solid #333",
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {({ loading, url, blob }) =>
+                              loading ? "Gerando PDF..." : "Exportar Relatório"
+                            }
+                          </PDFDownloadLink>
+                        ) : (
+                          <button
+                            style={{
+                              ...menuBtnStyle,
+                              color: "#666",
+                              background: "#333",
+                              borderBottom: "1px solid #333",
+                              cursor: "not-allowed",
+                            }}
+                            disabled
+                          >
+                            {paineisProjeto.length === 0
+                              ? "Sem painéis para exportar"
+                              : "Carregando..."}
+                          </button>
+                        )}
                         <button
                           style={{
                             ...menuBtnStyle,
-                            color: "#666",
-                            background: "#333",
-                            borderBottom: "1px solid #333",
-                            cursor: "not-allowed",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            backgroundColor: "#1e40af",
+                            borderBottom: "1px solid #3a4161",
                           }}
-                          disabled
+                          onClick={() => {
+                            editarProjeto(proj);
+                            setMenuAberto(null);
+                          }}
+                          title="Ir para a aba Projetos e editar este projeto"
                         >
-                          {paineisProjeto.length === 0
-                            ? "Sem painéis para exportar"
-                            : "Carregando..."}
+                          📋 <span>Editar Projeto</span>
                         </button>
-                      )}
-                      <button
-                        style={{
-                          ...menuBtnStyle,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          backgroundColor: "#1e40af",
-                          borderBottom: "1px solid #3a4161",
-                        }}
-                        onClick={() => {
-                          editarProjeto(proj);
-                          setMenuAberto(null);
-                        }}
-                        title="Ir para a aba Projetos e editar este projeto"
-                      >
-                        📋 <span>Editar Projeto</span>
-                      </button>
-                      <button
-                        style={{
-                          ...menuBtnStyle,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          backgroundColor: "#7c2d12",
-                          borderBottom: "1px solid #3a4161",
-                        }}
-                        onClick={() => {
-                          abrirListaMaterial(proj);
-                        }}
-                        title="Gerenciar lista de material para este projeto"
-                      >
-                        📦 <span>Lista de Material</span>
-                      </button>
-                      <button
-                        style={{
-                          ...menuBtnStyle,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          backgroundColor: "#0f766e",
-                          borderBottom: "none",
-                        }}
-                        onClick={() => {
-                          editarPaineis(proj);
-                          setMenuAberto(null);
-                        }}
-                        title="Ir para a aba Painéis e carregar os painéis deste projeto"
-                      >
-                        🖥️ <span>Editar Painéis</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div style={{ fontSize: "0.98em", marginBottom: 8 }}>
-                  Cliente: {proj.cliente || "-"}
-                  <br />
-                  Data de Entrega:{" "}
-                  {proj.dataEntrega
-                    ? new Date(proj.dataEntrega).toLocaleDateString("pt-BR")
-                    : "-"}
-                </div>
-                {paineisProjeto.length === 0 ? (
-                  <div style={{ color: "#bbb", fontSize: "0.95em" }}>
-                    Nenhum painel cadastrado neste projeto.
+                        <button
+                          style={{
+                            ...menuBtnStyle,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            backgroundColor: "#7c2d12",
+                            borderBottom: "1px solid #3a4161",
+                          }}
+                          onClick={() => {
+                            abrirListaMaterial(proj);
+                          }}
+                          title="Gerenciar lista de material para este projeto"
+                        >
+                          📦 <span>Lista de Material</span>
+                        </button>
+                        <button
+                          style={{
+                            ...menuBtnStyle,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            backgroundColor: "#0f766e",
+                            borderBottom: "none",
+                          }}
+                          onClick={() => {
+                            editarPaineis(proj);
+                            setMenuAberto(null);
+                          }}
+                          title="Ir para a aba Painéis e carregar os painéis deste projeto"
+                        >
+                          🖥️ <span>Editar Painéis</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <ul
-                    style={{ listStyle: "disc", marginLeft: 24, marginTop: 6 }}
-                  >
-                    {paineisProjeto.map((painel, j) => (
-                      <li key={j} style={{ marginBottom: 4 }}>
-                        <span style={{ fontWeight: 500 }}>{painel.nome}</span> —
-                        {` ${painel.largura?.toFixed(
-                          2
-                        )}m x ${painel.altura?.toFixed(
-                          2
-                        )}m, ${painel.area?.toFixed(2)}m², ${
-                          painel.pixelsLargura
-                        }x${painel.pixelsAltura} pixels, ${painel.peso}kg`}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-      <ListaMaterialModal
-        isOpen={modalListaMaterial.isOpen}
-        onClose={fecharListaMaterial}
-        onSave={salvarListaMaterial}
-        projeto={modalListaMaterial.projeto}
-        paineisProjeto={
-          modalListaMaterial.projeto
-            ? paineis.filter(
-                (p) => p.projeto === modalListaMaterial.projeto.nome
-              )
-            : []
-        }
-      />
+                  <div style={{ fontSize: "0.98em", marginBottom: 8 }}>
+                    Cliente: {proj.cliente || "-"}
+                    <br />
+                    Data de Entrega:{" "}
+                    {proj.dataEntrega
+                      ? new Date(proj.dataEntrega).toLocaleDateString("pt-BR")
+                      : "-"}
+                  </div>
+                  {paineisProjeto.length === 0 ? (
+                    <div style={{ color: "#bbb", fontSize: "0.95em" }}>
+                      Nenhum painel cadastrado neste projeto.
+                    </div>
+                  ) : (
+                    <ul
+                      style={{
+                        listStyle: "disc",
+                        marginLeft: 24,
+                        marginTop: 6,
+                      }}
+                    >
+                      {paineisProjeto.map((painel, j) => (
+                        <li key={j} style={{ marginBottom: 4 }}>
+                          <span style={{ fontWeight: 500 }}>{painel.nome}</span>{" "}
+                          —
+                          {` ${painel.largura?.toFixed(
+                            2
+                          )}m x ${painel.altura?.toFixed(
+                            2
+                          )}m, ${painel.area?.toFixed(2)}m², ${
+                            painel.pixelsLargura
+                          }x${painel.pixelsAltura} pixels, ${painel.peso}kg`}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <ListaMaterialModal
+          isOpen={modalListaMaterial.isOpen}
+          onClose={fecharListaMaterial}
+          onSave={salvarListaMaterial}
+          projeto={modalListaMaterial.projeto}
+          paineisProjeto={
+            modalListaMaterial.projeto
+              ? paineis.filter(
+                  (p) => p.projeto === modalListaMaterial.projeto.nome
+                )
+              : []
+          }
+        />
       </div>
     </motion.div>
   );

@@ -323,20 +323,25 @@ export default function Paineis({ isActive }) {
     },
     {
       title: "Potência Total",
-      value: paineisFiltrados.reduce((acc, p) => {
-        const gabinete = gabinetes.find((g) => g.nome === p.gabinete);
-        if (gabinete) {
-          const qtdGab = (p.qtdLargura || 1) * (p.qtdAltura || 1);
-          return acc + gabinete.potencia * qtdGab;
-        }
-        return acc;
-      }, 0).toLocaleString("pt-BR") + "W",
+      value:
+        paineisFiltrados
+          .reduce((acc, p) => {
+            const gabinete = gabinetes.find((g) => g.nome === p.gabinete);
+            if (gabinete) {
+              const qtdGab = (p.qtdLargura || 1) * (p.qtdAltura || 1);
+              return acc + gabinete.potencia * qtdGab;
+            }
+            return acc;
+          }, 0)
+          .toLocaleString("pt-BR") + "W",
       icon: Zap,
       color: "yellow",
     },
     {
       title: "Área Total",
-      value: paineisFiltrados.reduce((acc, p) => acc + (p.area || 0), 0).toFixed(2) + "m²",
+      value:
+        paineisFiltrados.reduce((acc, p) => acc + (p.area || 0), 0).toFixed(2) +
+        "m²",
       icon: Ruler,
       color: "green",
     },
@@ -360,7 +365,9 @@ export default function Paineis({ isActive }) {
             <Monitor className="text-blue-400" />
             Painéis LED
           </h1>
-          <p className="text-gray-400">Configure e calcule as especificações dos painéis LED</p>
+          <p className="text-gray-400">
+            Configure e calcule as especificações dos painéis LED
+          </p>
         </motion.div>
 
         {/* Cards de Estatísticas */}
@@ -413,290 +420,313 @@ export default function Paineis({ isActive }) {
                   ]}
                 />
               </div>
-        {/* Formulário só aparece se um projeto estiver selecionado */}
-        {selectedProjectId && (
-          <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
-            <input name="projeto" type="hidden" value={selectedProjectId} />
-            <input
-              name="nome"
-              placeholder="Nome do Painel"
-              value={form.nome}
-              onChange={handleChange}
-              required
-            />
-            <select
-              name="gabinete"
-              value={form.gabinete}
-              onChange={handleChange}
-              required
-              disabled={loadingGabinetes}
-            >
-              <option value="">
-                {loadingGabinetes
-                  ? "Carregando gabinetes..."
-                  : errorGabinetes
-                  ? "Erro ao carregar gabinetes"
-                  : gabinetes.length === 0
-                  ? "Nenhum gabinete disponível"
-                  : "Selecione o Gabinete"}
-              </option>
-              {gabinetes.map((g, i) => (
-                <option key={i} value={g.nome}>
-                  {g.nome} ({g.largura}×{g.altura}mm)
-                </option>
-              ))}
-            </select>
-            {errorGabinetes && (
-              <div
-                style={{ color: "#ef4444", fontSize: "0.9em", marginTop: 4 }}
-              >
-                ❌ Erro: {errorGabinetes}
-              </div>
-            )}
-            {!loadingGabinetes && !errorGabinetes && gabinetes.length === 0 && (
-              <div
-                style={{ color: "#f59e0b", fontSize: "0.9em", marginTop: 4 }}
-              >
-                ⚠️ Nenhum gabinete encontrado. Verifique se há gabinetes
-                cadastrados na aba Gabinetes.
-              </div>
-            )}
-            <div style={{ margin: "12px 0" }}>
-              <label>
-                <input
-                  type="radio"
-                  name="modo"
-                  value="metro"
-                  checked={form.modo === "metro"}
-                  onChange={handleChange}
-                />
-                Medidas em Metros
-              </label>
-              <label style={{ marginLeft: 16 }}>
-                <input
-                  type="radio"
-                  name="modo"
-                  value="gabinete"
-                  checked={form.modo === "gabinete"}
-                  onChange={handleChange}
-                />
-                Medidas por Gabinetes
-              </label>
-            </div>
-            {form.modo === "gabinete" ? (
-              <>
-                <input
-                  name="qtdLargura"
-                  type="number"
-                  min={1}
-                  value={form.qtdLargura}
-                  onChange={handleChange}
-                  placeholder="Qtd Gabinetes Largura"
-                  required
-                />
-                <input
-                  name="qtdAltura"
-                  type="number"
-                  min={1}
-                  value={form.qtdAltura}
-                  onChange={handleChange}
-                  placeholder="Qtd Gabinetes Altura"
-                  required
-                />
-              </>
-            ) : (
-              <>
-                <input
-                  name="larguraM"
-                  type="number"
-                  step="0.01"
-                  min={0.01}
-                  value={form.larguraM}
-                  onChange={handleChange}
-                  placeholder="Largura (m)"
-                  required
-                />
-                <input
-                  name="alturaM"
-                  type="number"
-                  step="0.01"
-                  min={0.01}
-                  value={form.alturaM}
-                  onChange={handleChange}
-                  placeholder="Altura (m)"
-                  required
-                />
-              </>
-            )}
-            <div style={{ margin: "12px 0" }}>
-              <label>
-                Tensão:
-                <select
-                  value={tensao}
-                  onChange={(e) => {
-                    setTensao(e.target.value);
-                    if (e.target.value === "220" && tipoRede === "monofasico") {
-                      setTipoRede("bifasico");
-                    }
-                  }}
-                  style={{ marginLeft: 8 }}
-                >
-                  <option value="220">220V</option>
-                  <option value="380">380V</option>
-                </select>
-              </label>
-              <label style={{ marginLeft: 16 }}>
-                Tipo de rede:
-                <select
-                  value={tipoRede}
-                  onChange={(e) => setTipoRede(e.target.value)}
-                  style={{ marginLeft: 8 }}
-                >
-                  {tensao === "220" ? (
+              {/* Formulário só aparece se um projeto estiver selecionado */}
+              {selectedProjectId && (
+                <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
+                  <input
+                    name="projeto"
+                    type="hidden"
+                    value={selectedProjectId}
+                  />
+                  <input
+                    name="nome"
+                    placeholder="Nome do Painel"
+                    value={form.nome}
+                    onChange={handleChange}
+                    required
+                  />
+                  <select
+                    name="gabinete"
+                    value={form.gabinete}
+                    onChange={handleChange}
+                    required
+                    disabled={loadingGabinetes}
+                  >
+                    <option value="">
+                      {loadingGabinetes
+                        ? "Carregando gabinetes..."
+                        : errorGabinetes
+                        ? "Erro ao carregar gabinetes"
+                        : gabinetes.length === 0
+                        ? "Nenhum gabinete disponível"
+                        : "Selecione o Gabinete"}
+                    </option>
+                    {gabinetes.map((g, i) => (
+                      <option key={i} value={g.nome}>
+                        {g.nome} ({g.largura}×{g.altura}mm)
+                      </option>
+                    ))}
+                  </select>
+                  {errorGabinetes && (
+                    <div
+                      style={{
+                        color: "#ef4444",
+                        fontSize: "0.9em",
+                        marginTop: 4,
+                      }}
+                    >
+                      ❌ Erro: {errorGabinetes}
+                    </div>
+                  )}
+                  {!loadingGabinetes &&
+                    !errorGabinetes &&
+                    gabinetes.length === 0 && (
+                      <div
+                        style={{
+                          color: "#f59e0b",
+                          fontSize: "0.9em",
+                          marginTop: 4,
+                        }}
+                      >
+                        ⚠️ Nenhum gabinete encontrado. Verifique se há gabinetes
+                        cadastrados na aba Gabinetes.
+                      </div>
+                    )}
+                  <div style={{ margin: "12px 0" }}>
+                    <label>
+                      <input
+                        type="radio"
+                        name="modo"
+                        value="metro"
+                        checked={form.modo === "metro"}
+                        onChange={handleChange}
+                      />
+                      Medidas em Metros
+                    </label>
+                    <label style={{ marginLeft: 16 }}>
+                      <input
+                        type="radio"
+                        name="modo"
+                        value="gabinete"
+                        checked={form.modo === "gabinete"}
+                        onChange={handleChange}
+                      />
+                      Medidas por Gabinetes
+                    </label>
+                  </div>
+                  {form.modo === "gabinete" ? (
                     <>
-                      <option value="bifasico">Bifásico</option>
-                      <option value="trifasico">Trifásico</option>
+                      <input
+                        name="qtdLargura"
+                        type="number"
+                        min={1}
+                        value={form.qtdLargura}
+                        onChange={handleChange}
+                        placeholder="Qtd Gabinetes Largura"
+                        required
+                      />
+                      <input
+                        name="qtdAltura"
+                        type="number"
+                        min={1}
+                        value={form.qtdAltura}
+                        onChange={handleChange}
+                        placeholder="Qtd Gabinetes Altura"
+                        required
+                      />
                     </>
                   ) : (
                     <>
-                      <option value="monofasico">Monofásico</option>
-                      <option value="bifasico">Bifásico</option>
-                      <option value="trifasico">Trifásico</option>
+                      <input
+                        name="larguraM"
+                        type="number"
+                        step="0.01"
+                        min={0.01}
+                        value={form.larguraM}
+                        onChange={handleChange}
+                        placeholder="Largura (m)"
+                        required
+                      />
+                      <input
+                        name="alturaM"
+                        type="number"
+                        step="0.01"
+                        min={0.01}
+                        value={form.alturaM}
+                        onChange={handleChange}
+                        placeholder="Altura (m)"
+                        required
+                      />
                     </>
                   )}
-                </select>
-              </label>
-            </div>
-            <button type="submit" disabled={!resultado}>
-              {editando !== null ? "Salvar Edição" : "Adicionar Painel"}
-            </button>
-          </form>
-        )}
-        {/* Preview detalhado do painel selecionado (agora abaixo do formulário) */}
-        {previewPainel &&
-          (() => {
-            // Busca gabinete do painel
-            const gabineteObj = gabinetes.find(
-              (g) => g.nome === previewPainel.gabinete
-            );
-            // Quantidade de gabinetes
-            const qtdGabinetes =
-              (previewPainel.qtdLargura || 1) * (previewPainel.qtdAltura || 1);
-            // Potência máxima (100% brilho)
-            const potMax = gabineteObj
-              ? gabineteObj.potencia * qtdGabinetes
-              : 0;
-            // Potência aparente e corrente conforme painel
-            const tensaoPainel = previewPainel.tensao || "220";
-            const tipoRedePainel = previewPainel.tipoRede || "monofasico";
-            const energiaMax = calcularEnergia(
-              potMax,
-              tipoRedePainel,
-              tensaoPainel
-            );
-            // Potência média (50% brilho)
-            const pot50 = gabineteObj
-              ? calcularPotenciaFinal(gabineteObj, qtdGabinetes, 50).P_final
-              : 0;
-            const energia50 = calcularEnergia(
-              pot50,
-              tipoRedePainel,
-              tensaoPainel
-            );
-            // Formatação helper
-            const fmt = (v, dec = 2) =>
-              v !== undefined && !isNaN(v)
-                ? Number(v).toLocaleString("pt-BR", {
-                    minimumFractionDigits: dec,
-                    maximumFractionDigits: dec,
-                  })
-                : "-";
-            return (
-              <div
-                className="painel-preview"
-                style={{
-                  marginTop: 24,
-                  minWidth: 340,
-                  maxWidth: 600,
-                  background: "#23283a",
-                  borderRadius: 12,
-                  padding: 18,
-                  fontSize: "0.85em",
-                  lineHeight: 1.35,
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: "1em",
-                    marginBottom: 5,
-                  }}
-                >
-                  Informações do Painel – {previewPainel.nome}
-                </div>
-                <div style={{ marginLeft: 8 }}>
-                  Projeto: {previewPainel.projeto}
-                  <br />
-                  Gabinete: {previewPainel.gabinete}
-                  <br />
-                  Dimensões do Painel: {fmt(previewPainel.largura, 2)} m ×{" "}
-                  {fmt(previewPainel.altura, 2)} m
-                  <br />
-                  Resolução Total: {previewPainel.pixelsLargura} ×{" "}
-                  {previewPainel.pixelsAltura} pixels
-                  <br />
-                  Área Total: {fmt(previewPainel.area, 2)} m²
-                  <br />
-                  Peso Total: {fmt(previewPainel.peso, 0)} kg
-                </div>
-                <div style={{ margin: "12px 0 5px 0", fontWeight: "bold" }}>
-                  Composição do Painel
-                </div>
-                <div style={{ marginLeft: 8 }}>
-                  Quantidade de Gabinetes: {qtdGabinetes} unidades
-                  <br />
-                  Largura: {previewPainel.qtdLargura} gabinetes
-                  <br />
-                  Altura: {previewPainel.qtdAltura} gabinetes
-                </div>
-                <div style={{ margin: "14px 0 5px 0", fontWeight: "bold" }}>
-                  Potência e Consumo
-                </div>
-                <div
-                  style={{
-                    marginLeft: 8,
-                    textDecoration: "underline",
-                    marginTop: 2,
-                  }}
-                >
-                  Branco Máximo (100% de Brilho)
-                </div>
-                <div style={{ marginLeft: 8 }}>
-                  Potência Total Consumida: {fmt(potMax, 0)} Watts
-                  <br />
-                  Potência Aparente: {fmt(energiaMax.potenciaVA)} VA
-                  <br />
-                  Corrente Elétrica Estimada: {energiaMax.descricao}
-                </div>
-                <div
-                  style={{
-                    marginLeft: 8,
-                    textDecoration: "underline",
-                    marginTop: 10,
-                  }}
-                >
-                  Consumo Médio (Brilho em 50%)
-                </div>
-                <div style={{ marginLeft: 8 }}>
-                  Potência Estimada Consumida: {fmt(pot50, 0)} Watts
-                  <br />
-                  Potência Aparente: {fmt(energia50.potenciaVA)} VA
-                  <br />
-                  Corrente Elétrica Estimada: {energia50.descricao}
-                </div>
-              </div>
-            );
-          })()}
+                  <div style={{ margin: "12px 0" }}>
+                    <label>
+                      Tensão:
+                      <select
+                        value={tensao}
+                        onChange={(e) => {
+                          setTensao(e.target.value);
+                          if (
+                            e.target.value === "220" &&
+                            tipoRede === "monofasico"
+                          ) {
+                            setTipoRede("bifasico");
+                          }
+                        }}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <option value="220">220V</option>
+                        <option value="380">380V</option>
+                      </select>
+                    </label>
+                    <label style={{ marginLeft: 16 }}>
+                      Tipo de rede:
+                      <select
+                        value={tipoRede}
+                        onChange={(e) => setTipoRede(e.target.value)}
+                        style={{ marginLeft: 8 }}
+                      >
+                        {tensao === "220" ? (
+                          <>
+                            <option value="bifasico">Bifásico</option>
+                            <option value="trifasico">Trifásico</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="monofasico">Monofásico</option>
+                            <option value="bifasico">Bifásico</option>
+                            <option value="trifasico">Trifásico</option>
+                          </>
+                        )}
+                      </select>
+                    </label>
+                  </div>
+                  <button type="submit" disabled={!resultado}>
+                    {editando !== null ? "Salvar Edição" : "Adicionar Painel"}
+                  </button>
+                </form>
+              )}
+              {/* Preview detalhado do painel selecionado (agora abaixo do formulário) */}
+              {previewPainel &&
+                (() => {
+                  // Busca gabinete do painel
+                  const gabineteObj = gabinetes.find(
+                    (g) => g.nome === previewPainel.gabinete
+                  );
+                  // Quantidade de gabinetes
+                  const qtdGabinetes =
+                    (previewPainel.qtdLargura || 1) *
+                    (previewPainel.qtdAltura || 1);
+                  // Potência máxima (100% brilho)
+                  const potMax = gabineteObj
+                    ? gabineteObj.potencia * qtdGabinetes
+                    : 0;
+                  // Potência aparente e corrente conforme painel
+                  const tensaoPainel = previewPainel.tensao || "220";
+                  const tipoRedePainel = previewPainel.tipoRede || "monofasico";
+                  const energiaMax = calcularEnergia(
+                    potMax,
+                    tipoRedePainel,
+                    tensaoPainel
+                  );
+                  // Potência média (50% brilho)
+                  const pot50 = gabineteObj
+                    ? calcularPotenciaFinal(gabineteObj, qtdGabinetes, 50)
+                        .P_final
+                    : 0;
+                  const energia50 = calcularEnergia(
+                    pot50,
+                    tipoRedePainel,
+                    tensaoPainel
+                  );
+                  // Formatação helper
+                  const fmt = (v, dec = 2) =>
+                    v !== undefined && !isNaN(v)
+                      ? Number(v).toLocaleString("pt-BR", {
+                          minimumFractionDigits: dec,
+                          maximumFractionDigits: dec,
+                        })
+                      : "-";
+                  return (
+                    <div
+                      className="painel-preview"
+                      style={{
+                        marginTop: 24,
+                        minWidth: 340,
+                        maxWidth: 600,
+                        background: "#23283a",
+                        borderRadius: 12,
+                        padding: 18,
+                        fontSize: "0.85em",
+                        lineHeight: 1.35,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "1em",
+                          marginBottom: 5,
+                        }}
+                      >
+                        Informações do Painel – {previewPainel.nome}
+                      </div>
+                      <div style={{ marginLeft: 8 }}>
+                        Projeto: {previewPainel.projeto}
+                        <br />
+                        Gabinete: {previewPainel.gabinete}
+                        <br />
+                        Dimensões do Painel: {fmt(previewPainel.largura, 2)} m ×{" "}
+                        {fmt(previewPainel.altura, 2)} m
+                        <br />
+                        Resolução Total: {previewPainel.pixelsLargura} ×{" "}
+                        {previewPainel.pixelsAltura} pixels
+                        <br />
+                        Área Total: {fmt(previewPainel.area, 2)} m²
+                        <br />
+                        Peso Total: {fmt(previewPainel.peso, 0)} kg
+                      </div>
+                      <div
+                        style={{ margin: "12px 0 5px 0", fontWeight: "bold" }}
+                      >
+                        Composição do Painel
+                      </div>
+                      <div style={{ marginLeft: 8 }}>
+                        Quantidade de Gabinetes: {qtdGabinetes} unidades
+                        <br />
+                        Largura: {previewPainel.qtdLargura} gabinetes
+                        <br />
+                        Altura: {previewPainel.qtdAltura} gabinetes
+                      </div>
+                      <div
+                        style={{ margin: "14px 0 5px 0", fontWeight: "bold" }}
+                      >
+                        Potência e Consumo
+                      </div>
+                      <div
+                        style={{
+                          marginLeft: 8,
+                          textDecoration: "underline",
+                          marginTop: 2,
+                        }}
+                      >
+                        Branco Máximo (100% de Brilho)
+                      </div>
+                      <div style={{ marginLeft: 8 }}>
+                        Potência Total Consumida: {fmt(potMax, 0)} Watts
+                        <br />
+                        Potência Aparente: {fmt(energiaMax.potenciaVA)} VA
+                        <br />
+                        Corrente Elétrica Estimada: {energiaMax.descricao}
+                      </div>
+                      <div
+                        style={{
+                          marginLeft: 8,
+                          textDecoration: "underline",
+                          marginTop: 10,
+                        }}
+                      >
+                        Consumo Médio (Brilho em 50%)
+                      </div>
+                      <div style={{ marginLeft: 8 }}>
+                        Potência Estimada Consumida: {fmt(pot50, 0)} Watts
+                        <br />
+                        Potência Aparente: {fmt(energia50.potenciaVA)} VA
+                        <br />
+                        Corrente Elétrica Estimada: {energia50.descricao}
+                      </div>
+                    </div>
+                  );
+                })()}
             </div>
           </motion.div>
 
@@ -712,7 +742,7 @@ export default function Paineis({ isActive }) {
                 <Settings className="text-purple-400" />
                 Painéis do Projeto
               </h3>
-              
+
               {paineisFiltrados.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -722,7 +752,8 @@ export default function Paineis({ isActive }) {
                   <Monitor className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                   <p className="text-gray-400 mb-2">Nenhum painel cadastrado</p>
                   <p className="text-sm text-gray-500">
-                    Preencha o formulário ao lado para adicionar o primeiro painel.
+                    Preencha o formulário ao lado para adicionar o primeiro
+                    painel.
                   </p>
                 </motion.div>
               ) : (
@@ -741,7 +772,9 @@ export default function Paineis({ isActive }) {
                           index={i}
                           gabinetes={gabinetes}
                           isSelected={selectedPanelIndex === i}
-                          isRecenteAdicionado={painelRecenteAdicionado === p.nome}
+                          isRecenteAdicionado={
+                            painelRecenteAdicionado === p.nome
+                          }
                           onSelect={(index, painel) => {
                             setSelectedPanelIndex(index);
                             setPreviewPainel(painel);
