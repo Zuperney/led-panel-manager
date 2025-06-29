@@ -12,3 +12,5 @@ export { usePainelForm } from "./usePainelForm";
 export { usePainelCrud } from "./usePainelCrud";
 export { usePainelCalculations } from "./usePainelCalculations";
 export { usePainelFiltering } from "./usePainelFiltering";
+export { usePainelHandlers } from "./usePainelHandlers";
+export { usePainelState } from "./usePainelState";
