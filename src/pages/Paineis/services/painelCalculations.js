@@ -1,6 +1,6 @@
 /**
  * Serviço de cálculos para painéis LED
- * 
+ *
  * Responsabilidades:
  * - Cálculos de dimensões por gabinete e metro
  * - Cálculos de potência (máxima, média, realista)
@@ -8,7 +8,7 @@
  * - Validações de entrada robustas
  * - Formatação de resultados
  * - Cache de cálculos complexos
- * 
+ *
  * @author Led Panel Manager Team
  * @since 1.4.0
  */
@@ -21,7 +21,7 @@ const CALCULATION_CONSTANTS = {
   FATOR_POTENCIA_LED: 0.92,
   FATOR_CONTEUDO_PADRAO: 0.33, // 33% do conteúdo é branco em média
   CONSUMO_BASE_PERCENTUAL: 0.3, // 30% de consumo base
-  
+
   // Limites de validação
   MIN_DIMENSAO_GABINETE: 1,
   MAX_DIMENSAO_GABINETE: 1000,
@@ -29,7 +29,7 @@ const CALCULATION_CONSTANTS = {
   MAX_DIMENSAO_METRO: 100,
   MIN_POTENCIA: 0,
   MAX_POTENCIA: 100000,
-  
+
   // Configurações de cache
   CACHE_TTL: 60000, // 1 minuto para cálculos
 };
@@ -45,7 +45,7 @@ const calculationCache = new Map();
 class CalculationError extends Error {
   constructor(message, field, value) {
     super(message);
-    this.name = 'CalculationError';
+    this.name = "CalculationError";
     this.field = field;
     this.value = value;
   }
@@ -65,7 +65,7 @@ class CalculationError extends Error {
  */
 function validateNumber(value, min, max, fieldName) {
   const num = Number(value);
-  
+
   if (isNaN(num) || !isFinite(num)) {
     throw new CalculationError(
       `${fieldName} deve ser um número válido`,
@@ -73,7 +73,7 @@ function validateNumber(value, min, max, fieldName) {
       value
     );
   }
-  
+
   if (num < min || num > max) {
     throw new CalculationError(
       `${fieldName} deve estar entre ${min} e ${max}`,
@@ -81,7 +81,7 @@ function validateNumber(value, min, max, fieldName) {
       value
     );
   }
-  
+
   return num;
 }
 
@@ -91,49 +91,44 @@ function validateNumber(value, min, max, fieldName) {
  * @returns {Object} - Gabinete validado
  */
 function validateGabinete(gabinete) {
-  if (!gabinete || typeof gabinete !== 'object') {
-    throw new CalculationError('Gabinete é obrigatório', 'gabinete', gabinete);
+  if (!gabinete || typeof gabinete !== "object") {
+    throw new CalculationError("Gabinete é obrigatório", "gabinete", gabinete);
   }
-  
+
   return {
     largura: validateNumber(
-      gabinete.largura, 
-      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE, 
+      gabinete.largura,
+      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE,
       CALCULATION_CONSTANTS.MAX_DIMENSAO_GABINETE * 1000, // mm
-      'largura do gabinete'
+      "largura do gabinete"
     ),
     altura: validateNumber(
-      gabinete.altura, 
-      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE, 
+      gabinete.altura,
+      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE,
       CALCULATION_CONSTANTS.MAX_DIMENSAO_GABINETE * 1000, // mm
-      'altura do gabinete'
+      "altura do gabinete"
     ),
     pixels_largura: validateNumber(
-      gabinete.pixels_largura || 0, 
-      0, 
-      10000, 
-      'pixels largura do gabinete'
+      gabinete.pixels_largura || 0,
+      0,
+      10000,
+      "pixels largura do gabinete"
     ),
     pixels_altura: validateNumber(
-      gabinete.pixels_altura || 0, 
-      0, 
-      10000, 
-      'pixels altura do gabinete'
+      gabinete.pixels_altura || 0,
+      0,
+      10000,
+      "pixels altura do gabinete"
     ),
-    peso: validateNumber(
-      gabinete.peso || 0, 
-      0, 
-      1000, 
-      'peso do gabinete'
-    ),
+    peso: validateNumber(gabinete.peso || 0, 0, 1000, "peso do gabinete"),
     potencia: validateNumber(
-      gabinete.potencia || 0, 
-      CALCULATION_CONSTANTS.MIN_POTENCIA, 
-      CALCULATION_CONSTANTS.MAX_POTENCIA, 
-      'potência do gabinete'
+      gabinete.potencia || 0,
+      CALCULATION_CONSTANTS.MIN_POTENCIA,
+      CALCULATION_CONSTANTS.MAX_POTENCIA,
+      "potência do gabinete"
     ),
-    nome: gabinete.nome || 'Gabinete sem nome',
-    tipo: gabinete.tipo || 'indefinido'
+    nome: gabinete.nome || "Gabinete sem nome",
+    tipo: gabinete.tipo || "indefinido",
   };
 }
 
@@ -143,7 +138,7 @@ function validateGabinete(gabinete) {
  * @param {Array} params - Parâmetros do cálculo
  */
 function getCacheKey(type, ...params) {
-  return `${type}_${params.map(p => JSON.stringify(p)).join('_')}`;
+  return `${type}_${params.map((p) => JSON.stringify(p)).join("_")}`;
 }
 
 /**
@@ -151,7 +146,10 @@ function getCacheKey(type, ...params) {
  * @param {Object} cacheItem - Item do cache
  */
 function isCacheValid(cacheItem) {
-  return cacheItem && (Date.now() - cacheItem.timestamp) < CALCULATION_CONSTANTS.CACHE_TTL;
+  return (
+    cacheItem &&
+    Date.now() - cacheItem.timestamp < CALCULATION_CONSTANTS.CACHE_TTL
+  );
 }
 
 /**
@@ -168,28 +166,28 @@ function isCacheValid(cacheItem) {
 export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
   try {
     // Gerar chave de cache
-    const cacheKey = getCacheKey('gabinete', gabinete, qtdLargura, qtdAltura);
+    const cacheKey = getCacheKey("gabinete", gabinete, qtdLargura, qtdAltura);
     const cached = calculationCache.get(cacheKey);
-    
+
     if (isCacheValid(cached)) {
       return cached.data;
     }
-    
+
     // Validações
     const gabineteLimpo = validateGabinete(gabinete);
     const qtdLarg = validateNumber(
-      qtdLargura, 
-      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE, 
-      CALCULATION_CONSTANTS.MAX_DIMENSAO_GABINETE, 
-      'quantidade largura'
+      qtdLargura,
+      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE,
+      CALCULATION_CONSTANTS.MAX_DIMENSAO_GABINETE,
+      "quantidade largura"
     );
     const qtdAlt = validateNumber(
-      qtdAltura, 
-      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE, 
-      CALCULATION_CONSTANTS.MAX_DIMENSAO_GABINETE, 
-      'quantidade altura'
+      qtdAltura,
+      CALCULATION_CONSTANTS.MIN_DIMENSAO_GABINETE,
+      CALCULATION_CONSTANTS.MAX_DIMENSAO_GABINETE,
+      "quantidade altura"
     );
-    
+
     // Cálculos
     const largura = (gabineteLimpo.largura * qtdLarg) / 1000; // metros
     const altura = (gabineteLimpo.altura * qtdAlt) / 1000; // metros
@@ -198,10 +196,10 @@ export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
     const pixelsAltura = gabineteLimpo.pixels_altura * qtdAlt;
     const peso = gabineteLimpo.peso * qtdLarg * qtdAlt;
     const potencia = gabineteLimpo.potencia * qtdLarg * qtdAlt;
-    
+
     // Quantidade total de gabinetes
     const qtdGabinetes = qtdLarg * qtdAlt;
-    
+
     const resultado = {
       largura: Number(largura.toFixed(3)),
       altura: Number(altura.toFixed(3)),
@@ -214,20 +212,19 @@ export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
       qtdAltura: qtdAlt,
       qtdGabinetes,
       gabinete: gabineteLimpo.nome,
-      calculadoPor: 'gabinete',
-      timestamp: Date.now()
+      calculadoPor: "gabinete",
+      timestamp: Date.now(),
     };
-    
+
     // Armazenar no cache
     calculationCache.set(cacheKey, {
       data: resultado,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     return resultado;
-    
   } catch (error) {
-    console.error('Erro no cálculo por gabinete:', error);
+    console.error("Erro no cálculo por gabinete:", error);
     throw error;
   }
 }
@@ -242,55 +239,58 @@ export function calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura) {
 export function calcularPainelPorMetro(gabinete, larguraM, alturaM) {
   try {
     // Gerar chave de cache
-    const cacheKey = getCacheKey('metro', gabinete, larguraM, alturaM);
+    const cacheKey = getCacheKey("metro", gabinete, larguraM, alturaM);
     const cached = calculationCache.get(cacheKey);
-    
+
     if (isCacheValid(cached)) {
       return cached.data;
     }
-    
+
     // Validações
     const gabineteLimpo = validateGabinete(gabinete);
     const largM = validateNumber(
-      larguraM, 
-      CALCULATION_CONSTANTS.MIN_DIMENSAO_METRO, 
-      CALCULATION_CONSTANTS.MAX_DIMENSAO_METRO, 
-      'largura em metros'
+      larguraM,
+      CALCULATION_CONSTANTS.MIN_DIMENSAO_METRO,
+      CALCULATION_CONSTANTS.MAX_DIMENSAO_METRO,
+      "largura em metros"
     );
     const altM = validateNumber(
-      alturaM, 
-      CALCULATION_CONSTANTS.MIN_DIMENSAO_METRO, 
-      CALCULATION_CONSTANTS.MAX_DIMENSAO_METRO, 
-      'altura em metros'
+      alturaM,
+      CALCULATION_CONSTANTS.MIN_DIMENSAO_METRO,
+      CALCULATION_CONSTANTS.MAX_DIMENSAO_METRO,
+      "altura em metros"
     );
-    
+
     // Calcular quantidade de gabinetes necessários
     const qtdLargura = Math.round((largM * 1000) / gabineteLimpo.largura);
     const qtdAltura = Math.round((altM * 1000) / gabineteLimpo.altura);
-    
+
     // Calcular usando função de gabinetes
-    const resultado = calcularPainelPorGabinete(gabinete, qtdLargura, qtdAltura);
-    
+    const resultado = calcularPainelPorGabinete(
+      gabinete,
+      qtdLargura,
+      qtdAltura
+    );
+
     // Adicionar informações específicas do cálculo por metro
     const resultadoMetro = {
       ...resultado,
       larguraDesejada: largM,
       alturaDesejada: altM,
-      calculadoPor: 'metro',
+      calculadoPor: "metro",
       diferencaLargura: Number((resultado.largura - largM).toFixed(3)),
-      diferencaAltura: Number((resultado.altura - altM).toFixed(3))
+      diferencaAltura: Number((resultado.altura - altM).toFixed(3)),
     };
-    
+
     // Armazenar no cache
     calculationCache.set(cacheKey, {
       data: resultadoMetro,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     return resultadoMetro;
-    
   } catch (error) {
-    console.error('Erro no cálculo por metro:', error);
+    console.error("Erro no cálculo por metro:", error);
     throw error;
   }
 }
@@ -306,47 +306,53 @@ export function calcularPainelPorMetro(gabinete, larguraM, alturaM) {
  * @param {string} tensao - Tensão da rede
  * @returns {Object} - Dados de energia calculados
  */
-export function calcularEnergia(potenciaW, tipoRede = 'monofasico', tensao = '220') {
+export function calcularEnergia(
+  potenciaW,
+  tipoRede = "monofasico",
+  tensao = "220"
+) {
   try {
     const potencia = validateNumber(
-      potenciaW, 
-      CALCULATION_CONSTANTS.MIN_POTENCIA, 
-      CALCULATION_CONSTANTS.MAX_POTENCIA, 
-      'potência'
+      potenciaW,
+      CALCULATION_CONSTANTS.MIN_POTENCIA,
+      CALCULATION_CONSTANTS.MAX_POTENCIA,
+      "potência"
     );
-    
-    const tensaoNum = validateNumber(tensao, 110, 480, 'tensão');
-    
-    if (!['monofasico', 'bifasico', 'trifasico'].includes(tipoRede)) {
+
+    const tensaoNum = validateNumber(tensao, 110, 480, "tensão");
+
+    if (!["monofasico", "bifasico", "trifasico"].includes(tipoRede)) {
       throw new CalculationError(
-        'Tipo de rede deve ser: monofasico, bifasico ou trifasico',
-        'tipoRede',
+        "Tipo de rede deve ser: monofasico, bifasico ou trifasico",
+        "tipoRede",
         tipoRede
       );
     }
-    
+
     const fatorPotencia = CALCULATION_CONSTANTS.FATOR_POTENCIA_LED;
     const potenciaVA = potencia / fatorPotencia;
     let corrente = 0;
-    let descricao = '';
-    
+    let descricao = "";
+
     switch (tipoRede) {
-      case 'monofasico':
+      case "monofasico":
         corrente = potenciaVA / tensaoNum;
         descricao = `Monofásico ${tensaoNum}V: ${corrente.toFixed(2)} A`;
         break;
-        
-      case 'bifasico':
+
+      case "bifasico":
         corrente = potenciaVA / tensaoNum / 2;
         descricao = `Bifásico ${tensaoNum}V: ${corrente.toFixed(2)} A por fase`;
         break;
-        
-      case 'trifasico':
+
+      case "trifasico":
         corrente = potenciaVA / (tensaoNum * Math.sqrt(3));
-        descricao = `Trifásico ${tensaoNum}V: ${corrente.toFixed(2)} A por fase`;
+        descricao = `Trifásico ${tensaoNum}V: ${corrente.toFixed(
+          2
+        )} A por fase`;
         break;
     }
-    
+
     return {
       potenciaW: Number(potencia.toFixed(2)),
       potenciaVA: Number(potenciaVA.toFixed(2)),
@@ -355,11 +361,10 @@ export function calcularEnergia(potenciaW, tipoRede = 'monofasico', tensao = '22
       tipoRede,
       fatorPotencia,
       descricao,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
   } catch (error) {
-    console.error('Erro no cálculo de energia:', error);
+    console.error("Erro no cálculo de energia:", error);
     throw error;
   }
 }
@@ -374,20 +379,30 @@ export function calcularEnergia(potenciaW, tipoRede = 'monofasico', tensao = '22
  * @returns {Object} - Cálculo detalhado de potência
  */
 export function calcularPotenciaFinal(
-  gabinete, 
-  qtdGabinetes, 
-  brilhoPercentual, 
+  gabinete,
+  qtdGabinetes,
+  brilhoPercentual,
   fatorConteudo = CALCULATION_CONSTANTS.FATOR_CONTEUDO_PADRAO,
   consumoBasePercentual = CALCULATION_CONSTANTS.CONSUMO_BASE_PERCENTUAL
 ) {
   try {
     // Validações
     const gabineteLimpo = validateGabinete(gabinete);
-    const qtdGab = validateNumber(qtdGabinetes, 1, 10000, 'quantidade de gabinetes');
-    const brilho = validateNumber(brilhoPercentual, 0, 100, 'brilho percentual');
-    const fConteudo = validateNumber(fatorConteudo, 0, 1, 'fator de conteúdo');
-    const cBase = validateNumber(consumoBasePercentual, 0, 1, 'consumo base');
-    
+    const qtdGab = validateNumber(
+      qtdGabinetes,
+      1,
+      10000,
+      "quantidade de gabinetes"
+    );
+    const brilho = validateNumber(
+      brilhoPercentual,
+      0,
+      100,
+      "brilho percentual"
+    );
+    const fConteudo = validateNumber(fatorConteudo, 0, 1, "fator de conteúdo");
+    const cBase = validateNumber(consumoBasePercentual, 0, 1, "consumo base");
+
     // Cálculos
     const P_total_max = gabineteLimpo.potencia * qtdGab;
     const pwm = Math.pow(brilho / 100, 2); // Correção gamma
@@ -395,7 +410,7 @@ export function calcularPotenciaFinal(
     const P_conteudo = P_brilho * fConteudo;
     const P_base = P_total_max * cBase;
     const P_final = P_conteudo + P_base;
-    
+
     return {
       P_total_max: Number(P_total_max.toFixed(2)),
       pwm: Number(pwm.toFixed(4)),
@@ -408,11 +423,10 @@ export function calcularPotenciaFinal(
       consumoBasePercentual: cBase,
       qtdGabinetes: qtdGab,
       gabinete: gabineteLimpo.nome,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
   } catch (error) {
-    console.error('Erro no cálculo de potência final:', error);
+    console.error("Erro no cálculo de potência final:", error);
     throw error;
   }
 }
@@ -423,24 +437,23 @@ export function calcularPotenciaFinal(
  * @param {string} tensao - Tensão
  * @returns {number} - Corrente em ampères
  */
-export function calcularIntensidade(potenciaW, tensao = '220') {
+export function calcularIntensidade(potenciaW, tensao = "220") {
   try {
     const potencia = validateNumber(
-      potenciaW, 
-      CALCULATION_CONSTANTS.MIN_POTENCIA, 
-      CALCULATION_CONSTANTS.MAX_POTENCIA, 
-      'potência'
+      potenciaW,
+      CALCULATION_CONSTANTS.MIN_POTENCIA,
+      CALCULATION_CONSTANTS.MAX_POTENCIA,
+      "potência"
     );
-    const tensaoNum = validateNumber(tensao, 110, 480, 'tensão');
-    
+    const tensaoNum = validateNumber(tensao, 110, 480, "tensão");
+
     const fatorPotencia = CALCULATION_CONSTANTS.FATOR_POTENCIA_LED;
     const potenciaVA = potencia / fatorPotencia;
     const corrente = potenciaVA / tensaoNum;
-    
+
     return Number(corrente.toFixed(2));
-    
   } catch (error) {
-    console.error('Erro no cálculo de intensidade:', error);
+    console.error("Erro no cálculo de intensidade:", error);
     throw error;
   }
 }
@@ -456,11 +469,11 @@ export function calcularIntensidade(potenciaW, tensao = '220') {
  * @param {string} locale - Locale para formatação
  * @returns {string} - Número formatado
  */
-export function formatNumber(value, decimals = 2, locale = 'pt-BR') {
+export function formatNumber(value, decimals = 2, locale = "pt-BR") {
   if (value === undefined || value === null || isNaN(value)) {
-    return '-';
+    return "-";
   }
-  
+
   return Number(value).toLocaleString(locale, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -474,7 +487,7 @@ export function formatNumber(value, decimals = 2, locale = 'pt-BR') {
  */
 export function formatCalculationResult(resultado) {
   if (!resultado) return null;
-  
+
   return {
     ...resultado,
     larguraFormatada: `${formatNumber(resultado.largura, 2)} m`,
@@ -482,7 +495,7 @@ export function formatCalculationResult(resultado) {
     areaFormatada: `${formatNumber(resultado.area, 2)} m²`,
     pesoFormatado: `${formatNumber(resultado.peso, 1)} kg`,
     potenciaFormatada: `${formatNumber(resultado.potencia, 0)} W`,
-    resolucaoFormatada: `${resultado.pixelsLargura} × ${resultado.pixelsAltura} pixels`
+    resolucaoFormatada: `${resultado.pixelsLargura} × ${resultado.pixelsAltura} pixels`,
   };
 }
 
@@ -495,7 +508,7 @@ export function formatCalculationResult(resultado) {
  */
 export function clearCalculationCache() {
   calculationCache.clear();
-  console.log('🧹 Cache de cálculos limpo');
+  console.log("🧹 Cache de cálculos limpo");
 }
 
 /**
@@ -505,13 +518,13 @@ export function clearCalculationCache() {
 export function getCalculationCacheStats() {
   const entries = Array.from(calculationCache.entries());
   const validEntries = entries.filter(([_, value]) => isCacheValid(value));
-  
+
   return {
     total: calculationCache.size,
     valid: validEntries.length,
     expired: calculationCache.size - validEntries.length,
     hitRate: validEntries.length / (calculationCache.size || 1),
-    memory: JSON.stringify(Array.from(calculationCache.values())).length
+    memory: JSON.stringify(Array.from(calculationCache.values())).length,
   };
 }
 

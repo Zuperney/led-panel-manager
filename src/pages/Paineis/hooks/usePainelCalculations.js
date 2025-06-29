@@ -18,7 +18,7 @@ import {
   calcularPainelPorMetro,
   calcularEnergia,
   calcularPotenciaFinal,
-  CalculationError
+  CalculationError,
 } from "../services/painelCalculations";
 
 export function usePainelCalculations({ form, gabinetes, tensao, tipoRede }) {

@@ -4,7 +4,10 @@ import {
   VALIDATION_LIMITS,
   FEEDBACK_MESSAGES,
 } from "../Paineis.constants";
-import { validatePainelForm, sanitizePainelForm } from "../services/painelValidation";
+import {
+  validatePainelForm,
+  sanitizePainelForm,
+} from "../services/painelValidation";
 
 /**
  * 🎯 Hook customizado para gerenciamento de formulário de painéis

@@ -1,6 +1,6 @@
 /**
  * Serviço de validações para painéis LED
- * 
+ *
  * Responsabilidades:
  * - Validações de formulário de painéis
  * - Regras de negócio específicas
@@ -8,7 +8,7 @@
  * - Mensagens de erro padronizadas
  * - Validações de duplicidade
  * - Validações de consistência
- * 
+ *
  * @author Led Panel Manager Team
  * @since 1.4.0
  */
@@ -22,7 +22,7 @@ const VALIDATION_CONSTANTS = {
   MAX_NOME_LENGTH: 100,
   MIN_PROJETO_LENGTH: 1,
   MAX_PROJETO_LENGTH: 100,
-  
+
   // Limites numéricos
   MIN_QTD_GABINETE: 1,
   MAX_QTD_GABINETE: 1000,
@@ -30,27 +30,27 @@ const VALIDATION_CONSTANTS = {
   MAX_MEDIDA_METRO: 100,
   MIN_POTENCIA: 0,
   MAX_POTENCIA: 100000,
-  
+
   // Padrões regex
   NOME_PATTERN: /^[a-zA-Z0-9\s\-_áéíóúâêîôûàèìòùãõçÁÉÍÓÚÂÊÎÔÛÀÈÌÒÙÃÕÇ]+$/,
   PROJETO_PATTERN: /^[a-zA-Z0-9\s\-_áéíóúâêîôûàèìòùãõçÁÉÍÓÚÂÊÎÔÛÀÈÌÒÙÃÕÇ]+$/,
-  
+
   // Valores permitidos
-  MODOS_PERMITIDOS: ['gabinete', 'metro'],
-  TENSOES_PERMITIDAS: ['220', '380'],
-  TIPOS_REDE_PERMITIDOS: ['monofasico', 'bifasico', 'trifasico'],
+  MODOS_PERMITIDOS: ["gabinete", "metro"],
+  TENSOES_PERMITIDAS: ["220", "380"],
+  TIPOS_REDE_PERMITIDOS: ["monofasico", "bifasico", "trifasico"],
 };
 
 /**
  * Tipos de erro de validação
  */
 export const VALIDATION_ERROR_TYPES = {
-  REQUIRED: 'REQUIRED',
-  INVALID_FORMAT: 'INVALID_FORMAT',
-  OUT_OF_RANGE: 'OUT_OF_RANGE',
-  DUPLICATE: 'DUPLICATE',
-  INCONSISTENT: 'INCONSISTENT',
-  BUSINESS_RULE: 'BUSINESS_RULE'
+  REQUIRED: "REQUIRED",
+  INVALID_FORMAT: "INVALID_FORMAT",
+  OUT_OF_RANGE: "OUT_OF_RANGE",
+  DUPLICATE: "DUPLICATE",
+  INCONSISTENT: "INCONSISTENT",
+  BUSINESS_RULE: "BUSINESS_RULE",
 };
 
 /**
@@ -59,7 +59,7 @@ export const VALIDATION_ERROR_TYPES = {
 export class ValidationError extends Error {
   constructor(message, type, field, value) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
     this.type = type;
     this.field = field;
     this.value = value;
@@ -75,37 +75,42 @@ class ValidationResult {
     this.errors = [];
     this.warnings = [];
   }
-  
-  addError(field, message, type = VALIDATION_ERROR_TYPES.INVALID_FORMAT, value = null) {
+
+  addError(
+    field,
+    message,
+    type = VALIDATION_ERROR_TYPES.INVALID_FORMAT,
+    value = null
+  ) {
     this.isValid = false;
     this.errors.push({
       field,
       message,
       type,
-      value
+      value,
     });
   }
-  
+
   addWarning(field, message, value = null) {
     this.warnings.push({
       field,
       message,
-      value
+      value,
     });
   }
-  
+
   hasErrors() {
     return this.errors.length > 0;
   }
-  
+
   hasWarnings() {
     return this.warnings.length > 0;
   }
-  
+
   getErrorsForField(field) {
-    return this.errors.filter(error => error.field === field);
+    return this.errors.filter((error) => error.field === field);
   }
-  
+
   getFirstError() {
     return this.errors[0] || null;
   }
@@ -122,14 +127,14 @@ class ValidationResult {
  * @returns {boolean} - Se é válido
  */
 function isRequired(value, fieldName) {
-  if (value === null || value === undefined || value === '') {
+  if (value === null || value === undefined || value === "") {
     return false;
   }
-  
-  if (typeof value === 'string' && value.trim() === '') {
+
+  if (typeof value === "string" && value.trim() === "") {
     return false;
   }
-  
+
   return true;
 }
 
@@ -141,7 +146,7 @@ function isRequired(value, fieldName) {
  * @returns {boolean} - Se é válido
  */
 function isValidLength(value, min, max) {
-  if (typeof value !== 'string') return false;
+  if (typeof value !== "string") return false;
   const length = value.trim().length;
   return length >= min && length <= max;
 }
@@ -166,7 +171,7 @@ function isInRange(value, min, max) {
  * @returns {boolean} - Se é válido
  */
 function matchesPattern(value, pattern) {
-  if (typeof value !== 'string') return false;
+  if (typeof value !== "string") return false;
   return pattern.test(value);
 }
 
@@ -180,24 +185,34 @@ function matchesPattern(value, pattern) {
  * @param {ValidationResult} result - Resultado da validação
  */
 function validateNomePainel(nome, result) {
-  if (!isRequired(nome, 'nome')) {
-    result.addError('nome', 'Nome do painel é obrigatório', VALIDATION_ERROR_TYPES.REQUIRED);
+  if (!isRequired(nome, "nome")) {
+    result.addError(
+      "nome",
+      "Nome do painel é obrigatório",
+      VALIDATION_ERROR_TYPES.REQUIRED
+    );
     return;
   }
-  
-  if (!isValidLength(nome, VALIDATION_CONSTANTS.MIN_NOME_LENGTH, VALIDATION_CONSTANTS.MAX_NOME_LENGTH)) {
+
+  if (
+    !isValidLength(
+      nome,
+      VALIDATION_CONSTANTS.MIN_NOME_LENGTH,
+      VALIDATION_CONSTANTS.MAX_NOME_LENGTH
+    )
+  ) {
     result.addError(
-      'nome', 
+      "nome",
       `Nome deve ter entre ${VALIDATION_CONSTANTS.MIN_NOME_LENGTH} e ${VALIDATION_CONSTANTS.MAX_NOME_LENGTH} caracteres`,
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       nome
     );
   }
-  
+
   if (!matchesPattern(nome, VALIDATION_CONSTANTS.NOME_PATTERN)) {
     result.addError(
-      'nome',
-      'Nome contém caracteres inválidos. Use apenas letras, números, espaços e hífens',
+      "nome",
+      "Nome contém caracteres inválidos. Use apenas letras, números, espaços e hífens",
       VALIDATION_ERROR_TYPES.INVALID_FORMAT,
       nome
     );
@@ -210,14 +225,24 @@ function validateNomePainel(nome, result) {
  * @param {ValidationResult} result - Resultado da validação
  */
 function validateProjeto(projeto, result) {
-  if (!isRequired(projeto, 'projeto')) {
-    result.addError('projeto', 'Projeto é obrigatório', VALIDATION_ERROR_TYPES.REQUIRED);
+  if (!isRequired(projeto, "projeto")) {
+    result.addError(
+      "projeto",
+      "Projeto é obrigatório",
+      VALIDATION_ERROR_TYPES.REQUIRED
+    );
     return;
   }
-  
-  if (!isValidLength(projeto, VALIDATION_CONSTANTS.MIN_PROJETO_LENGTH, VALIDATION_CONSTANTS.MAX_PROJETO_LENGTH)) {
+
+  if (
+    !isValidLength(
+      projeto,
+      VALIDATION_CONSTANTS.MIN_PROJETO_LENGTH,
+      VALIDATION_CONSTANTS.MAX_PROJETO_LENGTH
+    )
+  ) {
     result.addError(
-      'projeto', 
+      "projeto",
       `Nome do projeto deve ter entre ${VALIDATION_CONSTANTS.MIN_PROJETO_LENGTH} e ${VALIDATION_CONSTANTS.MAX_PROJETO_LENGTH} caracteres`,
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       projeto
@@ -232,21 +257,31 @@ function validateProjeto(projeto, result) {
  * @param {ValidationResult} result - Resultado da validação
  */
 function validateGabinete(gabinete, gabinetesDisponiveis, result) {
-  if (!isRequired(gabinete, 'gabinete')) {
-    result.addError('gabinete', 'Gabinete é obrigatório', VALIDATION_ERROR_TYPES.REQUIRED);
+  if (!isRequired(gabinete, "gabinete")) {
+    result.addError(
+      "gabinete",
+      "Gabinete é obrigatório",
+      VALIDATION_ERROR_TYPES.REQUIRED
+    );
     return;
   }
-  
+
   if (!gabinetesDisponiveis || gabinetesDisponiveis.length === 0) {
-    result.addError('gabinete', 'Nenhum gabinete disponível', VALIDATION_ERROR_TYPES.BUSINESS_RULE);
+    result.addError(
+      "gabinete",
+      "Nenhum gabinete disponível",
+      VALIDATION_ERROR_TYPES.BUSINESS_RULE
+    );
     return;
   }
-  
-  const gabineteSelecionado = gabinetesDisponiveis.find(g => g.nome === gabinete);
+
+  const gabineteSelecionado = gabinetesDisponiveis.find(
+    (g) => g.nome === gabinete
+  );
   if (!gabineteSelecionado) {
     result.addError(
-      'gabinete',
-      'Gabinete selecionado não está disponível',
+      "gabinete",
+      "Gabinete selecionado não está disponível",
       VALIDATION_ERROR_TYPES.INVALID_FORMAT,
       gabinete
     );
@@ -259,15 +294,19 @@ function validateGabinete(gabinete, gabinetesDisponiveis, result) {
  * @param {ValidationResult} result - Resultado da validação
  */
 function validateModo(modo, result) {
-  if (!isRequired(modo, 'modo')) {
-    result.addError('modo', 'Modo de cálculo é obrigatório', VALIDATION_ERROR_TYPES.REQUIRED);
+  if (!isRequired(modo, "modo")) {
+    result.addError(
+      "modo",
+      "Modo de cálculo é obrigatório",
+      VALIDATION_ERROR_TYPES.REQUIRED
+    );
     return;
   }
-  
+
   if (!VALIDATION_CONSTANTS.MODOS_PERMITIDOS.includes(modo)) {
     result.addError(
-      'modo',
-      `Modo deve ser: ${VALIDATION_CONSTANTS.MODOS_PERMITIDOS.join(', ')}`,
+      "modo",
+      `Modo deve ser: ${VALIDATION_CONSTANTS.MODOS_PERMITIDOS.join(", ")}`,
       VALIDATION_ERROR_TYPES.INVALID_FORMAT,
       modo
     );
@@ -280,18 +319,30 @@ function validateModo(modo, result) {
  * @param {ValidationResult} result - Resultado da validação
  */
 function validateModoGabinete(form, result) {
-  if (!isInRange(form.qtdLargura, VALIDATION_CONSTANTS.MIN_QTD_GABINETE, VALIDATION_CONSTANTS.MAX_QTD_GABINETE)) {
+  if (
+    !isInRange(
+      form.qtdLargura,
+      VALIDATION_CONSTANTS.MIN_QTD_GABINETE,
+      VALIDATION_CONSTANTS.MAX_QTD_GABINETE
+    )
+  ) {
     result.addError(
-      'qtdLargura',
+      "qtdLargura",
       `Quantidade de gabinetes na largura deve estar entre ${VALIDATION_CONSTANTS.MIN_QTD_GABINETE} e ${VALIDATION_CONSTANTS.MAX_QTD_GABINETE}`,
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       form.qtdLargura
     );
   }
-  
-  if (!isInRange(form.qtdAltura, VALIDATION_CONSTANTS.MIN_QTD_GABINETE, VALIDATION_CONSTANTS.MAX_QTD_GABINETE)) {
+
+  if (
+    !isInRange(
+      form.qtdAltura,
+      VALIDATION_CONSTANTS.MIN_QTD_GABINETE,
+      VALIDATION_CONSTANTS.MAX_QTD_GABINETE
+    )
+  ) {
     result.addError(
-      'qtdAltura',
+      "qtdAltura",
       `Quantidade de gabinetes na altura deve estar entre ${VALIDATION_CONSTANTS.MIN_QTD_GABINETE} e ${VALIDATION_CONSTANTS.MAX_QTD_GABINETE}`,
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       form.qtdAltura
@@ -305,18 +356,30 @@ function validateModoGabinete(form, result) {
  * @param {ValidationResult} result - Resultado da validação
  */
 function validateModoMetro(form, result) {
-  if (!isInRange(form.larguraM, VALIDATION_CONSTANTS.MIN_MEDIDA_METRO, VALIDATION_CONSTANTS.MAX_MEDIDA_METRO)) {
+  if (
+    !isInRange(
+      form.larguraM,
+      VALIDATION_CONSTANTS.MIN_MEDIDA_METRO,
+      VALIDATION_CONSTANTS.MAX_MEDIDA_METRO
+    )
+  ) {
     result.addError(
-      'larguraM',
+      "larguraM",
       `Largura em metros deve estar entre ${VALIDATION_CONSTANTS.MIN_MEDIDA_METRO} e ${VALIDATION_CONSTANTS.MAX_MEDIDA_METRO}`,
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       form.larguraM
     );
   }
-  
-  if (!isInRange(form.alturaM, VALIDATION_CONSTANTS.MIN_MEDIDA_METRO, VALIDATION_CONSTANTS.MAX_MEDIDA_METRO)) {
+
+  if (
+    !isInRange(
+      form.alturaM,
+      VALIDATION_CONSTANTS.MIN_MEDIDA_METRO,
+      VALIDATION_CONSTANTS.MAX_MEDIDA_METRO
+    )
+  ) {
     result.addError(
-      'alturaM',
+      "alturaM",
       `Altura em metros deve estar entre ${VALIDATION_CONSTANTS.MIN_MEDIDA_METRO} e ${VALIDATION_CONSTANTS.MAX_MEDIDA_METRO}`,
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       form.alturaM
@@ -333,27 +396,29 @@ function validateModoMetro(form, result) {
 function validateConfiguracoesEletricas(tensao, tipoRede, result) {
   if (!VALIDATION_CONSTANTS.TENSOES_PERMITIDAS.includes(tensao)) {
     result.addError(
-      'tensao',
-      `Tensão deve ser: ${VALIDATION_CONSTANTS.TENSOES_PERMITIDAS.join(', ')}`,
+      "tensao",
+      `Tensão deve ser: ${VALIDATION_CONSTANTS.TENSOES_PERMITIDAS.join(", ")}`,
       VALIDATION_ERROR_TYPES.INVALID_FORMAT,
       tensao
     );
   }
-  
+
   if (!VALIDATION_CONSTANTS.TIPOS_REDE_PERMITIDOS.includes(tipoRede)) {
     result.addError(
-      'tipoRede',
-      `Tipo de rede deve ser: ${VALIDATION_CONSTANTS.TIPOS_REDE_PERMITIDOS.join(', ')}`,
+      "tipoRede",
+      `Tipo de rede deve ser: ${VALIDATION_CONSTANTS.TIPOS_REDE_PERMITIDOS.join(
+        ", "
+      )}`,
       VALIDATION_ERROR_TYPES.INVALID_FORMAT,
       tipoRede
     );
   }
-  
+
   // Regra de negócio: 220V monofásico não é permitido
-  if (tensao === '220' && tipoRede === 'monofasico') {
+  if (tensao === "220" && tipoRede === "monofasico") {
     result.addError(
-      'tipoRede',
-      '220V monofásico não é uma configuração válida. Use bifásico ou trifásico',
+      "tipoRede",
+      "220V monofásico não é uma configuração válida. Use bifásico ou trifásico",
       VALIDATION_ERROR_TYPES.BUSINESS_RULE,
       { tensao, tipoRede }
     );
@@ -372,67 +437,81 @@ function validateConfiguracoesEletricas(tensao, tipoRede, result) {
  * @param {boolean} isEdicao - Se é uma edição (permite mesmo nome)
  * @returns {ValidationResult} - Resultado da validação
  */
-export function validatePainelForm(formData, gabinetesDisponiveis = [], paineisExistentes = [], isEdicao = false) {
+export function validatePainelForm(
+  formData,
+  gabinetesDisponiveis = [],
+  paineisExistentes = [],
+  isEdicao = false
+) {
   const result = new ValidationResult();
-  
+
   try {
     // Validações básicas
     validateNomePainel(formData.nome, result);
     validateProjeto(formData.projeto, result);
     validateGabinete(formData.gabinete, gabinetesDisponiveis, result);
     validateModo(formData.modo, result);
-    
+
     // Validações específicas por modo
-    if (formData.modo === 'gabinete') {
+    if (formData.modo === "gabinete") {
       validateModoGabinete(formData, result);
-    } else if (formData.modo === 'metro') {
+    } else if (formData.modo === "metro") {
       validateModoMetro(formData, result);
     }
-    
+
     // Validar duplicidade de nome (apenas para criação)
     if (!isEdicao && formData.nome && formData.projeto) {
-      const nomeDuplicado = paineisExistentes.some(painel => 
-        painel.projeto === formData.projeto &&
-        painel.nome.trim().toLowerCase() === formData.nome.trim().toLowerCase()
+      const nomeDuplicado = paineisExistentes.some(
+        (painel) =>
+          painel.projeto === formData.projeto &&
+          painel.nome.trim().toLowerCase() ===
+            formData.nome.trim().toLowerCase()
       );
-      
+
       if (nomeDuplicado) {
         result.addError(
-          'nome',
-          'Já existe um painel com este nome no projeto selecionado',
+          "nome",
+          "Já existe um painel com este nome no projeto selecionado",
           VALIDATION_ERROR_TYPES.DUPLICATE,
           formData.nome
         );
       }
     }
-    
+
     // Warnings para valores extremos
-    if (formData.modo === 'gabinete') {
-      const totalGabinetes = (Number(formData.qtdLargura) || 0) * (Number(formData.qtdAltura) || 0);
+    if (formData.modo === "gabinete") {
+      const totalGabinetes =
+        (Number(formData.qtdLargura) || 0) * (Number(formData.qtdAltura) || 0);
       if (totalGabinetes > 100) {
         result.addWarning(
-          'qtdTotal',
+          "qtdTotal",
           `Painel com ${totalGabinetes} gabinetes é muito grande. Verifique se está correto`,
           totalGabinetes
         );
       }
     }
-    
-    if (formData.modo === 'metro') {
-      const area = (Number(formData.larguraM) || 0) * (Number(formData.alturaM) || 0);
+
+    if (formData.modo === "metro") {
+      const area =
+        (Number(formData.larguraM) || 0) * (Number(formData.alturaM) || 0);
       if (area > 50) {
         result.addWarning(
-          'area',
-          `Painel com ${area.toFixed(2)}m² é muito grande. Verifique se está correto`,
+          "area",
+          `Painel com ${area.toFixed(
+            2
+          )}m² é muito grande. Verifique se está correto`,
           area
         );
       }
     }
-    
   } catch (error) {
-    result.addError('geral', `Erro interno de validação: ${error.message}`, VALIDATION_ERROR_TYPES.BUSINESS_RULE);
+    result.addError(
+      "geral",
+      `Erro interno de validação: ${error.message}`,
+      VALIDATION_ERROR_TYPES.BUSINESS_RULE
+    );
   }
-  
+
   return result;
 }
 
@@ -456,26 +535,40 @@ export function validateEletricConfig(tensao, tipoRede) {
  */
 export function validatePainelForCalculation(painelData, gabinete) {
   const result = new ValidationResult();
-  
+
   if (!gabinete) {
-    result.addError('gabinete', 'Gabinete é necessário para cálculos', VALIDATION_ERROR_TYPES.REQUIRED);
+    result.addError(
+      "gabinete",
+      "Gabinete é necessário para cálculos",
+      VALIDATION_ERROR_TYPES.REQUIRED
+    );
     return result;
   }
-  
+
   // Validar dados do gabinete
-  if (!isInRange(gabinete.potencia, VALIDATION_CONSTANTS.MIN_POTENCIA, VALIDATION_CONSTANTS.MAX_POTENCIA)) {
+  if (
+    !isInRange(
+      gabinete.potencia,
+      VALIDATION_CONSTANTS.MIN_POTENCIA,
+      VALIDATION_CONSTANTS.MAX_POTENCIA
+    )
+  ) {
     result.addError(
-      'gabinete.potencia',
-      'Potência do gabinete inválida',
+      "gabinete.potencia",
+      "Potência do gabinete inválida",
       VALIDATION_ERROR_TYPES.OUT_OF_RANGE,
       gabinete.potencia
     );
   }
-  
+
   if (!gabinete.largura || !gabinete.altura) {
-    result.addError('gabinete.dimensoes', 'Dimensões do gabinete são obrigatórias', VALIDATION_ERROR_TYPES.REQUIRED);
+    result.addError(
+      "gabinete.dimensoes",
+      "Dimensões do gabinete são obrigatórias",
+      VALIDATION_ERROR_TYPES.REQUIRED
+    );
   }
-  
+
   return result;
 }
 
@@ -490,10 +583,10 @@ export function validatePainelForCalculation(painelData, gabinete) {
  */
 export function sanitizePainelForm(formData) {
   return {
-    nome: String(formData.nome || '').trim(),
-    projeto: String(formData.projeto || '').trim(),
-    gabinete: String(formData.gabinete || '').trim(),
-    modo: String(formData.modo || 'metro').trim(),
+    nome: String(formData.nome || "").trim(),
+    projeto: String(formData.projeto || "").trim(),
+    gabinete: String(formData.gabinete || "").trim(),
+    modo: String(formData.modo || "metro").trim(),
     qtdLargura: Math.max(1, parseInt(formData.qtdLargura) || 1),
     qtdAltura: Math.max(1, parseInt(formData.qtdAltura) || 1),
     larguraM: Math.max(0.01, parseFloat(formData.larguraM) || 0.01),
@@ -507,12 +600,12 @@ export function sanitizePainelForm(formData) {
  * @returns {string} - Nome sanitizado
  */
 export function sanitizeName(nome) {
-  if (typeof nome !== 'string') return '';
-  
+  if (typeof nome !== "string") return "";
+
   return nome
     .trim()
-    .replace(/[^\w\s\-áéíóúâêîôûàèìòùãõçÁÉÍÓÚÂÊÎÔÛÀÈÌÒÙÃÕÇ]/g, '') // Remove caracteres especiais
-    .replace(/\s+/g, ' ') // Substitui múltiplos espaços por um
+    .replace(/[^\w\s\-áéíóúâêîôûàèìòùãõçÁÉÍÓÚÂÊÎÔÛÀÈÌÒÙÃÕÇ]/g, "") // Remove caracteres especiais
+    .replace(/\s+/g, " ") // Substitui múltiplos espaços por um
     .substring(0, VALIDATION_CONSTANTS.MAX_NOME_LENGTH); // Limita tamanho
 }
 
@@ -527,36 +620,36 @@ export function sanitizeName(nome) {
  */
 export function getErrorMessage(error) {
   const fieldNames = {
-    nome: 'Nome do painel',
-    projeto: 'Projeto',
-    gabinete: 'Gabinete',
-    modo: 'Modo de cálculo',
-    qtdLargura: 'Quantidade na largura',
-    qtdAltura: 'Quantidade na altura',
-    larguraM: 'Largura em metros',
-    alturaM: 'Altura em metros',
-    tensao: 'Tensão',
-    tipoRede: 'Tipo de rede'
+    nome: "Nome do painel",
+    projeto: "Projeto",
+    gabinete: "Gabinete",
+    modo: "Modo de cálculo",
+    qtdLargura: "Quantidade na largura",
+    qtdAltura: "Quantidade na altura",
+    larguraM: "Largura em metros",
+    alturaM: "Altura em metros",
+    tensao: "Tensão",
+    tipoRede: "Tipo de rede",
   };
-  
+
   const fieldName = fieldNames[error.field] || error.field;
-  
+
   switch (error.type) {
     case VALIDATION_ERROR_TYPES.REQUIRED:
       return `${fieldName} é obrigatório`;
-    
+
     case VALIDATION_ERROR_TYPES.DUPLICATE:
       return `${fieldName} já existe`;
-    
+
     case VALIDATION_ERROR_TYPES.INVALID_FORMAT:
       return `${fieldName} possui formato inválido`;
-    
+
     case VALIDATION_ERROR_TYPES.OUT_OF_RANGE:
       return `${fieldName} está fora da faixa permitida`;
-    
+
     case VALIDATION_ERROR_TYPES.BUSINESS_RULE:
       return error.message;
-    
+
     default:
       return error.message || `Erro em ${fieldName}`;
   }
