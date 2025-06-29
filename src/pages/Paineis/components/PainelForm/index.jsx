@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion"; // Para futuras animações
 import { Calculator, Save } from "lucide-react";
-import { SelectField } from "../../../components/ModernUI";
+import { SelectField } from "../../../../components/ModernUI";
 
 /**
  * � PainelForm - Formulário de Criação/Edição de Painéis

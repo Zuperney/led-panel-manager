@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   CALCULATION_MODES,
   VALIDATION_LIMITS,
   FEEDBACK_MESSAGES,
 } from "../Paineis.constants";
-import {
-  validatePainelForm,
-  sanitizePainelForm,
-} from "../services/painelValidation";
+// import {
+//   validatePainelForm,
+//   sanitizePainelForm,
+// } from "../services/painelValidation"; // Para futuras validações
 
 /**
  * 🎯 Hook customizado para gerenciamento de formulário de painéis
@@ -51,7 +51,7 @@ export function usePainelForm(selectedProjectId) {
   // Validação em tempo real
   useEffect(() => {
     validateForm();
-  }, [form]);
+  }, [form, validateForm]);
 
   /**
    * Handler para mudanças nos campos do formulário
@@ -73,7 +73,7 @@ export function usePainelForm(selectedProjectId) {
   /**
    * Validação completa do formulário
    */
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
     // Validar nome
@@ -137,7 +137,7 @@ export function usePainelForm(selectedProjectId) {
     setIsValid(Object.keys(newErrors).length === 0);
 
     return Object.keys(newErrors).length === 0;
-  };
+  }, [form]);
 
   /**
    * Resetar formulário para estado inicial

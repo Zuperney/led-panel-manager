@@ -163,7 +163,7 @@ export async function savePaineis(paineis) {
   try {
     console.log(`💾 Salvando ${paineis.length} painéis...`);
 
-    const data = await fetchWithRetry(`${API_CONFIG.baseUrl}/paineis`, {
+    await fetchWithRetry(`${API_CONFIG.baseUrl}/paineis`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -350,7 +350,7 @@ export function clearCacheFor(endpoint) {
  */
 export function getCacheStats() {
   const entries = Array.from(cache.entries());
-  const validEntries = entries.filter(([_, value]) => isCacheValid(value));
+  const validEntries = entries.filter(([, value]) => isCacheValid(value));
 
   return {
     total: cache.size,

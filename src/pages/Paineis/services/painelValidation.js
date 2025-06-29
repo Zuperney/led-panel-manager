@@ -126,7 +126,7 @@ class ValidationResult {
  * @param {string} fieldName - Nome do campo
  * @returns {boolean} - Se é válido
  */
-function isRequired(value, fieldName) {
+function isRequired(value) {
   if (value === null || value === undefined || value === "") {
     return false;
   }

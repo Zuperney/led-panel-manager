@@ -517,7 +517,7 @@ export function clearCalculationCache() {
  */
 export function getCalculationCacheStats() {
   const entries = Array.from(calculationCache.entries());
-  const validEntries = entries.filter(([_, value]) => isCacheValid(value));
+  const validEntries = entries.filter(([, value]) => isCacheValid(value));
 
   return {
     total: calculationCache.size,

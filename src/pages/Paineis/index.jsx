@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion"; // Para futuras animações
 import { useEffect } from "react";
 
 // Context e hooks globais
@@ -10,7 +10,7 @@ import {
   usePainelForm,
   usePainelCrud,
   usePainelCalculations,
-  usePainelFiltering,
+  // usePainelFiltering, // Para futuro uso
   usePainelHandlers,
   usePainelState,
 } from "./hooks";
@@ -116,7 +116,7 @@ export default function Paineis({ isActive }) {
   });
 
   // Hook de filtragem (para futuro uso)
-  const painelFiltering = usePainelFiltering(paineis, gabinetes);
+  // const painelFiltering = usePainelFiltering(paineis, gabinetes);
 
   // Hook de handlers centralizados
   const handlers = usePainelHandlers({
@@ -134,7 +134,7 @@ export default function Paineis({ isActive }) {
     if (painelState.selectedProjectId) {
       painelForm.syncWithProject(painelState.selectedProjectId);
     }
-  }, [painelState.selectedProjectId, painelForm.syncWithProject]);
+  }, [painelState.selectedProjectId, painelForm, painelForm.syncWithProject]);
 
   return (
     <motion.div

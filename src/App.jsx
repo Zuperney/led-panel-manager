@@ -15,7 +15,7 @@ import {
 import { ProjetoProvider } from "./contextProjeto";
 import Gabinetes from "./Gabinetes";
 import Projetos from "./Projetos";
-import Paineis from "./Paineis";
+import Paineis from "./pages/Paineis";
 import Agenda from "./Agenda";
 import Relatorio from "./Relatorio";
 import PixelMapping from "./PixelMapping";

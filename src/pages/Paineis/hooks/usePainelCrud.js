@@ -14,11 +14,12 @@
  */
 
 import { useState, useCallback } from "react";
-import { savePaineis, ApiError } from "../services/painelApi";
-import {
-  validatePainelForm,
-  sanitizePainelForm,
-} from "../services/painelValidation";
+import { ApiError } from "../services/painelApi";
+// import { savePaineis } from "../services/painelApi"; // Para futuras features
+// import {
+//   validatePainelForm,
+//   sanitizePainelForm,
+// } from "../services/painelValidation"; // Para futuras validações
 
 export function usePainelCrud({
   paineis,

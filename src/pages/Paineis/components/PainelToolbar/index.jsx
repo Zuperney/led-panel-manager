@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion"; // Para futuras animações
 import { Monitor } from "lucide-react";
 
 /**

@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion"; // Para futuras animações
 import { Monitor, Zap, Ruler } from "lucide-react";
-import { StatusCard } from "../../../components/ModernUI";
+import { StatusCard } from "../../../../components/ModernUI";
 
 /**
  * � PainelStats - Componente de Estatísticas dos Painéis

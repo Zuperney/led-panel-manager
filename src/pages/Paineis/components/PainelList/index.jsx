@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion"; // Para futuras animações
 import { Monitor, Settings } from "lucide-react";
-import PainelCard from "../../../components/PainelCard";
+import PainelCard from "../../../../components/PainelCard";
 
 /**
  * � PainelList - Lista de Painéis do Projeto
