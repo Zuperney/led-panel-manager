@@ -1,9 +1,14 @@
-import { useState, useEffect } from "react";
-import { CALCULATION_MODES, VALIDATION_LIMITS, FEEDBACK_MESSAGES } from "../Paineis.constants";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  CALCULATION_MODES,
+  VALIDATION_LIMITS,
+  FEEDBACK_MESSAGES,
+} from "../Paineis.constants";
+import { validatePainelForm, sanitizePainelForm } from "../services/painelValidation";
 
 /**
  * 🎯 Hook customizado para gerenciamento de formulário de painéis
- * 
+ *
  * Responsabilidades:
  * - Gerenciar estado do formulário
  * - Validações de campos
@@ -32,10 +37,10 @@ export function usePainelForm(selectedProjectId) {
   // Sempre que selectedProjectId mudar, atualiza o campo projeto do form
   useEffect(() => {
     if (selectedProjectId) {
-      setForm(prevForm => ({ 
-        ...prevForm, 
-        projeto: selectedProjectId, 
-        modo: CALCULATION_MODES.BY_METER 
+      setForm((prevForm) => ({
+        ...prevForm,
+        projeto: selectedProjectId,
+        modo: CALCULATION_MODES.BY_METER,
       }));
     }
   }, [selectedProjectId]);
@@ -50,11 +55,11 @@ export function usePainelForm(selectedProjectId) {
    */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prevForm => ({ ...prevForm, [name]: value }));
-    
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
+
     // Limpar erro específico do campo quando usuário começar a digitar
     if (errors[name]) {
-      setErrors(prevErrors => {
+      setErrors((prevErrors) => {
         const newErrors = { ...prevErrors };
         delete newErrors[name];
         return newErrors;
@@ -90,7 +95,10 @@ export function usePainelForm(selectedProjectId) {
     // Validações específicas por modo
     if (form.modo === CALCULATION_MODES.BY_CABINET) {
       // Modo gabinete
-      if (!form.qtdLargura || form.qtdLargura < VALIDATION_LIMITS.MIN_CABINETS) {
+      if (
+        !form.qtdLargura ||
+        form.qtdLargura < VALIDATION_LIMITS.MIN_CABINETS
+      ) {
         newErrors.qtdLargura = `Mínimo ${VALIDATION_LIMITS.MIN_CABINETS} gabinete(s)`;
       } else if (form.qtdLargura > VALIDATION_LIMITS.MAX_CABINETS) {
         newErrors.qtdLargura = `Máximo ${VALIDATION_LIMITS.MAX_CABINETS} gabinetes`;
@@ -103,13 +111,19 @@ export function usePainelForm(selectedProjectId) {
       }
     } else if (form.modo === CALCULATION_MODES.BY_METER) {
       // Modo metro
-      if (!form.larguraM || Number(form.larguraM) < VALIDATION_LIMITS.MIN_WIDTH) {
+      if (
+        !form.larguraM ||
+        Number(form.larguraM) < VALIDATION_LIMITS.MIN_WIDTH
+      ) {
         newErrors.larguraM = `Largura mínima: ${VALIDATION_LIMITS.MIN_WIDTH}m`;
       } else if (Number(form.larguraM) > VALIDATION_LIMITS.MAX_WIDTH) {
         newErrors.larguraM = `Largura máxima: ${VALIDATION_LIMITS.MAX_WIDTH}m`;
       }
 
-      if (!form.alturaM || Number(form.alturaM) < VALIDATION_LIMITS.MIN_HEIGHT) {
+      if (
+        !form.alturaM ||
+        Number(form.alturaM) < VALIDATION_LIMITS.MIN_HEIGHT
+      ) {
         newErrors.alturaM = `Altura mínima: ${VALIDATION_LIMITS.MIN_HEIGHT}m`;
       } else if (Number(form.alturaM) > VALIDATION_LIMITS.MAX_HEIGHT) {
         newErrors.alturaM = `Altura máxima: ${VALIDATION_LIMITS.MAX_HEIGHT}m`;
@@ -118,7 +132,7 @@ export function usePainelForm(selectedProjectId) {
 
     setErrors(newErrors);
     setIsValid(Object.keys(newErrors).length === 0);
-    
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -129,7 +143,7 @@ export function usePainelForm(selectedProjectId) {
     setForm({
       ...initialFormState,
       projeto: selectedProjectId || "", // Manter projeto selecionado
-      modo: CALCULATION_MODES.BY_METER // Padrão sempre metro
+      modo: CALCULATION_MODES.BY_METER, // Padrão sempre metro
     });
     setErrors({});
     setIsValid(false);
@@ -141,7 +155,7 @@ export function usePainelForm(selectedProjectId) {
   const fillForm = (painelData) => {
     setForm({
       ...painelData,
-      projeto: selectedProjectId || painelData.projeto
+      projeto: selectedProjectId || painelData.projeto,
     });
   };
 
@@ -149,10 +163,11 @@ export function usePainelForm(selectedProjectId) {
    * Verificar se nome é duplicado
    */
   const isDuplicatedName = (name, paineis, isEditing = false) => {
-    return paineis.some(p => 
-      p.projeto === form.projeto &&
-      p.nome.trim().toLowerCase() === name.trim().toLowerCase() &&
-      !isEditing // Só verifica duplicação na criação
+    return paineis.some(
+      (p) =>
+        p.projeto === form.projeto &&
+        p.nome.trim().toLowerCase() === name.trim().toLowerCase() &&
+        !isEditing // Só verifica duplicação na criação
     );
   };
 
@@ -203,11 +218,11 @@ export function usePainelForm(selectedProjectId) {
     form,
     errors,
     isValid,
-    
+
     // Handlers
     handleChange,
     setForm,
-    
+
     // Operações
     resetForm,
     fillForm,
@@ -215,14 +230,14 @@ export function usePainelForm(selectedProjectId) {
     getFormData,
     isDuplicatedName,
     focusNameField,
-    
+
     // Computed
     hasChanges: JSON.stringify(form) !== JSON.stringify(initialFormState),
-    
+
     // Constantes úteis
     modes: {
       BY_CABINET: CALCULATION_MODES.BY_CABINET,
-      BY_METER: CALCULATION_MODES.BY_METER
-    }
+      BY_METER: CALCULATION_MODES.BY_METER,
+    },
   };
 }

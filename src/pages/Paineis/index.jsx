@@ -1,5 +1,16 @@
 import { motion } from "framer-motion";
-import { Monitor, Calculator, Save, Edit3, Trash2, Zap, Ruler, Eye, Plus, Settings } from "lucide-react";
+import {
+  Monitor,
+  Calculator,
+  Save,
+  Edit3,
+  Trash2,
+  Zap,
+  Ruler,
+  Eye,
+  Plus,
+  Settings,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 // Context e hooks globais
@@ -11,7 +22,7 @@ import {
   usePainelForm,
   usePainelCrud,
   usePainelCalculations,
-  usePainelFiltering
+  usePainelFiltering,
 } from "./hooks";
 
 // Componentes UI
@@ -57,7 +68,10 @@ export default function Paineis({ isActive }) {
   } = useApiData("paineis", isActive);
 
   // Estados globais
-  const [selectedProjectId, setSelectedProjectId] = useLocalStorage("selectedProjectId", "");
+  const [selectedProjectId, setSelectedProjectId] = useLocalStorage(
+    "selectedProjectId",
+    ""
+  );
   const [mensagemFeedback, showFeedback] = useTemporaryFeedback();
   const [selectedPanelIndex, setSelectedPanelIndex] = useState(null);
   const [previewPainel, setPreviewPainel] = useState(null);
@@ -74,21 +88,21 @@ export default function Paineis({ isActive }) {
     form: painelForm.form,
     gabinetes,
     tensao,
-    tipoRede
+    tipoRede,
   });
 
   // Hook de CRUD
   const painelCrud = usePainelCrud({
     paineis,
     setPaineis,
-    paineisFiltrados: paineis.filter(p => 
-      selectedProjectId && selectedProjectId !== "__all__" 
-        ? p.projeto === selectedProjectId 
+    paineisFiltrados: paineis.filter((p) =>
+      selectedProjectId && selectedProjectId !== "__all__"
+        ? p.projeto === selectedProjectId
         : true
     ),
     selectedProjectId,
     salvarPaineis,
-    showFeedback
+    showFeedback,
   });
 
   // Hook de filtragem (para futuro uso)
@@ -102,16 +116,17 @@ export default function Paineis({ isActive }) {
   }, [selectedProjectId, painelForm.syncWithProject]);
 
   // Painéis filtrados por projeto
-  const paineisFiltrados = selectedProjectId && selectedProjectId !== "__all__"
-    ? paineis.filter(p => p.projeto === selectedProjectId)
-    : paineis;
+  const paineisFiltrados =
+    selectedProjectId && selectedProjectId !== "__all__"
+      ? paineis.filter((p) => p.projeto === selectedProjectId)
+      : paineis;
 
   // Handlers do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!painelCalculations.resultado) {
-      alert('Aguarde o cálculo do painel ser concluído.');
+      alert("Aguarde o cálculo do painel ser concluído.");
       return;
     }
 
@@ -120,7 +135,7 @@ export default function Paineis({ isActive }) {
       ...painelForm.form,
       tensao,
       tipoRede,
-      ...painelCalculations.resultado
+      ...painelCalculations.resultado,
     };
 
     let sucesso = false;
@@ -141,7 +156,7 @@ export default function Paineis({ isActive }) {
 
     if (sucesso) {
       painelForm.resetForm();
-      
+
       // Foca no campo nome para facilitar adição do próximo painel
       setTimeout(() => {
         const nomeInput = document.querySelector('input[name="nome"]');
@@ -442,8 +457,13 @@ export default function Paineis({ isActive }) {
                       </select>
                     </label>
                   </div>
-                  <button type="submit" disabled={!painelCalculations.resultado}>
-                    {painelCrud.editando !== null ? "Salvar Edição" : "Adicionar Painel"}
+                  <button
+                    type="submit"
+                    disabled={!painelCalculations.resultado}
+                  >
+                    {painelCrud.editando !== null
+                      ? "Salvar Edição"
+                      : "Adicionar Painel"}
                   </button>
                 </form>
               )}

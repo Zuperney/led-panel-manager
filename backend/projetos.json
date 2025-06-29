@@ -5,19 +5,5 @@
     "dataEntrega": "2025-08-07",
     "descricao": "Desenvolvimento de painel LED para fachada da agência Sicredi, com display de informações institucionais e promocionais.",
     "_updatedAt": 1751093681875
-  },
-  {
-    "nome": "124",
-    "cliente": "111",
-    "dataEntrega": "2025-07-13",
-    "descricao": "Projeto piloto de teste com especificações básicas para validação de funcionalidades."
-  },
-  {
-    "nome": "Mirabel",
-    "cliente": "Sugar",
-    "dataEntrega": "2025-08-31",
-    "descricao": "Abertura dos Jogos de Doces",
-    "_createdAt": 1751093666005,
-    "_updatedAt": 1751093666005
   }
 ]

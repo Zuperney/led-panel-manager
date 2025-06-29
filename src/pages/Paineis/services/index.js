@@ -1,13 +1,29 @@
-// 📁 Índice de Serviços do Módulo Painéis
-// Re-exporta todos os serviços para facilitar imports
+/**
+ * Índice dos serviços do módulo Painéis
+ * 
+ * Centraliza todas as exportações dos serviços para facilitar importação
+ * e manter organização modular.
+ * 
+ * @author Led Panel Manager Team
+ * @since 1.4.0
+ */
 
-// TODO: Implementar na Etapa 1.4
-// export * as painelApi from './painelApi';
-// export * as painelCalculations from './painelCalculations';
-// export * as painelPersistence from './painelPersistence';
+// Serviço de API
+export * from './painelApi';
 
-// Placeholder para desenvolvimento
-export const servicesPlaceholder = {
-  message: "Serviços serão implementados na Etapa 1.4",
-  planned: ["painelApi", "painelCalculations", "painelPersistence"],
+// Serviço de cálculos
+export * from './painelCalculations';
+
+// Serviço de validações
+export * from './painelValidation';
+
+// Re-exports organizados por categoria
+import * as painelApi from './painelApi';
+import * as painelCalculations from './painelCalculations';
+import * as painelValidation from './painelValidation';
+
+export {
+  painelApi,
+  painelCalculations,
+  painelValidation
 };
