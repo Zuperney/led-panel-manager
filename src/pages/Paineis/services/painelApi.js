@@ -31,7 +31,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 /**
  * Classe de erro customizada para API
  */
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(message, status, endpoint) {
     super(message);
     this.name = "ApiError";
