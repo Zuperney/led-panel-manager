@@ -1,19 +1,14 @@
-// 📁 Índice de Hooks do Módulo Painéis
-// Re-exporta todos os hooks para facilitar imports
+/**
+ * Índice dos hooks customizados para painéis
+ * 
+ * Centraliza todas as exportações dos hooks para facilitar importação
+ * e manter organização modular.
+ * 
+ * @author Led Panel Manager Team
+ * @since 1.3.0
+ */
 
-// TODO: Implementar na Etapa 1.3
-// export { default as usePainelForm } from './usePainelForm';
-// export { default as usePainelCrud } from './usePainelCrud';
-// export { default as usePainelCalculations } from './usePainelCalculations';
-// export { default as usePainelFiltering } from './usePainelFiltering';
-
-// Placeholder para desenvolvimento
-export const hooksPlaceholder = {
-  message: "Hooks serão implementados na Etapa 1.3",
-  planned: [
-    "usePainelForm",
-    "usePainelCrud",
-    "usePainelCalculations",
-    "usePainelFiltering",
-  ],
-};
+export { usePainelForm } from './usePainelForm';
+export { usePainelCrud } from './usePainelCrud';
+export { usePainelCalculations } from './usePainelCalculations';
+export { usePainelFiltering } from './usePainelFiltering';
