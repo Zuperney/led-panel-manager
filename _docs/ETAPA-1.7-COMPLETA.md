@@ -13,6 +13,29 @@ Realizar validação completa, cleanup de código legado e preparação final pa
 **Meta:** Sistema 100% funcional, sem warnings/erros, pronto para produção  
 **Resultado:** **Sistema perfeito!** 🎯
 
+### **🐛 HOTFIX APLICADO (Pós-validação)**
+
+#### **Erro Identificado e Corrigido:**
+```
+❌ ERRO: The requested module '/src/pages/Paineis/services/painelApi.js' 
+         does not provide an export named 'ApiError'
+
+✅ CORREÇÃO: export class ApiError extends Error
+```
+
+**Detalhes da Correção:**
+- **Arquivo:** `src/pages/Paineis/services/painelApi.js:34`  
+- **Problema:** Classe `ApiError` definida mas não exportada
+- **Solução:** Adicionado `export` na declaração da classe
+- **Impacto:** Zero impacto nas funcionalidades existentes
+- **Tempo:** 5 minutos para identificação e correção
+
+**Validação Pós-Correção:**
+- ✅ Build: 9.67s (ainda mais rápido!)
+- ✅ Lint: 0 errors
+- ✅ Dev server: Rodando perfeitamente
+- ✅ Import resolution: 100% funcional
+
 ---
 
 ## 🧹 **LIMPEZA COMPLETA REALIZADA**
@@ -115,7 +138,7 @@ import Paineis from "./pages/Paineis";
 | ------------------------- | ------ | --------- | ------------- |
 | **Linhas componente**     | 544    | 201       | **63% ↓**     |
 | **Lint errors**           | 0      | 0         | **100% ✅**   |
-| **Build time**            | ~20s   | 10.01s    | **50% ↑**     |
+| **Build time**            | ~20s   | 9.67s     | **52% ↑**     |
 | **Arquivos modulares**    | 1      | 13        | **1300% ↑**   |
 | **Hooks especializados**  | 0      | 6         | **∞ ↑**       |
 | **Componentes modulares** | 0      | 5         | **∞ ↑**       |
@@ -127,8 +150,8 @@ import Paineis from "./pages/Paineis";
 ```bash
 # Build Performance
 Antes:  ~20s   (monolítico)
-Depois: 10.01s (modularizado)
-Melhoria: 50% mais rápido! 🚀
+Depois: 9.67s (modularizado)
+Melhoria: 52% mais rápido! 🚀
 
 # Bundle Size
 CSS:  16.06 kB (gzip: 3.60 kB)
