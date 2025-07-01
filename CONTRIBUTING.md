@@ -6,8 +6,8 @@
 
 ```bash
 # Configure seu nome e email (substitua pelos seus dados)
-git config --global user.name "Seu Nome"
-git config --global user.email "seu.email@exemplo.com"
+git config --global user.name "Zuperney"
+git config --global user.email "neymoma@gmail.com"
 
 # Configurações adicionais recomendadas
 git config --global init.defaultBranch main
@@ -84,7 +84,7 @@ git commit -m "✅ Complete Etapa 1.1: CRUD de Painéis
 
 ✨ Implementado:
 - PanelForm.tsx com validações
-- PanelCard.tsx responsivo  
+- PanelCard.tsx responsivo
 - usePanelData hook completo
 - Filtros e busca avançada
 - Testes unitários
@@ -109,6 +109,7 @@ git push --tags
 ### 📝 Convenções de Commit
 
 #### Formato Padrão
+
 ```
 <tipo>(<escopo>): <descrição>
 
@@ -118,6 +119,7 @@ git push --tags
 ```
 
 #### Tipos Principais
+
 - **✨ feat:** Nova funcionalidade
 - **🐛 fix:** Correção de bug
 - **📝 docs:** Documentação
@@ -129,6 +131,7 @@ git push --tags
 - **🎉 initial:** Commit inicial
 
 #### Exemplos
+
 ```bash
 # Feature nova
 git commit -m "✨ feat(panels): adicionar filtro por potência
@@ -140,7 +143,7 @@ git commit -m "✨ feat(panels): adicionar filtro por potência
 # Correção de bug
 git commit -m "🐛 fix(projects): corrigir cálculo de área total
 
-Fixes #23 - área estava sendo calculada incorretamente quando 
+Fixes #23 - área estava sendo calculada incorretamente quando
 painéis tinham dimensões diferentes"
 
 # Documentação
@@ -161,11 +164,12 @@ git commit -m "♻️ refactor(components): extrair lógica comum de formulário
 ## 🏷️ Sistema de Tags e Releases
 
 ### Tags para Milestones
+
 ```bash
 # Tag de etapa concluída
 git tag -a "etapa/1.1" -m "✅ Etapa 1.1: CRUD Painéis"
 
-# Tag de fase concluída  
+# Tag de fase concluída
 git tag -a "fase/1" -m "🏗️ Fase 1: Foundation Complete"
 
 # Tag de versão
@@ -173,11 +177,12 @@ git tag -a "v0.1.0" -m "🚀 Release v0.1.0: Foundation MVP"
 ```
 
 ### Releases Automáticos
+
 ```bash
 # Release patch (0.1.0 -> 0.1.1)
 npm run release:patch
 
-# Release minor (0.1.0 -> 0.2.0) 
+# Release minor (0.1.0 -> 0.2.0)
 npm run release:minor
 
 # Release major (0.1.0 -> 1.0.0)
@@ -187,6 +192,7 @@ npm run release:major
 ## 📊 Acompanhamento de Progresso
 
 ### Atualização Diária
+
 ```bash
 # 1. Status do trabalho
 git status
@@ -204,6 +210,7 @@ git push origin feature/etapa-1.1-crud-panels
 ```
 
 ### Atualização Semanal
+
 ```bash
 # 1. Merge das features completadas
 git checkout develop
@@ -221,6 +228,7 @@ git push --tags
 ## 🔄 Sincronização com Roadmap
 
 ### Após Completar Etapa
+
 1. **✅ Marcar etapa como concluída** no roadmap
 2. **📊 Atualizar métricas** no progress-dashboard
 3. **📝 Atualizar CHANGELOG** com mudanças
@@ -228,6 +236,7 @@ git push --tags
 5. **🚀 Fazer release** se apropriado
 
 ### Scripts de Automação
+
 ```bash
 # Script para atualizar progresso (criar como npm script)
 npm run update-progress
@@ -239,6 +248,7 @@ npm run update-progress
 ## 🛡️ Proteção de Branches
 
 ### Configurações Recomendadas no GitHub
+
 - **Branch `main`:** Protegida, require pull request
 - **Branch `develop`:** Protegida, require status checks
 - **Require reviews:** 1 reviewer (se em equipe)
@@ -247,46 +257,58 @@ npm run update-progress
 ## 📱 GitHub Issues e Milestones
 
 ### Template de Issue para Bugs
+
 ```markdown
 ## 🐛 Bug Report
 
 ### Descrição
+
 [Descrição clara do bug]
 
 ### Reprodução
+
 1. [Primeiro passo]
 2. [Segundo passo]
 3. [Ver erro]
 
 ### Comportamento Esperado
+
 [O que deveria acontecer]
 
 ### Screenshots
+
 [Se aplicável]
 
 ### Ambiente
+
 - OS: [Windows/Mac/Linux]
 - Browser: [Chrome/Firefox/Safari]
 - Version: [Versão do app]
 ```
 
 ### Template de Issue para Features
+
 ```markdown
 ## ✨ Feature Request
 
 ### Descrição da Feature
+
 [Descrição clara da funcionalidade]
 
 ### Motivação
+
 [Por que essa feature é necessária]
 
 ### Solução Proposta
+
 [Como você imagina que deveria funcionar]
 
 ### Alternativas
+
 [Outras abordagens consideradas]
 
 ### Etapa Relacionada
+
 [Qual etapa do roadmap esta feature se relaciona]
 ```
 

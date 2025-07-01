@@ -26,6 +26,7 @@ git push -u origin main
 ```
 
 **Exemplo prático:**
+
 ```bash
 # Se seu usuário for "joaosilva", execute:
 git remote add origin https://github.com/joaosilva/led-panel-manager.git
@@ -35,6 +36,7 @@ git push -u origin main
 ### 3. ✅ Verificação
 
 Após o push, você deve ver no GitHub:
+
 - ✅ Código-fonte completo
 - ✅ README.md com descrição
 - ✅ Documentação em docs/
@@ -68,13 +70,15 @@ git push --tags
 ### 2. 📋 Configurar Issues
 
 No GitHub, vá em **"Issues"** e você verá templates automáticos para:
+
 - 🐛 **Bug Report** - Reportar problemas
-- ✨ **Feature Request** - Sugerir funcionalidades  
+- ✨ **Feature Request** - Sugerir funcionalidades
 - 📋 **Task/Etapa** - Acompanhar roadmap
 
 ### 3. 🚀 Configurar Deploy (Opcional)
 
 #### Netlify (Recomendado)
+
 1. **Acesse:** https://netlify.com
 2. **"New site from Git"**
 3. **Conecte seu repositório GitHub**
@@ -84,6 +88,7 @@ No GitHub, vá em **"Issues"** e você verá templates automáticos para:
 5. **Deploy!**
 
 #### Vercel (Alternativa)
+
 1. **Acesse:** https://vercel.com
 2. **"New Project"**
 3. **Import do GitHub**
@@ -92,6 +97,7 @@ No GitHub, vá em **"Issues"** e você verá templates automáticos para:
 ### 4. 📊 Configurar Proteção de Branch
 
 No GitHub:
+
 1. **Settings** → **Branches**
 2. **Add rule** para `main`
 3. **✅ Require status checks**
@@ -100,6 +106,7 @@ No GitHub:
 ## 🔄 Workflow Diário
 
 ### 📝 Desenvolvimento
+
 ```bash
 # Início do dia
 git pull origin main
@@ -117,11 +124,12 @@ git push --tags
 ```
 
 ### 🏷️ Releases
+
 ```bash
 # Release patch (bug fixes)
 npm run release:patch
 
-# Release minor (new features)  
+# Release minor (new features)
 npm run release:minor
 
 # Release major (breaking changes)
@@ -131,6 +139,7 @@ npm run release:major
 ## 📱 GitHub Features Configuradas
 
 ### ✅ O que já está pronto:
+
 - **📋 Issue Templates** - Bug, Feature, Task
 - **🚀 CI/CD Pipeline** - Tests, Build, Deploy
 - **📝 Contributing Guide** - Workflow e padrões
@@ -139,8 +148,9 @@ npm run release:major
 - **🔒 Security** - Audit automático
 
 ### 🎯 Como usar:
+
 1. **Issues** - Acompanhar bugs e features
-2. **Actions** - Ver builds automáticos  
+2. **Actions** - Ver builds automáticos
 3. **Releases** - Histórico de versões
 4. **Projects** - Kanban board (criar depois)
 
@@ -166,18 +176,21 @@ npm run release:patch
 ## 🆘 Troubleshooting
 
 ### ❌ "Permission denied" no push
+
 ```bash
 # Configure SSH ou use Personal Access Token
 # GitHub Settings → Developer settings → Personal access tokens
 ```
 
 ### ❌ "Repository not found"
+
 ```bash
 # Verifique se o nome do repositório está correto
 # Verifique se você tem acesso ao repositório
 ```
 
 ### ❌ "Authentication failed"
+
 ```bash
 # Use Personal Access Token como senha
 # Ou configure SSH keys
