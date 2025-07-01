@@ -1,285 +1,190 @@
-import { useState, useCallback, useMemo } from "react";
-import type {
-  Project,
-  ProjectFilters,
-  CreateProjectData,
-  UpdateProjectData,
-  ProjectSummary,
-} from "../types";
-import { generateProjectSummary, validateProjectData } from "../utils";
+import { useState, useEffect, useCallback } from 'react';
+import type { Project, ProjectFormData } from '../types/project.types';
 
-/**
- * Custom hook for managing project data
- */
+const STORAGE_KEY = 'led-panel-manager-projects';
+
 export const useProjectData = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [filters, setFilters] = useState<ProjectFilters>({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Mock data for development
-  const mockProjects: Project[] = [
-    {
-      id: "1",
-      name: "LED Wall Shopping Center",
-      description: "Instalação de painel LED no Shopping Center XYZ",
-      status: "in-progress",
-      startDate: new Date("2024-01-15"),
-      endDate: new Date("2024-03-15"),
-      estimatedHours: 120,
-      actualHours: 80,
-      budget: 50000,
-      spentBudget: 32000,
-      client: {
-        name: "Shopping Center XYZ",
-        email: "contato@shoppingxyz.com.br",
-        phone: "(11) 99999-9999",
-        company: "Shopping Center XYZ Ltda",
-      },
-      panels: [
-        { panelId: "1", quantity: 20, unitPrice: 1500, totalPrice: 30000 },
-        { panelId: "2", quantity: 10, unitPrice: 2000, totalPrice: 20000 },
-      ],
-      cabinets: [
-        {
-          cabinetId: "1",
-          quantity: 5,
-          configuration: { width: 500, height: 500, depth: 100 },
-        },
-      ],
-      location: {
-        address: "Av. Paulista, 1000",
-        city: "São Paulo",
-        state: "SP",
-        country: "Brasil",
-      },
-      notes: "Projeto prioritário para inauguração da nova ala",
-      createdAt: new Date("2024-01-01"),
-      updatedAt: new Date("2024-01-20"),
-    },
-    {
-      id: "2",
-      name: "Painel Corporativo Empresa ABC",
-      description: "Painel LED para recepção corporativa",
-      status: "planning",
-      startDate: new Date("2024-02-01"),
-      endDate: new Date("2024-02-28"),
-      estimatedHours: 40,
-      budget: 15000,
-      client: {
-        name: "João Silva",
-        email: "joao@empresaabc.com.br",
-        company: "Empresa ABC Ltda",
-      },
-      panels: [
-        { panelId: "1", quantity: 5, unitPrice: 1500, totalPrice: 7500 },
-      ],
-      cabinets: [
-        {
-          cabinetId: "2",
-          quantity: 2,
-          configuration: { width: 400, height: 300, depth: 80 },
-        },
-      ],
-      location: {
-        address: "Rua das Flores, 123",
-        city: "Rio de Janeiro",
-        state: "RJ",
-        country: "Brasil",
-      },
-      createdAt: new Date("2024-01-10"),
-      updatedAt: new Date("2024-01-15"),
-    },
-  ];
-
-  // Initialize with mock data
-  useState(() => {
-    if (projects.length === 0) {
-      setProjects(mockProjects);
+  // Carregar dados do localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProjects(parsed);
+      }
+    } catch (err) {
+      setError('Erro ao carregar dados dos projetos');
+      console.error('Error loading projects:', err);
+    } finally {
+      setLoading(false);
     }
-  });
-
-  // Filtered projects based on current filters
-  const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
-      if (
-        filters.status &&
-        filters.status.length > 0 &&
-        !filters.status.includes(project.status)
-      ) {
-        return false;
-      }
-
-      if (
-        filters.client &&
-        !project.client.name
-          .toLowerCase()
-          .includes(filters.client.toLowerCase())
-      ) {
-        return false;
-      }
-
-      if (filters.startDate && project.startDate < filters.startDate) {
-        return false;
-      }
-
-      if (
-        filters.endDate &&
-        project.endDate &&
-        project.endDate > filters.endDate
-      ) {
-        return false;
-      }
-
-      if (filters.budgetRange) {
-        if (
-          project.budget < filters.budgetRange.min ||
-          project.budget > filters.budgetRange.max
-        ) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [projects, filters]);
-
-  // Project summary statistics
-  const summary: ProjectSummary = useMemo(() => {
-    return generateProjectSummary(filteredProjects);
-  }, [filteredProjects]);
-
-  // Create a new project
-  const createProject = useCallback(
-    async (data: CreateProjectData): Promise<Project> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const validationErrors = validateProjectData(data);
-        if (validationErrors.length > 0) {
-          throw new Error(validationErrors.join(", "));
-        }
-
-        const newProject: Project = {
-          ...data,
-          id: Date.now().toString(),
-          status: "planning",
-          panels: [],
-          cabinets: [],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-
-        setProjects((prev) => [...prev, newProject]);
-        return newProject;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Erro ao criar projeto";
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  // Update an existing project
-  const updateProject = useCallback(
-    async (id: string, data: UpdateProjectData): Promise<Project> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const validationErrors = validateProjectData(data);
-        if (validationErrors.length > 0) {
-          throw new Error(validationErrors.join(", "));
-        }
-
-        const projectIndex = projects.findIndex((p) => p.id === id);
-        if (projectIndex === -1) {
-          throw new Error("Projeto não encontrado");
-        }
-
-        const updatedProject: Project = {
-          ...projects[projectIndex],
-          ...data,
-          updatedAt: new Date(),
-        };
-
-        const newProjects = [...projects];
-        newProjects[projectIndex] = updatedProject;
-        setProjects(newProjects);
-
-        return updatedProject;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Erro ao atualizar projeto";
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [projects]
-  );
-
-  // Delete a project
-  const deleteProject = useCallback(
-    async (id: string): Promise<void> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const projectExists = projects.some((p) => p.id === id);
-        if (!projectExists) {
-          throw new Error("Projeto não encontrado");
-        }
-
-        setProjects((prev) => prev.filter((p) => p.id !== id));
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Erro ao excluir projeto";
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [projects]
-  );
-
-  // Get a project by ID
-  const getProject = useCallback(
-    (id: string): Project | undefined => {
-      return projects.find((p) => p.id === id);
-    },
-    [projects]
-  );
-
-  // Update filters
-  const updateFilters = useCallback((newFilters: Partial<ProjectFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
 
-  // Clear filters
-  const clearFilters = useCallback(() => {
-    setFilters({});
+  // Salvar dados no localStorage
+  const saveToStorage = useCallback((data: Project[]) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (err) {
+      setError('Erro ao salvar dados dos projetos');
+      console.error('Error saving projects:', err);
+    }
   }, []);
+
+  // Adicionar projeto
+  const addProject = useCallback((formData: ProjectFormData) => {
+    try {
+      const newProject: Project = {
+        id: crypto.randomUUID(),
+        ...formData,
+        status: formData.status || 'planning',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const updatedProjects = [...projects, newProject];
+      setProjects(updatedProjects);
+      saveToStorage(updatedProjects);
+      setError(null);
+
+      return newProject;
+    } catch (err) {
+      setError('Erro ao adicionar projeto');
+      console.error('Error adding project:', err);
+      throw err;
+    }
+  }, [projects, saveToStorage]);
+
+  // Atualizar projeto
+  const updateProject = useCallback((id: string, formData: ProjectFormData) => {
+    try {
+      const updatedProjects = projects.map(project => 
+        project.id === id 
+          ? {
+              ...project,
+              ...formData,
+              updatedAt: new Date().toISOString(),
+            }
+          : project
+      );
+
+      setProjects(updatedProjects);
+      saveToStorage(updatedProjects);
+      setError(null);
+
+      return updatedProjects.find(project => project.id === id);
+    } catch (err) {
+      setError('Erro ao atualizar projeto');
+      console.error('Error updating project:', err);
+      throw err;
+    }
+  }, [projects, saveToStorage]);
+
+  // Deletar projeto
+  const deleteProject = useCallback((id: string) => {
+    try {
+      const updatedProjects = projects.filter(project => project.id !== id);
+      setProjects(updatedProjects);
+      saveToStorage(updatedProjects);
+      setError(null);
+    } catch (err) {
+      setError('Erro ao deletar projeto');
+      console.error('Error deleting project:', err);
+      throw err;
+    }
+  }, [projects, saveToStorage]);
+
+  // Buscar projeto por ID
+  const getProjectById = useCallback((id: string) => {
+    return projects.find(project => project.id === id);
+  }, [projects]);
+
+  // Limpar erro
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  // Estatísticas dos projetos
+  const getStats = useCallback(() => {
+    const total = projects.length;
+    const planning = projects.filter(project => project.status === 'planning').length;
+    const inProgress = projects.filter(project => project.status === 'in-progress').length;
+    const delivered = projects.filter(project => project.status === 'delivered').length;
+    const cancelled = projects.filter(project => project.status === 'cancelled').length;
+    
+    // Projetos com entrega nos próximos 7 dias
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const upcomingDeadlines = projects.filter(project => {
+      const deliveryDate = new Date(project.deliveryDate);
+      const today = new Date();
+      return deliveryDate <= nextWeek && deliveryDate >= today && project.status !== 'delivered';
+    }).length;
+
+    return {
+      total,
+      planning,
+      inProgress,
+      delivered,
+      cancelled,
+      upcomingDeadlines,
+    };
+  }, [projects]);
+
+  // Criar alguns projetos de exemplo se não houver nenhum
+  useEffect(() => {
+    if (!loading && projects.length === 0) {
+      const sampleProjects: Project[] = [
+        {
+          id: crypto.randomUUID(),
+          name: 'Painel LED Shopping ABC',
+          client: 'Shopping ABC Ltda',
+          deliveryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 dias
+          status: 'in-progress',
+          description: 'Instalação de painel LED no hall principal do shopping',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'Telão Estádio Municipal',
+          client: 'Prefeitura Municipal',
+          deliveryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 dias
+          status: 'planning',
+          description: 'Telão LED para transmissões no estádio municipal',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'Fachada LED Hotel Central',
+          client: 'Hotel Central S/A',
+          deliveryDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // Entregue há 5 dias
+          status: 'delivered',
+          description: 'Instalação de fachada LED interativa',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      setProjects(sampleProjects);
+      saveToStorage(sampleProjects);
+    }
+  }, [loading, projects.length, saveToStorage]);
 
   return {
-    projects: filteredProjects,
-    allProjects: projects,
-    summary,
-    filters,
+    projects,
     loading,
     error,
-    createProject,
+    addProject,
     updateProject,
     deleteProject,
-    getProject,
-    updateFilters,
-    clearFilters,
+    getProjectById,
+    clearError,
+    getStats,
+    summary: getStats(), // Para compatibilidade com o código existente
   };
 };

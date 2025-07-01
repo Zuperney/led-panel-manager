@@ -5,11 +5,17 @@ import type { PanelFormData } from "../components/PanelForm";
 /**
  * Converts PanelFormData to Panel
  */
-const formDataToPanel = (data: PanelFormData, existingId?: string, existingCreatedAt?: Date): Panel => {
+const formDataToPanel = (
+  data: PanelFormData,
+  existingId?: string,
+  existingCreatedAt?: Date
+): Panel => {
   const now = new Date();
-  
+
   return {
-    id: existingId || `panel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id:
+      existingId ||
+      `panel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     name: data.name,
     manufacturer: data.manufacturer,
     model: data.model,
@@ -79,14 +85,11 @@ export const usePanelData = () => {
     }
   }, [panels]);
 
-  const addPanel = useCallback(
-    (panelData: PanelFormData) => {
-      const newPanel = formDataToPanel(panelData);
-      setPanels((prev) => [...prev, newPanel]);
-      return newPanel;
-    },
-    []
-  );
+  const addPanel = useCallback((panelData: PanelFormData) => {
+    const newPanel = formDataToPanel(panelData);
+    setPanels((prev) => [...prev, newPanel]);
+    return newPanel;
+  }, []);
 
   const updatePanel = useCallback((id: string, panelData: PanelFormData) => {
     setPanels((prev) =>
@@ -176,7 +179,7 @@ export const usePanelData = () => {
           price: panel.price,
           description: panel.description,
         };
-        
+
         return addPanel(formData);
       }
     },

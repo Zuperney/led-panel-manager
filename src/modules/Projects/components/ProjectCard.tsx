@@ -1,212 +1,163 @@
 import React from "react";
-import { Calendar, Clock, AlertTriangle, CheckCircle } from "lucide-react";
-import type { Project } from "../types";
-import {
-  calculateProjectProgress,
-  calculateBudgetUtilization,
-  getProjectStatusColor,
-  getProjectStatusLabel,
-  formatCurrency,
-  formatProjectDate,
-  isProjectAtRisk,
-} from "../utils";
-import { Card } from "../../../shared/components";
+import { Calendar, Clock, User, Edit2, Trash2 } from "lucide-react";
+import type { Project } from "../types/project.types";
 
 interface ProjectCardProps {
   project: Project;
-  onClick?: (project: Project) => void;
-  onEdit?: (project: Project) => void;
-  onDelete?: (project: Project) => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
-  onClick,
   onEdit,
   onDelete,
 }) => {
-  const progress = calculateProjectProgress(
-    project.estimatedHours,
-    project.actualHours
-  );
-  const budgetUtilization = calculateBudgetUtilization(
-    project.budget,
-    project.spentBudget
-  );
-  const isAtRisk = isProjectAtRisk(project);
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onClick?.(project);
+  // Calcular dias restantes
+  const getDaysRemaining = () => {
+    const deliveryDate = new Date(project.deliveryDate);
+    const today = new Date();
+    const diffTime = deliveryDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEdit?.(project);
+  const daysRemaining = getDaysRemaining();
+
+  // Função para obter cor do status
+  const getStatusColor = (status: Project['status']) => {
+    switch (status) {
+      case 'planning':
+        return 'bg-blue-100 text-blue-700';
+      case 'in-progress':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'delivered':
+        return 'bg-green-100 text-green-700';
+      case 'cancelled':
+        return 'bg-red-100 text-red-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete?.(project);
+  // Função para obter label do status
+  const getStatusLabel = (status: Project['status']) => {
+    switch (status) {
+      case 'planning':
+        return '📋 Planejamento';
+      case 'in-progress':
+        return '🚧 Em Andamento';
+      case 'delivered':
+        return '✅ Entregue';
+      case 'cancelled':
+        return '❌ Cancelado';
+      default:
+        return status;
+    }
+  };
+
+  // Função para obter cor da urgência
+  const getUrgencyColor = () => {
+    if (project.status === 'delivered' || project.status === 'cancelled') {
+      return '';
+    }
+
+    if (daysRemaining < 0) {
+      return 'text-red-600'; // Atrasado
+    } else if (daysRemaining <= 3) {
+      return 'text-red-500'; // Urgente
+    } else if (daysRemaining <= 7) {
+      return 'text-yellow-600'; // Atenção
+    } else {
+      return 'text-green-600'; // Ok
+    }
   };
 
   return (
-    <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 relative group">
-      <div onClick={handleCardClick} className="w-full h-full">
-        {/* Risk indicator */}
-        {isAtRisk && (
-          <div className="absolute top-3 right-3 z-10">
-            <AlertTriangle className="w-5 h-5 text-amber-500" />
-          </div>
-        )}
-
+    <div className="bg-white rounded-lg shadow border hover:shadow-lg transition-shadow">
+      <div className="p-4">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1 pr-8">
+            <h3 className="font-semibold text-gray-900 text-lg line-clamp-2">
               {project.name}
             </h3>
-            <p className="text-gray-600 text-sm line-clamp-2">
+          </div>
+          
+          <div className="flex space-x-1 ml-2">
+            <button
+              onClick={onEdit}
+              className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+              title="Editar projeto"
+            >
+              <Edit2 className="h-4 w-4" />
+            </button>
+            <button
+              onClick={onDelete}
+              className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+              title="Excluir projeto"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Status e urgência */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(project.status)}`}>
+            {getStatusLabel(project.status)}
+          </span>
+          
+          {project.status !== 'delivered' && project.status !== 'cancelled' && (
+            <span className={`text-xs font-medium ${getUrgencyColor()}`}>
+              {daysRemaining < 0 ? 
+                `⚠️ ${Math.abs(daysRemaining)} dia(s) atrasado` :
+                daysRemaining === 0 ? 
+                  '📅 Entrega hoje!' :
+                  daysRemaining === 1 ? 
+                    '⏰ Entrega amanhã' :
+                    `📆 ${daysRemaining} dias restantes`
+              }
+            </span>
+          )}
+        </div>
+
+        {/* Informações do projeto */}
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center">
+            <User className="h-4 w-4 text-gray-400 mr-2" />
+            <span className="text-gray-500">Cliente:</span>
+            <span className="font-medium ml-2">{project.client}</span>
+          </div>
+
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+            <span className="text-gray-500">Entrega:</span>
+            <span className="font-medium ml-2">
+              {new Date(project.deliveryDate).toLocaleDateString('pt-BR')}
+            </span>
+          </div>
+
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 text-gray-400 mr-2" />
+            <span className="text-gray-500">Criado:</span>
+            <span className="font-medium ml-2">
+              {new Date(project.createdAt).toLocaleDateString('pt-BR')}
+            </span>
+          </div>
+        </div>
+
+        {/* Descrição */}
+        {project.description && (
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <p className="text-xs text-gray-600 line-clamp-2">
               {project.description}
             </p>
           </div>
-        </div>
-
-        {/* Status */}
-        <div className="mb-4">
-          <span
-            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getProjectStatusColor(
-              project.status
-            )}`}
-          >
-            {getProjectStatusLabel(project.status)}
-          </span>
-        </div>
-
-        {/* Client */}
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Cliente:</span> {project.client.name}
-          </p>
-          {project.client.company && (
-            <p className="text-sm text-gray-500">{project.client.company}</p>
-          )}
-        </div>
-
-        {/* Progress */}
-        {project.status !== "planning" && (
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-sm text-gray-600">Progresso</span>
-              <span className="text-sm font-medium">
-                {progress.toFixed(0)}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  progress >= 100
-                    ? "bg-green-500"
-                    : progress >= 75
-                    ? "bg-blue-500"
-                    : progress >= 50
-                    ? "bg-yellow-500"
-                    : "bg-red-500"
-                }`}
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Budget */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm text-gray-600">Orçamento</span>
-            <span className="text-sm font-medium">
-              {budgetUtilization.toFixed(0)}%
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">
-              {formatCurrency(project.spentBudget || 0)}
-            </span>
-            <span className="font-medium">
-              {formatCurrency(project.budget)}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-            <div
-              className={`h-2 rounded-full transition-all duration-300 ${
-                budgetUtilization > 100
-                  ? "bg-red-500"
-                  : budgetUtilization > 80
-                  ? "bg-amber-500"
-                  : "bg-green-500"
-              }`}
-              style={{ width: `${Math.min(budgetUtilization, 100)}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-          <div className="flex items-center text-gray-600">
-            <Calendar className="w-4 h-4 mr-2" />
-            <div>
-              <p className="text-xs text-gray-500">Início</p>
-              <p>{formatProjectDate(project.startDate)}</p>
-            </div>
-          </div>
-          {project.endDate && (
-            <div className="flex items-center text-gray-600">
-              <Clock className="w-4 h-4 mr-2" />
-              <div>
-                <p className="text-xs text-gray-500">Fim</p>
-                <p>{formatProjectDate(project.endDate)}</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Hours */}
-        <div className="flex justify-between items-center text-sm mb-4">
-          <span className="text-gray-600">Horas</span>
-          <span className="font-medium">
-            {project.actualHours || 0} / {project.estimatedHours}h
-          </span>
-        </div>
-
-        {/* Location */}
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">
-            {project.location.city}, {project.location.state}
-          </p>
-        </div>
-
-        {/* Completion indicator */}
-        {project.status === "completed" && (
-          <div className="absolute top-3 left-3">
-            <CheckCircle className="w-5 h-5 text-green-500" />
-          </div>
         )}
       </div>
-
-      {/* Actions */}
-      <div className="flex gap-2 pt-4 border-t border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <button
-          onClick={handleEdit}
-          className="flex-1 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-        >
-          Editar
-        </button>
-        <button
-          onClick={handleDelete}
-          className="flex-1 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
-        >
-          Excluir
-        </button>
-      </div>
-    </Card>
+    </div>
   );
 };
+
+export default ProjectCard;

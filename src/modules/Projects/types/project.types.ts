@@ -1,120 +1,53 @@
 /**
  * Types for the Projects module
+ * Projeto -> Nome, cliente, data de entrega
  */
 
 export interface Project {
   id: string;
   name: string;
-  description: string;
-  status: ProjectStatus;
-  startDate: Date;
-  endDate?: Date;
-  estimatedHours: number;
-  actualHours?: number;
-  budget: number;
-  spentBudget?: number;
-  client: {
-    name: string;
-    email: string;
-    phone?: string;
-    company?: string;
-  };
-  panels: ProjectPanel[];
-  cabinets: ProjectCabinet[];
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  };
-  notes?: string;
-  attachments?: ProjectAttachment[];
-  createdAt: Date;
-  updatedAt: Date;
+  client: string;
+  deliveryDate: string; // ISO date string
+  
+  // Metadados
+  createdAt: string;
+  updatedAt: string;
+  description?: string;
+  status?: 'planning' | 'in-progress' | 'delivered' | 'cancelled';
 }
 
-export interface ProjectPanel {
-  panelId: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-}
-
-export interface ProjectCabinet {
-  cabinetId: string;
-  quantity: number;
-  configuration: {
-    width: number;
-    height: number;
-    depth: number;
-  };
-}
-
-export interface ProjectAttachment {
-  id: string;
+export interface ProjectFormData {
   name: string;
-  type: string;
-  size: number;
-  url: string;
-  uploadedAt: Date;
+  client: string;
+  deliveryDate: string;
+  description?: string;
+  status?: Project['status'];
 }
 
-export type ProjectStatus =
-  | "planning"
-  | "approved"
-  | "in-progress"
-  | "on-hold"
-  | "completed"
-  | "cancelled";
+export interface ProjectFormErrors {
+  [key: string]: string;
+}
+
+export interface ProjectFormProps {
+  initialData?: Project;
+  onSubmit: (data: ProjectFormData) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
+  mode: 'create' | 'edit';
+}
 
 export interface ProjectFilters {
-  status?: ProjectStatus[];
-  client?: string;
-  startDate?: Date;
-  endDate?: Date;
-  budgetRange?: {
-    min: number;
-    max: number;
-  };
+  search: string;
+  status: 'all' | Project['status'];
+  sortBy: 'name' | 'client' | 'deliveryDate' | 'status' | 'createdAt';
+  sortOrder: 'asc' | 'desc';
 }
 
-export interface ProjectSummary {
-  totalProjects: number;
-  activeProjects: number;
-  completedProjects: number;
-  totalBudget: number;
-  totalSpent: number;
-  averageProjectDuration: number;
-}
-
-export interface CreateProjectData {
-  name: string;
-  description: string;
-  startDate: Date;
-  endDate?: Date;
-  estimatedHours: number;
-  budget: number;
-  client: {
-    name: string;
-    email: string;
-    phone?: string;
-    company?: string;
-  };
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-  };
-  notes?: string;
-}
-
-export interface UpdateProjectData extends Partial<CreateProjectData> {
-  status?: ProjectStatus;
-  actualHours?: number;
-  spentBudget?: number;
+export interface ProjectStats {
+  total: number;
+  planning: number;
+  inProgress: number;
+  delivered: number;
+  cancelled: number;
+  upcomingDeadlines: number; // projetos com entrega nos próximos 7 dias
 }

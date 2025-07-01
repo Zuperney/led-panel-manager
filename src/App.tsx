@@ -11,7 +11,8 @@ import {
 
 // Import modules
 import { PanelList, usePanelData } from "./modules/Panels";
-import { ProjectCard, useProjectData } from "./modules/Projects";
+import { ProjectList, useProjectData } from "./modules/Projects";
+import { CabinetList, useCabinetData } from "./modules/Cabinets";
 import { Button } from "./shared/components";
 
 type Module = "panels" | "projects" | "reports" | "cabinets" | "schedule";
@@ -186,18 +187,28 @@ function PanelsModule() {
     addPanel,
     updatePanel,
     deletePanel,
-    clearError
+    clearError,
   } = usePanelData();
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (error) {
     return (
       <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5 text-red-600 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span className="text-red-800 font-medium">Erro:</span>
             <span className="text-red-700 ml-2">{error}</span>
@@ -206,8 +217,18 @@ function PanelsModule() {
             onClick={clearError}
             className="text-red-600 hover:text-red-800"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -219,9 +240,7 @@ function PanelsModule() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">
-            📱 Painéis LED
-          </h3>
+          <h3 className="text-2xl font-bold text-gray-900">📱 Painéis LED</h3>
           <p className="text-gray-600 mt-1">
             Gerencie seu catálogo de painéis LED
           </p>
@@ -242,75 +261,73 @@ function PanelsModule() {
 }
 
 function ProjectsModule() {
-  const { projects, summary, loading, error } = useProjectData();
+  const {
+    projects,
+    loading,
+    error,
+    addProject,
+    updateProject,
+    deleteProject,
+    clearError,
+  } = useProjectData();
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Carregando projetos...</div>
-      </div>
-    );
-  }
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-500">Erro: {error}</div>
+      <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <svg
+              className="w-5 h-5 text-red-600 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-red-800 font-medium">{error}</span>
+          </div>
+          <button
+            onClick={clearError}
+            className="text-red-600 hover:text-red-800"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <div className="text-sm text-gray-600">Total de Projetos</div>
-          <div className="text-2xl font-bold text-gray-900">
-            {summary.totalProjects}
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <div className="text-sm text-gray-600">Projetos Ativos</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {summary.activeProjects}
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <div className="text-sm text-gray-600">Concluídos</div>
-          <div className="text-2xl font-bold text-green-600">
-            {summary.completedProjects}
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <div className="text-sm text-gray-600">Orçamento Total</div>
-          <div className="text-2xl font-bold text-purple-600">
-            {new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            }).format(summary.totalBudget)}
-          </div>
-        </div>
-      </div>
-
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Lista de Projetos
-        </h3>
-        <Button variant="primary">Novo Projeto</Button>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900">📁 Projetos</h3>
+          <p className="text-gray-600 mt-1">
+            Gerencie seus projetos de LED
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onClick={(p) => console.log("Visualizar projeto:", p.name)}
-            onEdit={(p) => console.log("Editar projeto:", p.name)}
-            onDelete={(p) => console.log("Excluir projeto:", p.name)}
-          />
-        ))}
-      </div>
+      <ProjectList
+        projects={projects}
+        onCreateProject={addProject}
+        onUpdateProject={updateProject}
+        onDeleteProject={deleteProject}
+        isLoading={loading}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
     </div>
   );
 }
@@ -331,16 +348,73 @@ function ReportsModule() {
 }
 
 function CabinetsModule() {
+  const {
+    cabinets,
+    loading,
+    error,
+    addCabinet,
+    updateCabinet,
+    deleteCabinet,
+    clearError,
+  } = useCabinetData();
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  if (error) {
+    return (
+      <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <svg
+              className="w-5 h-5 text-red-600 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-red-800 font-medium">{error}</span>
+          </div>
+          <button
+            onClick={clearError}
+            className="text-red-600 hover:text-red-800"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="text-center py-12">
-      <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-        Módulo de Gabinetes
-      </h3>
-      <p className="text-gray-600 mb-6">
-        Configuração de layouts e arranjos de gabinetes LED.
-      </p>
-      <Button variant="primary">Criar Layout</Button>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900">📦 Gabinetes LED</h3>
+          <p className="text-gray-600 mt-1">
+            Gerencie seu catálogo de gabinetes LED
+          </p>
+        </div>
+      </div>
+
+      <CabinetList
+        cabinets={cabinets}
+        onCreateCabinet={addCabinet}
+        onUpdateCabinet={updateCabinet}
+        onDeleteCabinet={deleteCabinet}
+        isLoading={loading}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
     </div>
   );
 }

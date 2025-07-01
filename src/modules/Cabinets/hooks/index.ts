@@ -1,2 +1,1 @@
-// Cabinets hooks will be implemented here
-export {};
+export { useCabinetData } from './useCabinetData';
