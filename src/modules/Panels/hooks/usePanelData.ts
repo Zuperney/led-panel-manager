@@ -1,5 +1,37 @@
 import { useState, useEffect, useCallback } from "react";
 import type { Panel, PanelFilter } from "../types";
+import type { PanelFormData } from "../components/PanelForm";
+
+/**
+ * Converts PanelFormData to Panel
+ */
+const formDataToPanel = (data: PanelFormData, existingId?: string, existingCreatedAt?: Date): Panel => {
+  const now = new Date();
+  
+  return {
+    id: existingId || `panel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    name: data.name,
+    manufacturer: data.manufacturer,
+    model: data.model,
+    width: data.width,
+    height: data.height,
+    pixelPitch: data.pixelPitch,
+    powerConsumption: data.powerConsumption,
+    brightness: data.brightness,
+    refreshRate: data.refreshRate,
+    inputVoltage: data.inputVoltage,
+    operatingTemperature: {
+      min: data.operatingTemperatureMin,
+      max: data.operatingTemperatureMax,
+    },
+    ipRating: data.ipRating,
+    weight: data.weight,
+    price: data.price,
+    description: data.description,
+    createdAt: existingCreatedAt || now,
+    updatedAt: now,
+  };
+};
 
 /**
  * Hook for managing panel data and operations
@@ -48,25 +80,19 @@ export const usePanelData = () => {
   }, [panels]);
 
   const addPanel = useCallback(
-    (panelData: Omit<Panel, "id" | "createdAt" | "updatedAt">) => {
-      const newPanel: Panel = {
-        ...panelData,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
+    (panelData: PanelFormData) => {
+      const newPanel = formDataToPanel(panelData);
       setPanels((prev) => [...prev, newPanel]);
       return newPanel;
     },
     []
   );
 
-  const updatePanel = useCallback((id: string, updates: Partial<Panel>) => {
+  const updatePanel = useCallback((id: string, panelData: PanelFormData) => {
     setPanels((prev) =>
       prev.map((panel) =>
         panel.id === id
-          ? { ...panel, ...updates, updatedAt: new Date() }
+          ? formDataToPanel(panelData, id, panel.createdAt)
           : panel
       )
     );
@@ -132,14 +158,26 @@ export const usePanelData = () => {
     (id: string) => {
       const panel = panels.find((p) => p.id === id);
       if (panel) {
-        const duplicated = {
-          ...panel,
+        const formData: PanelFormData = {
           name: `${panel.name} (Copy)`,
+          manufacturer: panel.manufacturer,
+          model: panel.model,
+          width: panel.width,
+          height: panel.height,
+          pixelPitch: panel.pixelPitch,
+          powerConsumption: panel.powerConsumption,
+          brightness: panel.brightness,
+          refreshRate: panel.refreshRate,
+          inputVoltage: panel.inputVoltage,
+          operatingTemperatureMin: panel.operatingTemperature.min,
+          operatingTemperatureMax: panel.operatingTemperature.max,
+          ipRating: panel.ipRating,
+          weight: panel.weight,
+          price: panel.price,
+          description: panel.description,
         };
-        delete (duplicated as any).id;
-        delete (duplicated as any).createdAt;
-        delete (duplicated as any).updatedAt;
-        return addPanel(duplicated);
+        
+        return addPanel(formData);
       }
     },
     [panels, addPanel]
