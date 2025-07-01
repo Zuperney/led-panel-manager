@@ -1,0 +1,47 @@
+{
+  "name": "led-project-maneger",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "echo \"Tests coming soon\" && exit 0",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write . || echo 'Prettier not installed'",
+    "release:patch": "npm version patch && npm run build && git push --follow-tags",
+    "release:minor": "npm version minor && npm run build && git push --follow-tags",
+    "release:major": "npm version major && npm run build && git push --follow-tags",
+    "prepare-release": "npm run build && echo 'Release prepared'"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@react-pdf/renderer": "^4.3.0",
+    "@tailwindcss/postcss": "^4.1.11",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.20.1",
+    "lucide-react": "^0.525.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hot-toast": "^2.5.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^7.0.0"
+  }
+}
