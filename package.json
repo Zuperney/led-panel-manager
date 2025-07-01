@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "echo \"Tests coming soon\" && exit 0",
+    "test": "echo \"✅ Tests: Coming soon in next iterations\" && exit 0",
     "type-check": "tsc --noEmit",
     "format": "prettier --write . || echo 'Prettier not installed'",
     "release:patch": "npm version patch && npm run build && git push --follow-tags",

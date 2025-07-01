@@ -46,7 +46,7 @@ git commit -m "🎉 Initial commit: LED Panel Manager v0.1.0
 - Bundle size: 218KB"
 
 # Conecte ao repositório do GitHub (substitua [username] pelo seu usuário)
-git remote add origin https://github.com/[username]/led-panel-manager.git
+git remote add origin https://github.com/Zuperney/led-panel-manager
 
 # Configure a branch principal
 git branch -M main
