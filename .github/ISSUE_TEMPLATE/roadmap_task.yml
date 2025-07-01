@@ -1,0 +1,128 @@
+name: 📋 Task/Etapa do Roadmap
+description: Acompanhar progresso de uma etapa específica do roadmap
+title: "[TASK] "
+labels: ["task", "roadmap"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use este template para acompanhar o progresso de etapas específicas do roadmap ou tarefas de desenvolvimento.
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: 🗺️ Fase do Roadmap
+      description: Qual fase esta tarefa pertence?
+      options:
+        - Fase 1 - Foundation
+        - Fase 2 - Auth & Users  
+        - Fase 3 - Advanced Features
+        - Fase 4 - Enterprise
+    validations:
+      required: true
+
+  - type: input
+    id: etapa
+    attributes:
+      label: 📋 Etapa
+      description: Qual etapa específica (ex: 1.1, 2.3, etc.)
+      placeholder: "1.1"
+    validations:
+      required: true
+
+  - type: input
+    id: etapa-name
+    attributes:
+      label: 📝 Nome da Etapa
+      description: Nome descritivo da etapa
+      placeholder: "CRUD Completo de Painéis"
+    validations:
+      required: true
+
+  - type: textarea
+    id: objectives
+    attributes:
+      label: 🎯 Objetivos
+      description: Principais objetivos desta etapa
+      placeholder: |
+        - Objetivo 1
+        - Objetivo 2
+        - Objetivo 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 📦 Entregáveis
+      description: Lista dos principais entregáveis
+      placeholder: |
+        - [ ] Componente 1
+        - [ ] Hook 1
+        - [ ] Teste 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ Critérios de Aceitação
+      description: Como saber que esta etapa está completa?
+      placeholder: |
+        - [ ] Critério 1
+        - [ ] Critério 2
+        - [ ] Critério 3
+
+  - type: input
+    id: estimated-time
+    attributes:
+      label: ⏱️ Tempo Estimado
+      description: Estimativa de tempo para conclusão
+      placeholder: "1 semana"
+
+  - type: dropdown
+    id: current-status
+    attributes:
+      label: 📊 Status Atual
+      description: Status atual da etapa
+      options:
+        - ⏳ Planejada
+        - 🔄 Em Andamento
+        - 🧪 Em Testes
+        - ✅ Concluída
+        - ⏸️ Pausada
+        - ❌ Cancelada
+    validations:
+      required: true
+
+  - type: input
+    id: progress-percentage
+    attributes:
+      label: 📈 Progresso (%)
+      description: Percentual de conclusão atual
+      placeholder: "0"
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 🔗 Dependências
+      description: O que precisa estar pronto antes desta etapa?
+      placeholder: |
+        - Etapa X.Y concluída
+        - Componente Z implementado
+
+  - type: textarea
+    id: blockers
+    attributes:
+      label: 🚧 Bloqueios
+      description: O que está impedindo o progresso?
+      placeholder: Descreva qualquer bloqueio atual...
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 📝 Notas Adicionais
+      description: Qualquer informação adicional relevante
+      placeholder: Notas, decisões técnicas, links úteis...

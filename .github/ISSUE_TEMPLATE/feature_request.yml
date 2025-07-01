@@ -1,0 +1,117 @@
+name: ✨ Feature Request
+description: Sugerir uma nova funcionalidade para o projeto
+title: "[FEATURE] "
+labels: ["enhancement", "needs-review"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por sugerir uma nova funcionalidade! Suas ideias ajudam a melhorar o LED Panel Manager.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 📝 Descrição da Funcionalidade
+      description: Descrição clara e concisa da funcionalidade que você gostaria de ver
+      placeholder: Eu gostaria que o sistema...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 🎯 Motivação e Contexto
+      description: Por que essa funcionalidade seria útil? Que problema ela resolve?
+      placeholder: Esta funcionalidade seria útil porque...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 Solução Proposta
+      description: Como você imagina que essa funcionalidade deveria funcionar?
+      placeholder: Eu imagino que poderia funcionar assim...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternativas Consideradas
+      description: Outras abordagens ou soluções que você considerou
+      placeholder: Outras formas de resolver isso seriam...
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: 📦 Módulo Relacionado
+      description: A qual módulo esta funcionalidade se relaciona?
+      options:
+        - Painéis
+        - Projetos
+        - Relatórios
+        - Cabinetes
+        - Agendamento
+        - Test Cards
+        - Técnicos
+        - Autenticação
+        - UI/UX
+        - Novo Módulo
+        - Geral
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: 🗺️ Fase do Roadmap
+      description: Em qual fase do roadmap esta funcionalidade se encaixaria?
+      options:
+        - Fase 1 - Foundation
+        - Fase 2 - Auth & Users
+        - Fase 3 - Advanced Features
+        - Fase 4 - Enterprise
+        - Futuro (Fase 5+)
+        - Não sei
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 📊 Prioridade Sugerida
+      description: Quão importante você considera esta funcionalidade?
+      options:
+        - 🔴 Crítica - Essencial para o funcionamento
+        - 🟡 Alta - Muito importante para usuários
+        - 🟢 Média - Seria uma boa adição
+        - 🔵 Baixa - Nice to have
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: complexity
+    attributes:
+      label: 🛠️ Complexidade Estimada
+      description: Como você avalia a complexidade desta funcionalidade?
+      options:
+        - label: 🟢 Simples - Mudança pequena ou componente básico
+        - label: 🟡 Média - Nova funcionalidade com algumas integrações
+        - label: 🔴 Complexa - Mudanças significativas na arquitetura
+        - label: 🤔 Não sei avaliar a complexidade
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: 🎨 Mockups ou Referências
+      description: Se você tem ideias visuais, sketches, ou referências de outros sistemas
+      placeholder: Cole imagens ou links de referência...
+
+  - type: checkboxes
+    id: willing-to-help
+    attributes:
+      label: 🤝 Disposição para Contribuir
+      options:
+        - label: Eu gostaria de ajudar a implementar esta funcionalidade
+        - label: Eu posso ajudar com testes e feedback
+        - label: Eu posso ajudar com documentação
+        - label: Eu posso ajudar com design/mockups
