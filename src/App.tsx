@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 // Import modules
-import { PanelCard, usePanelData } from "./modules/Panels";
+import { PanelList, usePanelData } from "./modules/Panels";
 import { ProjectCard, useProjectData } from "./modules/Projects";
 import { Button } from "./shared/components";
 
@@ -179,20 +179,38 @@ function App() {
 
 // Module Components
 function PanelsModule() {
-  const { panels, loading, error } = usePanelData();
+  const {
+    panels,
+    loading,
+    error,
+    addPanel,
+    updatePanel,
+    deletePanel,
+    clearError
+  } = usePanelData();
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Carregando painéis...</div>
-      </div>
-    );
-  }
+  const [searchTerm, setSearchTerm] = useState('');
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-500">Erro: {error}</div>
+      <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-red-800 font-medium">Erro:</span>
+            <span className="text-red-700 ml-2">{error}</span>
+          </div>
+          <button
+            onClick={clearError}
+            className="text-red-600 hover:text-red-800"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
     );
   }
@@ -200,23 +218,25 @@ function PanelsModule() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Catálogo de Painéis LED
-        </h3>
-        <Button variant="primary">Adicionar Painel</Button>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900">
+            📱 Painéis LED
+          </h3>
+          <p className="text-gray-600 mt-1">
+            Gerencie seu catálogo de painéis LED
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {panels.map((panel) => (
-          <PanelCard
-            key={panel.id}
-            panel={panel}
-            onClick={(p) => console.log("Visualizar painel:", p.model)}
-            onEdit={(p) => console.log("Editar painel:", p.model)}
-            onDelete={(p) => console.log("Excluir painel:", p.model)}
-          />
-        ))}
-      </div>
+      <PanelList
+        panels={panels}
+        onCreatePanel={addPanel}
+        onUpdatePanel={updatePanel}
+        onDeletePanel={deletePanel}
+        isLoading={loading}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
     </div>
   );
 }
