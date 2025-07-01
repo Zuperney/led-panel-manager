@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import type { Cabinet, CabinetFormData, CabinetFormProps, CabinetFormErrors } from "../types/cabinet.types";
+import type {
+  CabinetFormData,
+  CabinetFormProps,
+  CabinetFormErrors,
+} from "../types/cabinet.types";
 
 // Função de cálculo para preview do pixel pitch
 const calculatePixelPitch = (widthMm: number, widthPixels: number): number => {
@@ -56,25 +60,34 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
 
     // Validações obrigatórias
     if (!formData.name.trim()) newErrors.name = "Nome é obrigatório";
-    
+
     // Validações numéricas básicas
-    if (formData.widthMm <= 0) newErrors.widthMm = "Largura deve ser maior que 0";
-    if (formData.heightMm <= 0) newErrors.heightMm = "Altura deve ser maior que 0";
-    if (formData.widthPixels <= 0) newErrors.widthPixels = "Largura em pixels deve ser maior que 0";
-    if (formData.heightPixels <= 0) newErrors.heightPixels = "Altura em pixels deve ser maior que 0";
-    if (formData.powerWatts <= 0) newErrors.powerWatts = "Potência deve ser maior que 0";
+    if (formData.widthMm <= 0)
+      newErrors.widthMm = "Largura deve ser maior que 0";
+    if (formData.heightMm <= 0)
+      newErrors.heightMm = "Altura deve ser maior que 0";
+    if (formData.widthPixels <= 0)
+      newErrors.widthPixels = "Largura em pixels deve ser maior que 0";
+    if (formData.heightPixels <= 0)
+      newErrors.heightPixels = "Altura em pixels deve ser maior que 0";
+    if (formData.powerWatts <= 0)
+      newErrors.powerWatts = "Potência deve ser maior que 0";
     if (formData.weight <= 0) newErrors.weight = "Peso deve ser maior que 0";
 
     // Validações do modo completo
-    if (currentFormMode === 'complete') {
-      if (formData.voltage <= 0) newErrors.voltage = "Voltagem deve ser maior que 0";
+    if (currentFormMode === "complete") {
+      if (formData.voltage <= 0)
+        newErrors.voltage = "Voltagem deve ser maior que 0";
       if (formData.brightness && formData.brightness <= 0) {
         newErrors.brightness = "Brilho deve ser maior que 0";
       }
       if (formData.refreshRate && formData.refreshRate <= 0) {
         newErrors.refreshRate = "Taxa de atualização deve ser maior que 0";
       }
-      if (formData.powerFactor && (formData.powerFactor <= 0 || formData.powerFactor > 1)) {
+      if (
+        formData.powerFactor &&
+        (formData.powerFactor <= 0 || formData.powerFactor > 1)
+      ) {
         newErrors.powerFactor = "Fator de potência deve estar entre 0 e 1";
       }
     }
@@ -127,15 +140,19 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
 
       {/* Seletor de Modo */}
       <div className="mb-6 bg-gray-50 rounded-lg p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Modo de Preenchimento</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          Modo de Preenchimento
+        </h3>
         <div className="flex space-x-4">
           <label className="flex items-center">
             <input
               type="radio"
               name="formMode"
               value="basic"
-              checked={currentFormMode === 'basic'}
-              onChange={(e) => setCurrentFormMode(e.target.value as 'basic' | 'complete')}
+              checked={currentFormMode === "basic"}
+              onChange={(e) =>
+                setCurrentFormMode(e.target.value as "basic" | "complete")
+              }
               className="mr-2"
             />
             <span className="text-sm font-medium text-gray-700">
@@ -147,8 +164,10 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               type="radio"
               name="formMode"
               value="complete"
-              checked={currentFormMode === 'complete'}
-              onChange={(e) => setCurrentFormMode(e.target.value as 'basic' | 'complete')}
+              checked={currentFormMode === "complete"}
+              onChange={(e) =>
+                setCurrentFormMode(e.target.value as "basic" | "complete")
+              }
               className="mr-2"
             />
             <span className="text-sm font-medium text-gray-700">
@@ -192,7 +211,12 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               </label>
               <select
                 value={formData.type}
-                onChange={(e) => handleInputChange("type", e.target.value as 'indoor' | 'outdoor')}
+                onChange={(e) =>
+                  handleInputChange(
+                    "type",
+                    e.target.value as "indoor" | "outdoor"
+                  )
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="indoor">🏠 Indoor</option>
@@ -217,7 +241,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               <input
                 type="number"
                 value={formData.widthMm || ""}
-                onChange={(e) => handleInputChange("widthMm", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("widthMm", Number(e.target.value))
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.widthMm ? "border-red-500" : "border-gray-300"
                 }`}
@@ -237,7 +263,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               <input
                 type="number"
                 value={formData.heightMm || ""}
-                onChange={(e) => handleInputChange("heightMm", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("heightMm", Number(e.target.value))
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.heightMm ? "border-red-500" : "border-gray-300"
                 }`}
@@ -257,7 +285,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               <input
                 type="number"
                 value={formData.widthPixels || ""}
-                onChange={(e) => handleInputChange("widthPixels", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("widthPixels", Number(e.target.value))
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.widthPixels ? "border-red-500" : "border-gray-300"
                 }`}
@@ -265,7 +295,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                 min="1"
               />
               {errors.widthPixels && (
-                <p className="text-red-500 text-sm mt-1">{errors.widthPixels}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.widthPixels}
+                </p>
               )}
             </div>
 
@@ -277,7 +309,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               <input
                 type="number"
                 value={formData.heightPixels || ""}
-                onChange={(e) => handleInputChange("heightPixels", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("heightPixels", Number(e.target.value))
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.heightPixels ? "border-red-500" : "border-gray-300"
                 }`}
@@ -285,7 +319,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                 min="1"
               />
               {errors.heightPixels && (
-                <p className="text-red-500 text-sm mt-1">{errors.heightPixels}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.heightPixels}
+                </p>
               )}
             </div>
           </div>
@@ -294,7 +330,10 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
           {calculatedPixelPitch > 0 && (
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <span className="text-sm font-medium text-blue-900">
-                🧮 Pixel Pitch Calculado: <span className="font-mono text-lg">{calculatedPixelPitch}mm</span>
+                🧮 Pixel Pitch Calculado:{" "}
+                <span className="font-mono text-lg">
+                  {calculatedPixelPitch}mm
+                </span>
               </span>
             </div>
           )}
@@ -315,7 +354,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               <input
                 type="number"
                 value={formData.powerWatts || ""}
-                onChange={(e) => handleInputChange("powerWatts", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("powerWatts", Number(e.target.value))
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.powerWatts ? "border-red-500" : "border-gray-300"
                 }`}
@@ -335,7 +376,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
               <input
                 type="number"
                 value={formData.weight || ""}
-                onChange={(e) => handleInputChange("weight", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("weight", Number(e.target.value))
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.weight ? "border-red-500" : "border-gray-300"
                 }`}
@@ -351,7 +394,7 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
         </div>
 
         {/* Seção: Especificações Completas (modo completo apenas) */}
-        {currentFormMode === 'complete' && (
+        {currentFormMode === "complete" && (
           <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               🔧 Especificações Completas
@@ -366,7 +409,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                 <input
                   type="number"
                   value={formData.voltage || ""}
-                  onChange={(e) => handleInputChange("voltage", Number(e.target.value))}
+                  onChange={(e) =>
+                    handleInputChange("voltage", Number(e.target.value))
+                  }
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.voltage ? "border-red-500" : "border-gray-300"
                   }`}
@@ -384,10 +429,15 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                   type="checkbox"
                   id="isBivolt"
                   checked={formData.isBivolt}
-                  onChange={(e) => handleInputChange("isBivolt", e.target.checked)}
+                  onChange={(e) =>
+                    handleInputChange("isBivolt", e.target.checked)
+                  }
                   className="mr-2"
                 />
-                <label htmlFor="isBivolt" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="isBivolt"
+                  className="text-sm font-medium text-gray-700"
+                >
                   ⚡ Bivolt (110V/220V)
                 </label>
               </div>
@@ -400,8 +450,11 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                 <input
                   type="number"
                   value={formData.brightness || ""}
-                  onChange={(e) => 
-                    handleInputChange("brightness", e.target.value ? Number(e.target.value) : undefined)
+                  onChange={(e) =>
+                    handleInputChange(
+                      "brightness",
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
                   }
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.brightness ? "border-red-500" : "border-gray-300"
@@ -410,7 +463,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                   min="1"
                 />
                 {errors.brightness && (
-                  <p className="text-red-500 text-sm mt-1">{errors.brightness}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.brightness}
+                  </p>
                 )}
               </div>
 
@@ -422,8 +477,11 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                 <input
                   type="number"
                   value={formData.refreshRate || ""}
-                  onChange={(e) => 
-                    handleInputChange("refreshRate", e.target.value ? Number(e.target.value) : undefined)
+                  onChange={(e) =>
+                    handleInputChange(
+                      "refreshRate",
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
                   }
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.refreshRate ? "border-red-500" : "border-gray-300"
@@ -432,7 +490,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                   min="1"
                 />
                 {errors.refreshRate && (
-                  <p className="text-red-500 text-sm mt-1">{errors.refreshRate}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.refreshRate}
+                  </p>
                 )}
               </div>
 
@@ -444,8 +504,11 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                 <input
                   type="number"
                   value={formData.powerFactor || ""}
-                  onChange={(e) => 
-                    handleInputChange("powerFactor", e.target.value ? Number(e.target.value) : undefined)
+                  onChange={(e) =>
+                    handleInputChange(
+                      "powerFactor",
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
                   }
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.powerFactor ? "border-red-500" : "border-gray-300"
@@ -456,7 +519,9 @@ const CabinetForm: React.FC<CabinetFormProps> = ({
                   step="0.01"
                 />
                 {errors.powerFactor && (
-                  <p className="text-red-500 text-sm mt-1">{errors.powerFactor}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.powerFactor}
+                  </p>
                 )}
               </div>
             </div>

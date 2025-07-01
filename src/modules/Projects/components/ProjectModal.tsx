@@ -9,7 +9,7 @@ interface ProjectModalProps {
   onClose: () => void;
   onSubmit: (data: ProjectFormData) => void;
   initialData?: Project;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   isLoading?: boolean;
 }
 
@@ -18,7 +18,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   onClose,
   onSubmit,
   initialData,
-  mode = 'create',
+  mode = "create",
   isLoading = false,
 }) => {
   const handleSubmit = (data: ProjectFormData) => {
@@ -30,11 +30,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   const modalContent = (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">

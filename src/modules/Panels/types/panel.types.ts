@@ -18,7 +18,7 @@ export interface Panel {
   model: string;
   price?: number;
   description?: string;
-  specifications?: Record<string, any>;
+  specifications?: Record<string, string | number | boolean>;
   createdAt: Date;
   updatedAt: Date;
 }

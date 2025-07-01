@@ -41,7 +41,7 @@ export interface DocumentationDiagram {
   id: string;
   title: string;
   type: DiagramType;
-  data: any; // Diagram data structure
+  data: Record<string, unknown>; // Diagram data structure
   thumbnailUrl?: string;
 }
 
@@ -112,7 +112,7 @@ export interface DiagramComponent {
   name: string;
   type: string;
   position: { x: number; y: number };
-  properties: Record<string, any>;
+  properties: Record<string, string | number | boolean>;
 }
 
 export type DocumentationType =

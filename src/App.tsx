@@ -313,9 +313,7 @@ function ProjectsModule() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="text-2xl font-bold text-gray-900">📁 Projetos</h3>
-          <p className="text-gray-600 mt-1">
-            Gerencie seus projetos de LED
-          </p>
+          <p className="text-gray-600 mt-1">Gerencie seus projetos de LED</p>
         </div>
       </div>
 

@@ -13,7 +13,12 @@ import {
   Sun,
 } from "lucide-react";
 import CabinetModal from "./CabinetModal";
-import type { Cabinet, CabinetFormData, CabinetFilters, CabinetStats } from "../types/cabinet.types";
+import type {
+  Cabinet,
+  CabinetFormData,
+  CabinetFilters,
+  CabinetStats,
+} from "../types/cabinet.types";
 
 interface CabinetListProps {
   cabinets: Cabinet[];
@@ -37,20 +42,20 @@ const CabinetList: React.FC<CabinetListProps> = ({
   // Estados do modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCabinet, setEditingCabinet] = useState<Cabinet | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [formMode, setFormMode] = useState<'basic' | 'complete'>('basic');
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [formMode, setFormMode] = useState<"basic" | "complete">("basic");
 
   // Estados dos filtros
   const [filters, setFilters] = useState<CabinetFilters>({
     search: searchTerm,
-    type: 'all',
-    sortBy: 'name',
-    sortOrder: 'asc',
+    type: "all",
+    sortBy: "name",
+    sortOrder: "asc",
   });
 
   // Atualizar filtro de busca quando searchTerm muda
   React.useEffect(() => {
-    setFilters(prev => ({ ...prev, search: searchTerm }));
+    setFilters((prev) => ({ ...prev, search: searchTerm }));
   }, [searchTerm]);
 
   // Filtrar e ordenar gabinetes
@@ -60,41 +65,42 @@ const CabinetList: React.FC<CabinetListProps> = ({
     // Filtro de busca
     if (filters.search.trim()) {
       const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(cabinet =>
-        cabinet.name.toLowerCase().includes(searchLower) ||
-        cabinet.type.toLowerCase().includes(searchLower) ||
-        cabinet.description?.toLowerCase().includes(searchLower)
+      filtered = filtered.filter(
+        (cabinet) =>
+          cabinet.name.toLowerCase().includes(searchLower) ||
+          cabinet.type.toLowerCase().includes(searchLower) ||
+          cabinet.description?.toLowerCase().includes(searchLower)
       );
     }
 
     // Filtro de tipo
-    if (filters.type !== 'all') {
-      filtered = filtered.filter(cabinet => cabinet.type === filters.type);
+    if (filters.type !== "all") {
+      filtered = filtered.filter((cabinet) => cabinet.type === filters.type);
     }
 
     // Ordenação
     filtered.sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: string | number | Date;
+      let bValue: string | number | Date;
 
       switch (filters.sortBy) {
-        case 'name':
+        case "name":
           aValue = a.name.toLowerCase();
           bValue = b.name.toLowerCase();
           break;
-        case 'type':
+        case "type":
           aValue = a.type;
           bValue = b.type;
           break;
-        case 'pixelPitch':
+        case "pixelPitch":
           aValue = a.pixelPitch;
           bValue = b.pixelPitch;
           break;
-        case 'power':
+        case "power":
           aValue = a.powerWatts;
           bValue = b.powerWatts;
           break;
-        case 'createdAt':
+        case "createdAt":
           aValue = new Date(a.createdAt);
           bValue = new Date(b.createdAt);
           break;
@@ -103,8 +109,8 @@ const CabinetList: React.FC<CabinetListProps> = ({
           bValue = b.name.toLowerCase();
       }
 
-      if (aValue < bValue) return filters.sortOrder === 'asc' ? -1 : 1;
-      if (aValue > bValue) return filters.sortOrder === 'asc' ? 1 : -1;
+      if (aValue < bValue) return filters.sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return filters.sortOrder === "asc" ? 1 : -1;
       return 0;
     });
 
@@ -114,14 +120,27 @@ const CabinetList: React.FC<CabinetListProps> = ({
   // Calcular estatísticas
   const stats: CabinetStats = useMemo(() => {
     const total = cabinets.length;
-    const indoor = cabinets.filter(cabinet => cabinet.type === 'indoor').length;
-    const outdoor = cabinets.filter(cabinet => cabinet.type === 'outdoor').length;
-    
-    const averagePixelPitch = total > 0 
-      ? Number((cabinets.reduce((sum, cabinet) => sum + cabinet.pixelPitch, 0) / total).toFixed(2))
-      : 0;
-    
-    const totalPower = cabinets.reduce((sum, cabinet) => sum + cabinet.powerWatts, 0);
+    const indoor = cabinets.filter(
+      (cabinet) => cabinet.type === "indoor"
+    ).length;
+    const outdoor = cabinets.filter(
+      (cabinet) => cabinet.type === "outdoor"
+    ).length;
+
+    const averagePixelPitch =
+      total > 0
+        ? Number(
+            (
+              cabinets.reduce((sum, cabinet) => sum + cabinet.pixelPitch, 0) /
+              total
+            ).toFixed(2)
+          )
+        : 0;
+
+    const totalPower = cabinets.reduce(
+      (sum, cabinet) => sum + cabinet.powerWatts,
+      0
+    );
 
     return {
       total,
@@ -133,24 +152,25 @@ const CabinetList: React.FC<CabinetListProps> = ({
   }, [cabinets]);
 
   // Handlers do modal
-  const handleCreateClick = (mode: 'basic' | 'complete') => {
+  const handleCreateClick = (mode: "basic" | "complete") => {
     setEditingCabinet(null);
-    setModalMode('create');
+    setModalMode("create");
     setFormMode(mode);
     setModalOpen(true);
   };
 
   const handleEditClick = (cabinet: Cabinet) => {
     setEditingCabinet(cabinet);
-    setModalMode('edit');
+    setModalMode("edit");
     // Detectar se tem dados completos para sugerir modo completo
-    const hasCompleteData = cabinet.brightness || cabinet.refreshRate || cabinet.powerFactor;
-    setFormMode(hasCompleteData ? 'complete' : 'basic');
+    const hasCompleteData =
+      cabinet.brightness || cabinet.refreshRate || cabinet.powerFactor;
+    setFormMode(hasCompleteData ? "complete" : "basic");
     setModalOpen(true);
   };
 
   const handleModalSubmit = (data: CabinetFormData) => {
-    if (modalMode === 'create') {
+    if (modalMode === "create") {
       onCreateCabinet(data);
     } else if (editingCabinet) {
       onUpdateCabinet(editingCabinet.id, data);
@@ -160,30 +180,32 @@ const CabinetList: React.FC<CabinetListProps> = ({
   };
 
   const handleDeleteClick = (cabinet: Cabinet) => {
-    if (window.confirm(`Deseja realmente excluir o gabinete "${cabinet.name}"?`)) {
+    if (
+      window.confirm(`Deseja realmente excluir o gabinete "${cabinet.name}"?`)
+    ) {
       onDeleteCabinet(cabinet.id);
     }
   };
 
   // Handler para mudança de filtros
-  const handleFilterChange = (key: keyof CabinetFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    if (key === 'search') {
+  const handleFilterChange = (key: keyof CabinetFilters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    if (key === "search") {
       onSearchChange(value);
     }
   };
 
-  const toggleSort = (sortBy: CabinetFilters['sortBy']) => {
+  const toggleSort = (sortBy: CabinetFilters["sortBy"]) => {
     if (filters.sortBy === sortBy) {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
-        sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc'
+        sortOrder: prev.sortOrder === "asc" ? "desc" : "asc",
       }));
     } else {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
         sortBy,
-        sortOrder: 'asc'
+        sortOrder: "asc",
       }));
     }
   };
@@ -217,7 +239,9 @@ const CabinetList: React.FC<CabinetListProps> = ({
             <Sun className="h-8 w-8 text-orange-600" />
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Outdoor</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.outdoor}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.outdoor}
+              </p>
             </div>
           </div>
         </div>
@@ -226,8 +250,12 @@ const CabinetList: React.FC<CabinetListProps> = ({
           <div className="flex items-center">
             <Monitor className="h-8 w-8 text-purple-600" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Pixel Pitch Médio</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.averagePixelPitch}mm</p>
+              <p className="text-sm font-medium text-gray-500">
+                Pixel Pitch Médio
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.averagePixelPitch}mm
+              </p>
             </div>
           </div>
         </div>
@@ -236,8 +264,12 @@ const CabinetList: React.FC<CabinetListProps> = ({
           <div className="flex items-center">
             <Zap className="h-8 w-8 text-red-600" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Potência Total</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalPower}W</p>
+              <p className="text-sm font-medium text-gray-500">
+                Potência Total
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.totalPower}W
+              </p>
             </div>
           </div>
         </div>
@@ -254,7 +286,7 @@ const CabinetList: React.FC<CabinetListProps> = ({
                 type="text"
                 placeholder="Buscar gabinetes..."
                 value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
+                onChange={(e) => handleFilterChange("search", e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -264,7 +296,7 @@ const CabinetList: React.FC<CabinetListProps> = ({
           <div className="flex gap-2">
             <select
               value={filters.type}
-              onChange={(e) => handleFilterChange('type', e.target.value)}
+              onChange={(e) => handleFilterChange("type", e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">Todos os tipos</option>
@@ -273,34 +305,44 @@ const CabinetList: React.FC<CabinetListProps> = ({
             </select>
 
             <button
-              onClick={() => toggleSort('name')}
+              onClick={() => toggleSort("name")}
               className={`px-3 py-2 border rounded-lg flex items-center space-x-1 ${
-                filters.sortBy === 'name' ? 'bg-blue-50 border-blue-300' : 'border-gray-300 hover:bg-gray-50'
+                filters.sortBy === "name"
+                  ? "bg-blue-50 border-blue-300"
+                  : "border-gray-300 hover:bg-gray-50"
               }`}
             >
               <span>Nome</span>
-              {filters.sortBy === 'name' && (
-                filters.sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />
-              )}
+              {filters.sortBy === "name" &&
+                (filters.sortOrder === "asc" ? (
+                  <SortAsc className="h-4 w-4" />
+                ) : (
+                  <SortDesc className="h-4 w-4" />
+                ))}
             </button>
 
             <button
-              onClick={() => toggleSort('pixelPitch')}
+              onClick={() => toggleSort("pixelPitch")}
               className={`px-3 py-2 border rounded-lg flex items-center space-x-1 ${
-                filters.sortBy === 'pixelPitch' ? 'bg-blue-50 border-blue-300' : 'border-gray-300 hover:bg-gray-50'
+                filters.sortBy === "pixelPitch"
+                  ? "bg-blue-50 border-blue-300"
+                  : "border-gray-300 hover:bg-gray-50"
               }`}
             >
               <span>Pixel Pitch</span>
-              {filters.sortBy === 'pixelPitch' && (
-                filters.sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />
-              )}
+              {filters.sortBy === "pixelPitch" &&
+                (filters.sortOrder === "asc" ? (
+                  <SortAsc className="h-4 w-4" />
+                ) : (
+                  <SortDesc className="h-4 w-4" />
+                ))}
             </button>
           </div>
 
           {/* Botões de Criar */}
           <div className="flex gap-2">
             <button
-              onClick={() => handleCreateClick('basic')}
+              onClick={() => handleCreateClick("basic")}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 flex items-center space-x-2"
               disabled={isLoading}
             >
@@ -309,7 +351,7 @@ const CabinetList: React.FC<CabinetListProps> = ({
             </button>
 
             <button
-              onClick={() => handleCreateClick('complete')}
+              onClick={() => handleCreateClick("complete")}
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 flex items-center space-x-2"
               disabled={isLoading}
             >
@@ -329,23 +371,25 @@ const CabinetList: React.FC<CabinetListProps> = ({
         <div className="text-center py-12 bg-white rounded-lg shadow border">
           <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {filters.search || filters.type !== 'all' ? 'Nenhum gabinete encontrado' : 'Nenhum gabinete cadastrado'}
+            {filters.search || filters.type !== "all"
+              ? "Nenhum gabinete encontrado"
+              : "Nenhum gabinete cadastrado"}
           </h3>
           <p className="text-gray-600 mb-6">
-            {filters.search || filters.type !== 'all' 
-              ? 'Tente ajustar os filtros de busca.'
-              : 'Comece criando seu primeiro gabinete LED.'}
+            {filters.search || filters.type !== "all"
+              ? "Tente ajustar os filtros de busca."
+              : "Comece criando seu primeiro gabinete LED."}
           </p>
-          {(!filters.search && filters.type === 'all') && (
+          {!filters.search && filters.type === "all" && (
             <div className="flex justify-center gap-3">
               <button
-                onClick={() => handleCreateClick('basic')}
+                onClick={() => handleCreateClick("basic")}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 ✨ Criar Gabinete Básico
               </button>
               <button
-                onClick={() => handleCreateClick('complete')}
+                onClick={() => handleCreateClick("complete")}
                 className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
                 🔧 Criar Gabinete Completo
@@ -387,8 +431,13 @@ interface CabinetCardProps {
   onDelete: () => void;
 }
 
-const CabinetCard: React.FC<CabinetCardProps> = ({ cabinet, onEdit, onDelete }) => {
-  const hasCompleteData = cabinet.brightness || cabinet.refreshRate || cabinet.powerFactor;
+const CabinetCard: React.FC<CabinetCardProps> = ({
+  cabinet,
+  onEdit,
+  onDelete,
+}) => {
+  const hasCompleteData =
+    cabinet.brightness || cabinet.refreshRate || cabinet.powerFactor;
 
   return (
     <div className="bg-white rounded-lg shadow border hover:shadow-lg transition-shadow">
@@ -396,14 +445,16 @@ const CabinetCard: React.FC<CabinetCardProps> = ({ cabinet, onEdit, onDelete }) 
         {/* Header */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center space-x-2">
-            {cabinet.type === 'indoor' ? (
+            {cabinet.type === "indoor" ? (
               <Tv className="h-5 w-5 text-green-600" />
             ) : (
               <Sun className="h-5 w-5 text-orange-600" />
             )}
-            <h3 className="font-semibold text-gray-900 text-lg">{cabinet.name}</h3>
+            <h3 className="font-semibold text-gray-900 text-lg">
+              {cabinet.name}
+            </h3>
           </div>
-          
+
           <div className="flex space-x-1">
             <button
               onClick={onEdit}
@@ -422,20 +473,22 @@ const CabinetCard: React.FC<CabinetCardProps> = ({ cabinet, onEdit, onDelete }) 
 
         {/* Badges */}
         <div className="flex flex-wrap gap-2 mb-3">
-          <span className={`px-2 py-1 text-xs rounded-full ${
-            cabinet.type === 'indoor' 
-              ? 'bg-green-100 text-green-700' 
-              : 'bg-orange-100 text-orange-700'
-          }`}>
-            {cabinet.type === 'indoor' ? '🏠 Indoor' : '🌤️ Outdoor'}
+          <span
+            className={`px-2 py-1 text-xs rounded-full ${
+              cabinet.type === "indoor"
+                ? "bg-green-100 text-green-700"
+                : "bg-orange-100 text-orange-700"
+            }`}
+          >
+            {cabinet.type === "indoor" ? "🏠 Indoor" : "🌤️ Outdoor"}
           </span>
-          
+
           {hasCompleteData && (
             <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
               🔧 Completo
             </span>
           )}
-          
+
           {cabinet.isBivolt && (
             <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">
               ⚡ Bivolt
@@ -448,18 +501,24 @@ const CabinetCard: React.FC<CabinetCardProps> = ({ cabinet, onEdit, onDelete }) 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="text-gray-500">Dimensões:</span>
-              <p className="font-medium">{cabinet.widthMm} × {cabinet.heightMm} mm</p>
+              <p className="font-medium">
+                {cabinet.widthMm} × {cabinet.heightMm} mm
+              </p>
             </div>
             <div>
               <span className="text-gray-500">Pixels:</span>
-              <p className="font-medium">{cabinet.widthPixels} × {cabinet.heightPixels}</p>
+              <p className="font-medium">
+                {cabinet.widthPixels} × {cabinet.heightPixels}
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="text-gray-500">Pixel Pitch:</span>
-              <p className="font-medium text-blue-600">{cabinet.pixelPitch}mm</p>
+              <p className="font-medium text-blue-600">
+                {cabinet.pixelPitch}mm
+              </p>
             </div>
             <div>
               <span className="text-gray-500">Potência:</span>
@@ -507,13 +566,15 @@ const CabinetCard: React.FC<CabinetCardProps> = ({ cabinet, onEdit, onDelete }) 
         {/* Descrição */}
         {cabinet.description && (
           <div className="mt-3 pt-3 border-t border-gray-200">
-            <p className="text-xs text-gray-600 line-clamp-2">{cabinet.description}</p>
+            <p className="text-xs text-gray-600 line-clamp-2">
+              {cabinet.description}
+            </p>
           </div>
         )}
 
         {/* Footer */}
         <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500">
-          Criado em {new Date(cabinet.createdAt).toLocaleDateString('pt-BR')}
+          Criado em {new Date(cabinet.createdAt).toLocaleDateString("pt-BR")}
         </div>
       </div>
     </div>

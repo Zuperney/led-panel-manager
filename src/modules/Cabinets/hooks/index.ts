@@ -1,1 +1,1 @@
-export { useCabinetData } from './useCabinetData';
+export { useCabinetData } from "./useCabinetData";

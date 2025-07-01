@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import type { Project, ProjectFormData, ProjectFormProps, ProjectFormErrors } from "../types/project.types";
+import type {
+  Project,
+  ProjectFormData,
+  ProjectFormProps,
+  ProjectFormErrors,
+} from "../types/project.types";
 
 const ProjectForm: React.FC<ProjectFormProps> = ({
   initialData,
@@ -12,8 +17,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const [formData, setFormData] = useState<ProjectFormData>({
     name: initialData?.name || "",
     client: initialData?.client || "",
-    deliveryDate: initialData?.deliveryDate ? 
-      new Date(initialData.deliveryDate).toISOString().split('T')[0] : "",
+    deliveryDate: initialData?.deliveryDate
+      ? new Date(initialData.deliveryDate).toISOString().split("T")[0]
+      : "",
     status: initialData?.status || "planning",
     description: initialData?.description || "",
   });
@@ -28,14 +34,15 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     // Validações obrigatórias
     if (!formData.name.trim()) newErrors.name = "Nome do projeto é obrigatório";
     if (!formData.client.trim()) newErrors.client = "Cliente é obrigatório";
-    if (!formData.deliveryDate) newErrors.deliveryDate = "Data de entrega é obrigatória";
+    if (!formData.deliveryDate)
+      newErrors.deliveryDate = "Data de entrega é obrigatória";
 
     // Validação de data
     if (formData.deliveryDate) {
       const deliveryDate = new Date(formData.deliveryDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       if (deliveryDate < today) {
         newErrors.deliveryDate = "Data de entrega não pode ser no passado";
       }
@@ -81,12 +88,12 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   // Calcular dias restantes
   const getDaysRemaining = () => {
     if (!formData.deliveryDate) return null;
-    
+
     const deliveryDate = new Date(formData.deliveryDate);
     const today = new Date();
     const diffTime = deliveryDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return diffDays;
   };
 
@@ -160,23 +167,34 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               <input
                 type="date"
                 value={formData.deliveryDate}
-                onChange={(e) => handleInputChange("deliveryDate", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("deliveryDate", e.target.value)
+                }
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.deliveryDate ? "border-red-500" : "border-gray-300"
                 }`}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
               {errors.deliveryDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.deliveryDate}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.deliveryDate}
+                </p>
               )}
               {daysRemaining !== null && daysRemaining >= 0 && (
-                <p className={`text-sm mt-1 ${
-                  daysRemaining <= 7 ? 'text-red-600' : 
-                  daysRemaining <= 30 ? 'text-yellow-600' : 'text-green-600'
-                }`}>
-                  {daysRemaining === 0 ? '📅 Entrega hoje!' :
-                   daysRemaining === 1 ? '⏰ Entrega amanhã!' :
-                   `📆 ${daysRemaining} dias restantes`}
+                <p
+                  className={`text-sm mt-1 ${
+                    daysRemaining <= 7
+                      ? "text-red-600"
+                      : daysRemaining <= 30
+                      ? "text-yellow-600"
+                      : "text-green-600"
+                  }`}
+                >
+                  {daysRemaining === 0
+                    ? "📅 Entrega hoje!"
+                    : daysRemaining === 1
+                    ? "⏰ Entrega amanhã!"
+                    : `📆 ${daysRemaining} dias restantes`}
                 </p>
               )}
             </div>
@@ -188,7 +206,12 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => handleInputChange("status", e.target.value as Project['status'])}
+                onChange={(e) =>
+                  handleInputChange(
+                    "status",
+                    e.target.value as Project["status"]
+                  )
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="planning">📋 Planejamento</option>

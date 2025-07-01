@@ -80,7 +80,7 @@ export interface SectionContent {
   specifications?: SpecificationData;
   calculations?: CalculationData;
   layoutDiagram?: LayoutDiagramData;
-  custom?: Record<string, any>;
+  custom?: Record<string, string | number | boolean>;
 }
 
 export interface TableData {
@@ -179,7 +179,7 @@ export interface DiagramElement {
   height: number;
   label?: string;
   color?: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, string | number | boolean>;
 }
 
 export interface ReportMetadata {
@@ -249,7 +249,7 @@ export interface CreateReportRequest {
   projectId?: string;
   cabinetId?: string;
   panelId?: string;
-  customData?: Record<string, any>;
+  customData?: Record<string, string | number | boolean>;
   settings?: Partial<PageSettings>;
   branding?: ReportBranding;
 }

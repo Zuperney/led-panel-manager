@@ -6,12 +6,70 @@ import type {
   ReportType,
 } from "../types";
 
+// Tipos específicos para os dados de entrada do relatório
+interface ProjectData {
+  name?: string;
+  client?: {
+    name?: string;
+  };
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  budget?: number;
+  location?: {
+    city?: string;
+    state?: string;
+  };
+  estimatedHours?: number;
+  actualHours?: number;
+}
+
+interface ReportSourceData {
+  project?: ProjectData;
+  panels?: Array<{
+    name?: string;
+    model?: string;
+    width?: number;
+    height?: number;
+    pixelPitch?: number;
+    brightness?: number;
+    powerConsumption?: number;
+    specifications?: Record<string, string | number>;
+  }>;
+  cabinets?: Array<{
+    name?: string;
+    type?: string;
+  }>;
+  materials?: Array<{
+    name?: string;
+    quantity?: number;
+    unit?: string;
+    unitPrice?: number;
+    totalPrice?: number;
+  }>;
+  costBreakdown?: Record<string, number>;
+  layout?: {
+    width?: number;
+    height?: number;
+    elements?: Array<{
+      id: string;
+      type: "panel" | "cabinet" | "cable" | "annotation";
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      label?: string;
+    }>;
+  };
+}
+
 /**
  * Generate report data based on project information
  */
 export const generateReportData = (
   type: ReportType,
-  sourceData: any,
+  sourceData: ReportSourceData,
   metadata: ReportMetadata
 ): ReportData => {
   const sections: ReportSection[] = [];
@@ -69,7 +127,7 @@ const getReportTitle = (type: ReportType): string => {
 /**
  * Get report subtitle
  */
-const getReportSubtitle = (data: any): string => {
+const getReportSubtitle = (data: ReportSourceData): string => {
   if (data?.project?.name) {
     return `Projeto: ${data.project.name}`;
   }
@@ -79,7 +137,9 @@ const getReportSubtitle = (data: any): string => {
 /**
  * Generate project summary sections
  */
-const generateProjectSummarySections = (data: any): ReportSection[] => {
+const generateProjectSummarySections = (
+  data: ReportSourceData
+): ReportSection[] => {
   const sections: ReportSection[] = [];
 
   // Project overview
@@ -156,7 +216,9 @@ const generateProjectSummarySections = (data: any): ReportSection[] => {
 /**
  * Generate technical specifications sections
  */
-const generateTechnicalSpecsSections = (data: any): ReportSection[] => {
+const generateTechnicalSpecsSections = (
+  data: ReportSourceData
+): ReportSection[] => {
   const sections: ReportSection[] = [];
 
   if (data.panels && Array.isArray(data.panels)) {
@@ -169,7 +231,7 @@ const generateTechnicalSpecsSections = (data: any): ReportSection[] => {
       content: {
         table: {
           headers: ["Modelo", "Resolução", "Pixel Pitch", "Brilho", "Consumo"],
-          rows: data.panels.map((panel: any) => [
+          rows: data.panels?.map((panel) => [
             panel.model || "N/A",
             `${panel.width}x${panel.height}`,
             `${panel.pixelPitch}mm`,
@@ -192,19 +254,22 @@ const generateTechnicalSpecsSections = (data: any): ReportSection[] => {
 /**
  * Generate material list sections
  */
-const generateMaterialListSections = (data: any): ReportSection[] => {
+const generateMaterialListSections = (
+  data: ReportSourceData
+): ReportSection[] => {
   const sections: ReportSection[] = [];
 
   if (data.materials && Array.isArray(data.materials)) {
     const tableData: TableData = {
       headers: ["Item", "Quantidade", "Unidade", "Preço Unit.", "Total"],
-      rows: data.materials.map((item: any) => [
-        item.name,
-        item.quantity,
-        item.unit,
-        formatCurrency(item.unitPrice),
-        formatCurrency(item.totalPrice),
-      ]),
+      rows:
+        data.materials?.map((item) => [
+          item.name || "N/A",
+          item.quantity || 0,
+          item.unit || "",
+          formatCurrency(item.unitPrice || 0),
+          formatCurrency(item.totalPrice || 0),
+        ]) || [],
       styling: {
         headerBackground: "#f3f4f6",
         alternateRows: true,
@@ -222,10 +287,11 @@ const generateMaterialListSections = (data: any): ReportSection[] => {
     });
 
     // Total cost
-    const totalCost = data.materials.reduce(
-      (sum: number, item: any) => sum + item.totalPrice,
-      0
-    );
+    const totalCost =
+      data.materials?.reduce(
+        (sum: number, item) => sum + (item.totalPrice || 0),
+        0
+      ) || 0;
     sections.push({
       id: "total-cost",
       title: "Custo Total",
@@ -244,7 +310,9 @@ const generateMaterialListSections = (data: any): ReportSection[] => {
 /**
  * Generate cost analysis sections
  */
-const generateCostAnalysisSections = (data: any): ReportSection[] => {
+const generateCostAnalysisSections = (
+  data: ReportSourceData
+): ReportSection[] => {
   const sections: ReportSection[] = [];
 
   if (data.costBreakdown) {
@@ -258,7 +326,7 @@ const generateCostAnalysisSections = (data: any): ReportSection[] => {
         chart: {
           type: "pie",
           data: Object.entries(data.costBreakdown).map(
-            ([category, cost]: [string, any]) => ({
+            ([category, cost]: [string, number]) => ({
               label: category,
               value: cost,
               color: getCategoryColor(category),
@@ -313,7 +381,9 @@ const generateInstallationGuideSections = (): ReportSection[] => {
 /**
  * Generate cabinet layout sections
  */
-const generateCabinetLayoutSections = (data: any): ReportSection[] => {
+const generateCabinetLayoutSections = (
+  data: ReportSourceData
+): ReportSection[] => {
   const sections: ReportSection[] = [];
 
   if (data.layout) {
@@ -357,7 +427,7 @@ const generateDefaultSection = (): ReportSection => {
 /**
  * Format date for display
  */
-const formatDate = (date: any): string => {
+const formatDate = (date: string | Date | undefined): string => {
   if (!date) return "N/A";
   if (typeof date === "string") date = new Date(date);
   return new Intl.DateTimeFormat("pt-BR").format(date);

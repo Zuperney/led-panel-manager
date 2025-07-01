@@ -87,7 +87,11 @@ const PanelForm: React.FC<PanelFormProps> = ({
   const [errors, setErrors] = useState<PanelFormErrors>({});
 
   // Estado dos cálculos em tempo real
-  const [calculations, setCalculations] = useState<any>(null);
+  const [calculations, setCalculations] = useState<{
+    totalPixels: number;
+    pixelDensity: number;
+    resolution: { horizontal: number; vertical: number };
+  } | null>(null);
 
   // Validação em tempo real
   useEffect(() => {
@@ -99,7 +103,7 @@ const PanelForm: React.FC<PanelFormProps> = ({
           formData.pixelPitch
         );
         setCalculations(calc);
-      } catch (error) {
+      } catch {
         setCalculations(null);
       }
     }
