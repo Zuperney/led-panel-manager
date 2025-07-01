@@ -18,7 +18,7 @@ export interface Panel {
   model: string;
   price?: number;
   description?: string;
-  specifications?: Record<string, any>;
+  specifications?: Record<string, string | number | boolean>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -77,4 +77,14 @@ export interface PanelFormData {
   model: string;
   price: string;
   description: string;
+}
+
+export interface PanelPreviewCalculations {
+  totalPixels: number;
+  pixelDensity: number;
+  resolution: {
+    horizontal: number;
+    vertical: number;
+  };
+  estimatedPower?: number;
 }

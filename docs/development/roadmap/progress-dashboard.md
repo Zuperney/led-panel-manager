@@ -1,30 +1,36 @@
 # 📊 Dashboard de Progresso - LED Panel Manager
 
+## 🚨 RESET ESTRATÉGICO REALIZADO
+**Data:** 01/07/2025  
+**Motivo:** Garantir qualidade e sustentabilidade do desenvolvimento  
+**Ponto de Restauração:** `milestone/etapa-1.1`  
+**Documentação:** [Reset Estratégico](../RESET_ESTRATEGICO_01_07_2025.md)
+
 ## 🎯 Status Geral do Projeto
 
 ```
-Progresso Geral: ████████░░ 40%
+Progresso Geral: ███░░░░░░░ 15% (Reajustado pós-reset)
 
-Fase 1 (Foundation):     ████████░░ 60%
-Fase 2 (Auth & Users):   ███░░░░░░░ 15%
-Fase 3 (Advanced):       ██░░░░░░░░ 10%
-Fase 4 (Enterprise):     █░░░░░░░░░ 5%
+Fase 1 (Foundation):     ███░░░░░░░ 15%
+Fase 2 (Auth & Users):   ░░░░░░░░░░ 0%
+Fase 3 (Advanced):       ░░░░░░░░░░ 0%
+Fase 4 (Enterprise):     ░░░░░░░░░░ 0%
 ```
 
-**Última atualização:** Junho 30, 2025
+**Última atualização:** 01 de Julho, 2025
 
 ## 📈 Métricas por Fase
 
 ### 🏗️ Fase 1: Foundation
 
-| Etapa                | Status          | Progresso | Tempo Gasto | Tempo Restante |
-| -------------------- | --------------- | --------- | ----------- | -------------- |
-| 1.1 - CRUD Painéis   | 🔄 Em Andamento | 60%       | 3 dias      | 2 dias         |
-| 1.2 - CRUD Projetos  | ⏳ Pendente     | 0%        | 0 dias      | 5 dias         |
-| 1.3 - Relatórios PDF | ⏳ Pendente     | 0%        | 0 dias      | 7 dias         |
-| 1.4 - UI Polish      | ⏳ Pendente     | 0%        | 0 dias      | 5 dias         |
+| Etapa                | Status          | Progresso | Qualidade | Próximos Passos |
+| -------------------- | --------------- | --------- | --------- | --------------- |
+| 1.1 - CRUD Painéis   | 🔄 Finalizando  | 85%       | ✅ Estável | Testes + Tipagem final |
+| 1.2 - CRUD Projetos  | ⏳ Aguardando   | 0%        | 🚫 Reset  | Aguardar conclusão 1.1 |
+| 1.3 - Relatórios PDF | ⏳ Aguardando   | 0%        | 🚫 Reset  | Aguardar conclusão 1.2 |
+| 1.4 - UI Polish      | ⏳ Aguardando   | 0%        | 🚫 Reset  | Aguardar conclusão 1.3 |
 
-**Total Fase 1:** 15% concluído | Estimativa restante: 19 dias
+**Total Fase 1:** 15% concluído | Foco atual: Qualidade da Etapa 1.1
 
 ### 🔐 Fase 2: Authentication & Users
 

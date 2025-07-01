@@ -50,7 +50,7 @@ export const usePanelData = () => {
         if (storedPanels) {
           const parsedPanels = JSON.parse(storedPanels);
           setPanels(
-            parsedPanels.map((panel: any) => ({
+            parsedPanels.map((panel: Omit<Panel, 'createdAt' | 'updatedAt'> & { createdAt: string; updatedAt: string }) => ({
               ...panel,
               createdAt: new Date(panel.createdAt),
               updatedAt: new Date(panel.updatedAt),

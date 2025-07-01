@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Panel } from '../types/panel.types';
+import type { Panel, PanelPreviewCalculations } from '../types/panel.types';
 
 // Função de cálculo para preview (sem dependência de Panel completo)
 const calculatePreviewMetrics = (width: number, height: number, pixelPitch: number) => {
@@ -83,7 +83,7 @@ const PanelForm: React.FC<PanelFormProps> = ({
   const [errors, setErrors] = useState<PanelFormErrors>({});
 
   // Estado dos cálculos em tempo real
-  const [calculations, setCalculations] = useState<any>(null);
+  const [calculations, setCalculations] = useState<PanelPreviewCalculations | null>(null);
 
   // Validação em tempo real
   useEffect(() => {
@@ -95,7 +95,7 @@ const PanelForm: React.FC<PanelFormProps> = ({
           formData.pixelPitch
         );
         setCalculations(calc);
-      } catch (error) {
+      } catch {
         setCalculations(null);
       }
     }

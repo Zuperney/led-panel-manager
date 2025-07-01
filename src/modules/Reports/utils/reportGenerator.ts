@@ -1,10 +1,10 @@
 import type {
   ReportData,
-  ReportSection,
-  TableData,
   ReportMetadata,
+  ReportSection,
   ReportType,
-} from "../types";
+  TableData,
+} from "../types/report.types";
 
 /**
  * Generate report data based on project information
